@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-20T14:00:43.452398Z",
+  "generatedAt": "2026-11-20T18:29:57.702978Z",
   "title": "Design System: Groove Radar",
   "extensions": {
     "colorMeta": {
@@ -23,6 +23,12 @@
         "role": "neutral",
         "displayName": "Frost",
         "canonical": "#EEF4FA"
+      },
+      "glass-edge": {
+        "role": "neutral",
+        "displayName": "Glass edge",
+        "canonical": "rgba(255, 255, 255, 0.5)",
+        "note": "Peak of the 1px glass edge highlight; never a fill or text colour."
       }
     },
     "shadows": [
@@ -35,6 +41,11 @@
         "name": "pink-lift",
         "value": "0 12px 26px -14px rgba(255,46,136,.9)",
         "purpose": "Pink button hover."
+      },
+      {
+        "name": "segment-highlight",
+        "value": "0 6px 16px -8px rgba(0,6,20,.7), inset 0 1px 0 #FFFFFF",
+        "purpose": "The sliding Frost highlight in the filter control."
       }
     ],
     "motion": [
@@ -71,15 +82,15 @@
       "refersTo": "button-primary",
       "description": "Pink action button.",
       "html": "<a class=\"ds-cta\" href=\"#\">Buy tickets +</a>",
-      "css": ".ds-cta{display:inline-flex;background:#FF2E88;color:#03203D;font:600 15px 'Schibsted Grotesk',sans-serif;padding:13px 20px;border-radius:6px;text-decoration:none}.ds-cta:hover{background:#EEF4FA}.ds-cta:focus-visible{outline:2px solid #FF2E88;outline-offset:3px}"
+      "css": ".ds-cta{display:inline-flex;background:#FF2E88;color:#03203D;font:600 1rem 'Schibsted Grotesk',sans-serif;padding:13px 20px;border-radius:12px;text-decoration:none}.ds-cta:hover{box-shadow:0 12px 26px -14px rgba(255,46,136,.9);transform:translateY(-2px)}.ds-cta:focus-visible{outline:2px solid #FF2E88;outline-offset:3px}"
     },
     {
       "name": "Ghost Button",
       "kind": "button",
       "refersTo": "button-ghost",
-      "description": "Outlined secondary action.",
+      "description": "Outlined secondary action; flat, never glass.",
       "html": "<a class=\"ds-ghost\" href=\"#\">Show in calendar →</a>",
-      "css": ".ds-ghost{display:inline-flex;color:#EEF4FA;box-shadow:inset 0 0 0 1.5px #EEF4FA;font:600 15px 'Schibsted Grotesk',sans-serif;padding:13px 20px;border-radius:6px;text-decoration:none;background:#03203D}.ds-ghost:hover{box-shadow:inset 0 0 0 1.5px #FF2E88;color:#FF5CA2}"
+      "css": ".ds-ghost{display:inline-flex;color:#EEF4FA;box-shadow:inset 0 0 0 1.5px #EEF4FA;font:600 1rem 'Schibsted Grotesk',sans-serif;padding:13px 20px;border-radius:12px;text-decoration:none;background:transparent}.ds-ghost:hover{box-shadow:inset 0 0 0 1.5px #FF2E88;color:#FF5CA2}.ds-ghost:focus-visible{outline:2px solid #FF2E88;outline-offset:3px}"
     },
     {
       "name": "Filter Chip",
@@ -87,15 +98,15 @@
       "refersTo": "chip",
       "description": "Calendar filters.",
       "html": "<button class=\"ds-chip\" aria-pressed=\"true\">All gigs</button><button class=\"ds-chip\">Near me</button>",
-      "css": ".ds-chip{border:1.5px solid #EEF4FA;background:#03203D;color:#EEF4FA;font:500 14px 'Schibsted Grotesk',sans-serif;padding:7px 14px;border-radius:6px;margin-right:8px}.ds-chip[aria-pressed=true]{background:#EEF4FA;color:#03203D}"
+      "css": ".ds-chip{border:0;background:transparent;color:#EEF4FA;font:500 .875rem 'Schibsted Grotesk',sans-serif;padding:8px 16px;border-radius:8px;margin-right:2px}.ds-chip[aria-pressed=true]{background:#EEF4FA;color:#03203D}"
     },
     {
       "name": "Near-you tag",
       "kind": "chip",
       "refersTo": "tag-near",
       "description": "Marks the hero gig as close by.",
-      "html": "<span class=\"ds-near\">NEAR YOU</span>",
-      "css": ".ds-near{background:#FF2E88;color:#03203D;font:600 13px 'Schibsted Grotesk',sans-serif;letter-spacing:.04em;padding:6px 12px;border-radius:6px}"
+      "html": "<span class=\"ds-near\">Next near you</span>",
+      "css": ".ds-near{background:#FF2E88;color:#03203D;font:600 .71875rem 'Schibsted Grotesk',sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:6px}"
     }
   ],
   "narrative": {
