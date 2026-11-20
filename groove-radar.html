@@ -93,7 +93,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 @keyframes soft-in { from { opacity: 0; transform: translateY(10px); } }
 .view-enter > * { animation: soft-in 0.5s var(--soft) backwards; }
 .view-enter > *:nth-child(2) { animation-delay: 60ms; } .view-enter > *:nth-child(3) { animation-delay: 120ms; } .view-enter > *:nth-child(n+4) { animation-delay: 170ms; }
-#daypanel .rows > *, #daypanel .empty { animation: soft-in 0.45s var(--soft) backwards; }
+#daypanel .shead, #daypanel .rows > *, #daypanel .empty { animation: soft-in 0.45s var(--soft) backwards; }
 #daypanel .rows > *:nth-child(2) { animation-delay: 50ms; } #daypanel .rows > *:nth-child(n+3) { animation-delay: 100ms; }
 /* Scroll motion (driven from JS, see "scroll motion"): masked words and letters, 3D panels, nav progress line */
 .mk { display: inline-block; overflow: hidden; vertical-align: top; padding-block: 0.12em; margin-block: -0.12em; }
@@ -103,7 +103,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 #news, #view > .grid, #daypanel .rows, #view > .rows { transform-origin: 50% 0%; }
 .scrollprog { position: absolute; left: 18px; right: 18px; bottom: 0; height: 2px; background: var(--stone); transform-origin: 0 50%; scale: 0 1; pointer-events: none; }
 .seg-ind { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: var(--r-md); background: var(--ink); box-shadow: 0 6px 16px -8px rgba(0, 6, 20, 0.7), inset 0 1px 0 #FFFFFF; transition: left 0.5s var(--soft), width 0.5s var(--soft); }
-@media (prefers-reduced-motion: reduce) { .amb i, .view-enter > *, #daypanel .rows > *, #daypanel .empty { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .amb i, .view-enter > *, #daypanel .shead, #daypanel .rows > *, #daypanel .empty { animation: none !important; } }
 
 
 /* Hero */
@@ -453,7 +453,33 @@ const STORES = [
 ];
 
 const $ = (id) => document.getElementById(id);
-const SCROLL = () => (matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth");
+/* Eased page scroll (ease-out, about 0.7s) instead of the browser's jumpy one. Any wheel, touch or key from
+   the visitor cancels it; with reduced motion it moves at once. */
+let glideRaf = 0;
+function glideTo(y) {
+  cancelAnimationFrame(glideRaf);
+  const max = document.documentElement.scrollHeight - innerHeight;
+  const to = Math.max(0, Math.min(max, Math.round(y))), from = scrollY, dist = to - from;
+  if (Math.abs(dist) < 2) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { scrollTo(0, to); return; }
+  const dur = Math.min(900, 420 + Math.abs(dist) * 0.25), t0 = performance.now();
+  const stop = () => { cancelAnimationFrame(glideRaf); off(); };
+  const off = () => ["wheel", "touchstart", "keydown", "pointerdown"].forEach(ev => removeEventListener(ev, stop));
+  ["wheel", "touchstart", "keydown", "pointerdown"].forEach(ev => addEventListener(ev, stop, { passive: true }));
+  const step = now => {
+    const t = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - t, 4);
+    scrollTo(0, from + dist * e);
+    if (t < 1) glideRaf = requestAnimationFrame(step); else off();
+  };
+  glideRaf = requestAnimationFrame(step);
+}
+/* Bring a section's heading in under the sticky nav. */
+function glideToEl(n, onlyIfHidden) {
+  if (!n) return;
+  const r = n.getBoundingClientRect(), navH = document.querySelector("nav.top").getBoundingClientRect().bottom;
+  if (onlyIfHidden && r.top >= navH && r.top + 120 <= innerHeight) return;
+  glideTo(scrollY + r.top - navH - 16);
+}
 const pad = (n) => String(n).padStart(2, "0");
 const keyOf = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 const parseKey = (k) => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
@@ -503,7 +529,7 @@ function upcoming() {
   if (filter === "buy") l = l.filter(g => g.status === "available");
   return l.sort((a, b) => a.date.localeCompare(b.date) || (isNear(b) - isNear(a)));
 }
-function goToDay(k) { pendingFocus = "day-" + k; selDay = k; const d = parseKey(k); cursor = new Date(d.getFullYear(), d.getMonth(), 1); setView("month"); render(); setTimeout(() => $("daypanel")?.scrollIntoView({ behavior: SCROLL(), block: "start" }), 40); }
+function goToDay(k) { pendingFocus = "day-" + k; selDay = k; const d = parseKey(k); cursor = new Date(d.getFullYear(), d.getMonth(), 1); setView("month"); render(); requestAnimationFrame(() => glideToEl($("daypanel"))); }
 
 /* ---------- hero ---------- */
 function renderHero() {
@@ -683,7 +709,15 @@ function renderMonth(list) {
     items.slice(0, 3).forEach(g => c.append(el("span", "ev" + (isNear(g) ? " near" : "") + (statusOf(g) === "sold_out" ? " sold" : ""), `${g.artist.split(",")[0]} · ${g.city || ""}`)));
     if (items.length > 3) c.append(el("span", "more", `+${items.length - 3} more`));
     const dots = el("span", "dots"); items.slice(0, 5).forEach(g => dots.append(el("i", "dot" + (isNear(g) ? " near" : "")))); c.append(dots);
-    c.onclick = () => { selDay = k; if (outM) cursor = new Date(d.getFullYear(), d.getMonth(), 1); render(); setTimeout(() => $("daypanel")?.scrollIntoView({ behavior: SCROLL(), block: "nearest" }), 30); };
+    c.onclick = () => {
+      if (outM) { selDay = k; cursor = new Date(d.getFullYear(), d.getMonth(), 1); render(); requestAnimationFrame(() => glideToEl($("daypanel"), true)); return; }
+      if (k === selDay) { glideToEl($("daypanel"), true); return; }
+      /* Same month: mark the new day and swap only the day panel, so nothing above it moves. */
+      selDay = k;
+      grid.querySelectorAll(".day").forEach(x => { const on = x === c; x.classList.toggle("sel", on); x.setAttribute("aria-pressed", String(on)); x.tabIndex = on ? 0 : -1; });
+      swapPanel(dayPanel());
+      glideToEl($("daypanel"), true);
+    };
     grid.append(c);
   }
   (grid.querySelector(".day.sel") || grid.querySelector(".day.today") || grid.querySelector(".day:not(.out)") || grid.querySelector(".day")).tabIndex = 0;
@@ -701,6 +735,8 @@ function renderMonth(list) {
   [["var(--accent)", (here ? `Near you, within ${NEAR_KM} km` : "Near you") + " (round dot, thick line)", "round"], ["var(--ink)", "Elsewhere in Europe", ""], ["var(--muted)", "Sold out (crossed out)", ""]].forEach(([bg, t, cls]) => { const s = el("span"); const i = el("i", cls || null); i.style.background = bg; i.setAttribute("aria-hidden", "true"); s.append(i, t); lg.append(s); });
   v.append(lg);
 
+  v.append(dayPanel());
+  function dayPanel() {
   const panel = el("section"); panel.id = "daypanel"; panel.style.display = "flex"; panel.style.flexDirection = "column"; panel.style.gap = "6px";
   const items = byDay[selDay] || [];
   const ph = el("div", "shead"); const t = el("h2", "sub", fmtLong(selDay));
@@ -715,7 +751,19 @@ function renderMonth(list) {
     if (nx) { const b = el("button", "cta ghost", `Next: ${nx.artist.split(",")[0]} · ${parseKey(nx.date).getDate()} ${MONTHS[parseKey(nx.date).getMonth()]}`); b.append(icon("next")); b.onclick = () => goToDay(nx.date); e.append(b); }
     panel.append(e);
   }
-  v.append(panel);
+  return panel;
+  }
+}
+/* Replace the day panel, easing its height from old to new so the page below never jumps. */
+function swapPanel(neu) {
+  const old = $("daypanel"); if (!old) return;
+  const h0 = old.offsetHeight; old.replaceWith(neu);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const h1 = neu.offsetHeight; if (Math.abs(h1 - h0) < 2) return;
+  neu.style.height = h0 + "px"; neu.style.overflow = "clip"; void neu.offsetHeight;
+  neu.style.transition = "height 0.45s var(--soft)"; neu.style.height = h1 + "px";
+  const done = () => { neu.style.height = neu.style.overflow = neu.style.transition = ""; };
+  neu.addEventListener("transitionend", done, { once: true }); setTimeout(done, 600);
 }
 
 function renderList(list) {
@@ -1038,11 +1086,11 @@ addEventListener("popstate", () => { readHash(); render(); });
 /* View links: switch the main view, then bring it into sight (it sits below the hero and What's new). */
 document.querySelectorAll(".navlinks button[data-v]").forEach(b => b.addEventListener("click", () => {
   setView(b.dataset.v); render();
-  $("main").scrollIntoView({ behavior: SCROLL(), block: "start" });
+  glideToEl($("main"));
 }));
 /* Phones: once you scroll past the hero, the nav keeps only its row of links (wordmark and count hide). */
 (() => { const nav = document.querySelector("nav.top"); const upd = () => nav.classList.toggle("compact", scrollY > 160); addEventListener("scroll", upd, { passive: true }); upd(); })();
-document.querySelector('.navlinks button[data-jump="news"]').addEventListener("click", () => { const s = $("newsSec"); if (!s.hidden) s.scrollIntoView({ behavior: SCROLL(), block: "start" }); });
+document.querySelector('.navlinks button[data-jump="news"]').addEventListener("click", () => { const s = $("newsSec"); if (!s.hidden) glideToEl(s); });
 
 render();
 
