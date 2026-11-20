@@ -13,7 +13,7 @@
   --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   --body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   /* Type roles (DESIGN.md typography). rem so the visitor's own text size is respected. */
-  --fs-label: 0.71875rem;                       /* 11.5px uppercase metadata */
+  --fs-label: 0.75rem;                          /* 12px uppercase metadata */
   --fs-meta: 0.8125rem;                         /* 13px small supporting text */
   --fs-ui: 0.875rem;                            /* 14px controls, navigation, notes */
   --fs-body: 1rem;                              /* 16px reading text and primary buttons */
@@ -60,8 +60,6 @@ nav.top { position: sticky; top: 8px; z-index: 10; display: flex; align-items: c
   .navlinks .short { display: inline; }
   .navlinks.overflows { -webkit-mask-image: linear-gradient(to right, var(--ink) 80%, transparent); mask-image: linear-gradient(to right, var(--ink) 80%, transparent); }
   .navlinks.overflows.at-end { -webkit-mask-image: none; mask-image: none; }
-  .chip { padding: 10px 14px; }
-  .store { padding: 9px 12px; }
   .sq { width: 44px; height: 44px; }
   .sq.txt { height: 44px; }
 }
@@ -77,18 +75,18 @@ nav.top { position: sticky; top: 8px; z-index: 10; display: flex; align-items: c
 @keyframes amb-b { to { transform: translate(-7vmax, -9vmax) scale(0.94); } }
 @keyframes amb-c { to { transform: translate(8vmax, -5vmax) scale(1.06); } }
 .page { position: relative; z-index: 1; }
-nav.top, .hero aside, .news, .filters, .grid, .acard, .sq {
+nav.top, .hero aside, .news, .filters, .grid, .sq {
   --gl-bg: rgba(16, 52, 88, 0.42);
   background: linear-gradient(150deg, rgba(238, 244, 250, 0.11), rgba(238, 244, 250, 0.02) 46%, rgba(238, 244, 250, 0.05)), var(--gl-bg);
   -webkit-backdrop-filter: blur(22px) saturate(1.8) brightness(1.06); backdrop-filter: blur(22px) saturate(1.8) brightness(1.06);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(238, 244, 250, 0.1), 0 18px 40px -22px rgba(0, 6, 20, 0.7);
   }
-.hero aside, .news, .filters, .grid, .acard, .sq { position: relative; }
-nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::before, .acard::before {
+.hero aside, .news, .filters, .grid, .sq { position: relative; }
+nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0) 68%, rgba(255, 46, 136, 0.28));
   -webkit-mask: linear-gradient(var(--ink) 0 0) content-box, linear-gradient(var(--ink) 0 0); -webkit-mask-composite: xor; mask: linear-gradient(var(--ink) 0 0) content-box exclude, linear-gradient(var(--ink) 0 0); }
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { nav.top, .hero aside, .news, .filters, .grid, .acard, .sq { --gl-bg: #0D2E52; } }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { nav.top, .hero aside, .news, .filters, .grid, .sq { --gl-bg: #0D2E52; } }
 /* Soft motion */
 :root { --soft: cubic-bezier(0.16, 1, 0.3, 1); }
 @keyframes soft-in { from { opacity: 0; transform: translateY(10px); } }
@@ -101,7 +99,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .mi { display: inline-block; }
 .mw { display: inline-block; white-space: nowrap; }
 #newsSec, #main { perspective: 1400px; }
-#news, #view > .grid, #daypanel .rows, #view > .rows, .artists { transform-origin: 50% 0%; }
+#news, #view > .grid, #daypanel .rows, #view > .rows { transform-origin: 50% 0%; }
 .scrollprog { position: absolute; left: 18px; right: 18px; bottom: 0; height: 2px; background: var(--accent); transform-origin: 0 50%; scale: 0 1; pointer-events: none; }
 .seg-ind { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: var(--r-md); background: var(--ink); box-shadow: 0 6px 16px -8px rgba(0, 6, 20, 0.7), inset 0 1px 0 #FFFFFF; transition: left 0.5s var(--soft), width 0.5s var(--soft); }
 @media (prefers-reduced-motion: reduce) { .amb i, .view-enter > *, #daypanel .rows > *, #daypanel .empty { animation: none !important; } }
@@ -226,7 +224,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .ract { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
 .ract .cta { align-self: stretch; justify-content: center; }
 /* Ticket status is plain text with a dot, so the only thing that looks clickable in a row is the button. */
-.st { display: inline-flex; align-items: center; gap: 7px; text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--fs-label); font-weight: 700; white-space: nowrap; color: var(--ink-2); }
+.st { display: inline-flex; align-items: center; gap: 7px; text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--fs-label); font-weight: 700; white-space: nowrap; color: var(--muted); }
 .st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .st.available { color: var(--accent-ink); }
 .st.sold_out { color: var(--muted); text-decoration: line-through; }
@@ -258,8 +256,23 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .stores { display: flex; flex-wrap: wrap; gap: 6px; }
 .store { font-size: var(--fs-meta); font-weight: 600; padding: 6px 10px; border-radius: var(--r); text-decoration: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); background: transparent; border: 0; cursor: pointer; }
 .store:hover { box-shadow: inset 0 0 0 1.5px var(--accent); color: var(--accent-ink); }
-.artists { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0 28px; }
-.acard { display: flex; flex-direction: column; gap: 10px; padding: 20px; border-radius: var(--r-panel); min-width: 0; }
+.atools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 18px; }
+.asearch input { font: inherit; font-size: var(--fs-ui); font-weight: 500; color: var(--ink); background: rgba(238, 244, 250, 0.06); border: 1px solid var(--line); border-radius: var(--r-md); padding: 0 12px; height: 40px; width: min(280px, 100%); }
+.asearch input::placeholder { color: var(--muted); }
+.asearch input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.arow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 18px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.arow[hidden] { display: none; }
+.ainfo { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ainfo .anm { margin-bottom: 4px; }
+.alatest { font-size: var(--fs-meta); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aact { display: flex; align-items: center; gap: 18px; }
+.aact .tbtn { margin: 0; }
+@media (max-width: 640px) {
+  .asearch, .asearch input { width: 100%; }
+  .asearch input { height: 44px; }
+  .arow { grid-template-columns: 1fr; }
+  .aact { justify-content: space-between; }
+}
 .anm { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: var(--fs-title); line-height: 1; }
 .asub { font-size: var(--fs-ui); font-weight: 500; color: var(--muted); }
 .smallnote { font-size: var(--fs-meta); color: var(--muted); }
@@ -323,6 +336,21 @@ html.intro-on .page { animation: intro-land 0.406s cubic-bezier(0.16, 1, 0.3, 1)
 @keyframes intro-bg { to { opacity: 0; visibility: hidden; } }
 @keyframes intro-land { from { opacity: 0; transform: scale(0.97) translateY(18px); } }
 @media (prefers-reduced-motion: reduce) { .intro { display: none; } }
+
+/* Phones: every control is at least 44px tall. Kept last so it wins over the base sizes above. */
+@media (max-width: 640px) {
+  .navlinks button { min-height: 44px; padding: 0; }
+  .chip { min-height: 44px; padding: 0 14px; }
+  .where select { min-height: 44px; }
+  .store { display: inline-flex; align-items: center; min-height: 44px; padding: 0 12px; }
+  .tbtn { min-height: 44px; padding: 0; margin: -6px 0; }
+  .rel { min-height: 44px; }
+  footer .legal a { display: inline-flex; align-items: center; min-height: 44px; padding: 0; }
+  /* The phone nav is two rows tall, so jumps land below it. */
+  section, header { scroll-margin-top: 120px; }
+  /* What's new: the type label sits above its text so the text gets the full width. */
+  .news li { grid-template-columns: 1fr; gap: 4px; }
+}
 </style>
 
 <a class="skip" href="#main">Skip to the gig calendar</a>
@@ -700,24 +728,69 @@ function renderList(list) {
   });
 }
 
-function renderArtists() {
+/* Artists: one compact row each, sorted by next gig (artists with nothing listed go last, A to Z).
+   The view's filter chips apply here too: Near me keeps artists with a gig near you, On sale those with tickets.
+   Releases and store links open per artist; the search box hides rows in place, so typing never loses focus. */
+const openArtists = new Set();
+let artistQuery = "";
+function applyArtistQuery(rows, empty) {
+  const q = artistQuery.trim().toLowerCase();
+  let shown = 0;
+  rows.querySelectorAll(".arow").forEach(r => { const hit = !q || r.dataset.name.includes(q); r.hidden = !hit; shown += hit; });
+  empty.hidden = shown > 0;
+  empty.textContent = q ? `No artist matches "${artistQuery.trim()}".` : "No artists match this filter.";
+}
+function renderArtists(list) {
   const head = $("mainhead");
-  head.append(el("h2", null, "Artists & music"), el("span", "cap", `${ARTISTS.length} artists`));
-  const all = allUpcoming();
-  const grid = el("div", "artists");
-  ARTISTS.forEach(name => {
-    const mine = all.filter(g => artistsIn(g.artist).includes(name));
-    const c = el("div", "acard");
-    c.append(el("h3", "anm", name));
+  const v = $("view");
+  const ready = loadState === "ready";
+  const byArtist = ARTISTS.map(name => ({ name, mine: list.filter(g => artistsIn(g.artist).includes(name)) }))
+    .filter(a => filter === "all" || a.mine.length)
+    .sort((a, b) => (a.mine[0]?.date || "9999").localeCompare(b.mine[0]?.date || "9999") || a.name.localeCompare(b.name));
+  head.append(el("h2", null, "Artists & music"), el("span", "cap", filter === "all" ? `${ARTISTS.length} artists` : `${byArtist.length} of ${ARTISTS.length} artists`));
+
+  const tools = el("div", "atools");
+  tools.append(filtersEl());
+  const sl = el("label", "asearch");
+  sl.append(el("span", "sr-only", "Find an artist"));
+  const inp = fk(el("input"), "artist-search"); inp.type = "search"; inp.placeholder = "Find an artist"; inp.value = artistQuery; inp.autocomplete = "off";
+  sl.append(inp); tools.append(sl);
+  v.append(tools);
+
+  if (!ready) { v.append(el("div", "empty", waitingText())); return; }
+  const rows = el("div", "rows arows");
+  byArtist.forEach(({ name, mine }) => {
+    const row = el("article", "arow"); row.dataset.name = name.toLowerCase();
+    const info = el("div", "ainfo");
+    info.append(el("h3", "anm", name));
     const nx = mine[0];
-    c.append(el("div", "asub", loadState !== "ready" ? waitingText() : mine.length ? `${mine.length} gig${mine.length > 1 ? "s" : ""} in Europe · next ${parseKey(nx.date).getDate()} ${MONTHS[parseKey(nx.date).getMonth()]}, ${nx.city || ""}` : "No European gigs listed right now"));
-    const rl = releaseList(name, 5); if (rl) c.append(rl);
-    const st = el("div", "stores"); st.append(...storeLinks(name));
-    if (nx) { const b = el("button", "store", "Next gig"); b.append(icon("next")); b.onclick = () => goToDay(nx.date); st.append(b); }
-    c.append(st);
-    grid.append(c);
+    if (nx) {
+      const d = parseKey(nx.date);
+      info.append(el("div", "asub", `Next ${d.getDate()} ${MONTHS[d.getMonth()]} · ${[nx.venue, nx.city].filter(Boolean).join(", ")}${mine.length > 1 ? ` · ${mine.length} gigs` : ""}`));
+      if (isNear(nx)) info.append(el("div", "rnear", `near you · ${kmTo(nx) ?? "?"} km from ${fromLabel(nx)}`));
+    } else info.append(el("div", "asub", "No European gigs listed right now"));
+    const latest = music[nkey(name)]?.releases?.[0];
+    if (latest) info.append(el("div", "alatest", `Latest: ${latest.title}`));
+
+    const act = el("div", "aact");
+    if (nx) { const b = fk(el("button", "store", "Next gig"), "next-" + name); b.append(icon("next")); b.onclick = () => goToDay(nx.date); act.append(b); }
+    const open = openArtists.has(name);
+    const tb = fk(el("button", "tbtn", open ? "Hide music" : "Music and stores"), "music-" + name); tb.setAttribute("aria-expanded", String(open));
+    tb.onclick = () => { open ? openArtists.delete(name) : openArtists.add(name); render(); };
+    act.append(tb);
+    row.append(info, act);
+    if (open) {
+      const more = el("div", "tracks");
+      const rl = releaseList(name, 5); if (rl) more.append(rl);
+      const st = el("div", "stores"); st.append(...storeLinks(name)); more.append(st);
+      row.append(more);
+    }
+    rows.append(row);
   });
-  $("view").append(grid);
+  const empty = el("div", "empty");
+  v.append(rows, empty);
+  applyArtistQuery(rows, empty);
+  inp.oninput = () => { artistQuery = inp.value; applyArtistQuery(rows, empty); };
 }
 
 /* ---------- news ---------- */
@@ -808,7 +881,7 @@ function render() {
   renderHero();
   $("mainhead").replaceChildren(); $("view").replaceChildren();
   const list = upcoming();
-  if (view === "month") renderMonth(list); else if (view === "list") renderList(list); else renderArtists();
+  if (view === "month") renderMonth(list); else if (view === "list") renderList(list); else renderArtists(list);
   if (gigs.length && decodeURIComponent(location.hash) !== hashFor()) { if (lastView === null || view === lastView) history.replaceState(null, "", hashFor()); else history.pushState(null, "", hashFor()); }
   if (view !== lastView) { const v = $("view"); v.classList.remove("view-enter"); void v.offsetWidth; v.classList.add("view-enter"); lastView = view; }
   restoreFocus(keep);
@@ -895,7 +968,7 @@ addEventListener("popstate", () => { readHash(); render(); });
     const max = document.documentElement.scrollHeight - vh;
     const heads = [...document.querySelectorAll(".shead h2")]; heads.forEach(h => split(h, "word"));
     const word = document.querySelector("footer .word"); if (word) split(word, "letter");
-    const panels = [...document.querySelectorAll("#news, #view > .grid, #daypanel .rows, #view > .rows, .artists")];
+    const panels = [...document.querySelectorAll("#news, #view > .grid, #daypanel .rows, #view > .rows")];
     const rows = [...nearRows];
     const headTop = heads.map(h => h.getBoundingClientRect().top);
     const panelTop = panels.map(n => n.getBoundingClientRect().top);
@@ -957,6 +1030,11 @@ addEventListener("popstate", () => { readHash(); render(); });
   const upd = () => { const over = nl.scrollWidth > nl.clientWidth + 1; nl.classList.toggle("overflows", over); nl.classList.toggle("at-end", over && nl.scrollLeft + nl.clientWidth >= nl.scrollWidth - 2); };
   nl.addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd();
 })();
+/* View links: switch the main view, then bring it into sight (it sits below the hero and What's new). */
+document.querySelectorAll(".navlinks button[data-v]").forEach(b => b.addEventListener("click", () => {
+  setView(b.dataset.v); render();
+  $("main").scrollIntoView({ behavior: SCROLL(), block: "start" });
+}));
 document.querySelector('.navlinks button[data-jump="news"]').addEventListener("click", () => { const s = $("newsSec"); if (!s.hidden) s.scrollIntoView({ behavior: SCROLL(), block: "start" }); });
 
 render();

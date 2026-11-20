@@ -71,7 +71,7 @@ typography:
     lineHeight: 1.35
   label:
     fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
-    fontSize: "0.71875rem"
+    fontSize: "0.75rem"
     fontWeight: 600
     lineHeight: 1.3
     letterSpacing: "0.06em"
@@ -146,7 +146,7 @@ Type is a single modern grotesk (Schibsted Grotesk) in big, tight, sentence-case
 - Exotic Pink is the only warm colour and always means "near you", "new" or "act now".
 - Stone Blue carries structure: the second headline line, rules, secondary text.
 - One typeface, big sentence-case headlines, small tracked labels for metadata only.
-- Liquid Glass panels (nav, hero panel, What's new, calendar, filters, artist cards, secondary buttons) over faint drifting light.
+- Liquid Glass panels (nav, hero panel, What's new, calendar, filters, secondary buttons) over faint drifting light.
 - Soft motion only: slow light drift, gentle fade-ups, a sliding filter highlight, a sheen on pink buttons.
 
 ## Colors
@@ -190,7 +190,7 @@ Sizes are rem so the visitor's own text size is respected (1rem = 16px by defaul
 - **Body** (400, 1rem, 1.5): descriptions, news items, primary buttons, legal text; keep under 70ch.
 - **UI** (500, 0.875rem): navigation, chips, small buttons, notes, venue lines, footer text.
 - **Meta** (500, 0.8125rem): small supporting text such as calendar event lines, release labels, store links and distance notes.
-- **Label** (600, 0.71875rem, 0.06em, uppercase): metadata only, such as weekday names, tags and status. Buttons, chips and navigation are sentence case.
+- **Label** (600, 0.75rem, 0.06em, uppercase): metadata only, such as weekday names, tags and status. Buttons, chips and navigation are sentence case.
 - **Wordmark** (500, clamp(3.5rem, 13vw, 11.875rem)) and **Intro** (500, clamp(1.75rem, 5.2vw, 4rem)): the footer wordmark and the intro tagline only.
 
 ### Named Rules
@@ -210,7 +210,7 @@ One centred column (max 1240px, 16px side gutter respecting safe areas), section
 
 Depth is Liquid Glass. Panels are translucent Egyptian Blue (`rgba(16, 52, 88, 0.42)` with a faint white sheen) behind a 22px backdrop blur with 1.8 saturation, lit by a 1px edge highlight (`glass-edge`) that is bright at the top-left and fades to a hint of pink at the bottom-right, plus an inset top highlight and a soft drop shadow. Behind everything, three large, very faint lights drift over 34 to 47 seconds. Where backdrop blur is unsupported, panels fall back to solid `#0D2E52`.
 
-Glass is used for: the sticky nav, the hero's description-and-tickets panel, the What's new panel, the calendar grid, the filter control, artist cards and month buttons. Ghost buttons are flat outlines, never glass, so a list of gigs never stacks dozens of blurs and a button inside a glass panel never becomes glass on glass. Dense lists (gig rows, news items) stay flat.
+Glass is used for: the sticky nav, the hero's description-and-tickets panel, the What's new panel, the calendar grid, the filter control and month buttons. Ghost buttons are flat outlines, never glass, so a list of gigs never stacks dozens of blurs and a button inside a glass panel never becomes glass on glass. Dense lists (gig rows, artist rows, news items) stay flat. On phones every control is at least 44px tall.
 
 ### Motion
 - Ease: `cubic-bezier(0.16, 1, 0.3, 1)` for everything soft.
@@ -224,7 +224,7 @@ Glass is used for: the sticky nav, the hero's description-and-tickets panel, the
 
 ## Shapes
 
-Tags and badges are 6px (`sm`); chips, the city picker and the filter highlight 8px (`md`); buttons, month buttons and the filter control 12px (`lg`); the navigation bar 18px (`nav`); glass panels (hero card, What's new, calendar grid, artist cards) 20px (`panel`). Rows and section layout are square. Rules are 1px hairlines; emphasis rules are 2 to 3px in Stone Blue.
+Tags and badges are 6px (`sm`); chips, the city picker and the filter highlight 8px (`md`); buttons, month buttons and the filter control 12px (`lg`); the navigation bar 18px (`nav`); glass panels (hero card, What's new, calendar grid) 20px (`panel`). Rows and section layout are square. Rules are 1px hairlines; emphasis rules are 2 to 3px in Stone Blue.
 
 ## Components
 
