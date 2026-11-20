@@ -139,6 +139,7 @@ LEGAL_CSS = """<style>
   color-scheme: dark;
 }
 html { scrollbar-color: var(--ink-2) var(--ground); }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } } /* section list and skip link glide */
 body { background: var(--ground); color: var(--ink); font-family: var(--body); font-size: var(--fs-body); line-height: 1.6; -webkit-font-smoothing: antialiased; }
 ::selection { background: var(--accent); color: var(--on-accent); }
 a { color: var(--accent-ink); text-underline-offset: 3px; text-decoration-thickness: 1.5px; }

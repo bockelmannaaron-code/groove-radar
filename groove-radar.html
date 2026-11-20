@@ -31,7 +31,7 @@
   color-scheme: dark;
 }
 
-html { scrollbar-color: var(--ink-2) var(--ground); }
+html { scrollbar-color: var(--ink-2) var(--ground); overflow-anchor: none; } /* the page keeps its own place on rebuilds (rerender); the browser's guess fought it */
 body { background: var(--ground); color: var(--ink); font-family: var(--body); accent-color: var(--accent); -webkit-font-smoothing: antialiased; }
 ::selection { background: var(--accent); color: var(--on-accent); }
 a { text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
@@ -94,6 +94,14 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .view-enter > * { animation: soft-in 0.5s var(--soft) backwards; }
 .view-enter > *:nth-child(2) { animation-delay: 60ms; } .view-enter > *:nth-child(3) { animation-delay: 120ms; } .view-enter > *:nth-child(n+4) { animation-delay: 170ms; }
 #daypanel .shead, #daypanel .rows > *, #daypanel .empty { animation: soft-in 0.45s var(--soft) backwards; }
+#daypanel.settled .shead, #daypanel.settled .rows > *, #daypanel.settled .empty { animation: none; }
+/* In-place changes: the month slides in from the side you went to; filtered content fades in (the filter itself stays put). */
+@keyframes month-l { from { opacity: 0; transform: translateX(-28px); } }
+@keyframes month-r { from { opacity: 0; transform: translateX(28px); } }
+@keyframes soft-fade { from { opacity: 0; } }
+.grid.enter-month-l > * { animation: month-l 0.38s var(--soft) backwards; }
+.grid.enter-month-r > * { animation: month-r 0.38s var(--soft) backwards; }
+#view.enter-fade > :not(.filters):not(.atools), #view.enter-fade > .atools ~ * { animation: soft-fade 0.32s ease-out backwards; }
 #daypanel .rows > *:nth-child(2) { animation-delay: 50ms; } #daypanel .rows > *:nth-child(n+3) { animation-delay: 100ms; }
 /* Scroll motion (driven from JS, see "scroll motion"): masked words and letters, 3D panels, nav progress line */
 .mk { display: inline-block; overflow: hidden; vertical-align: top; padding-block: 0.12em; margin-block: -0.12em; }
@@ -103,7 +111,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 #news, #view > .grid, #daypanel .rows, #view > .rows { transform-origin: 50% 0%; }
 .scrollprog { position: absolute; left: 18px; right: 18px; bottom: 0; height: 2px; background: var(--stone); transform-origin: 0 50%; scale: 0 1; pointer-events: none; }
 .seg-ind { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: var(--r-md); background: var(--ink); box-shadow: 0 6px 16px -8px rgba(0, 6, 20, 0.7), inset 0 1px 0 #FFFFFF; transition: left 0.5s var(--soft), width 0.5s var(--soft); }
-@media (prefers-reduced-motion: reduce) { .amb i, .view-enter > *, #daypanel .shead, #daypanel .rows > *, #daypanel .empty { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .amb i, .view-enter > *, #daypanel .shead, #daypanel .rows > *, #daypanel .empty, .grid[class*="enter-"] > *, #view.enter-fade > * { animation: none !important; } }
 
 
 /* Hero */
@@ -160,6 +168,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .tag.added, .tag.release { color: var(--accent-ink); }
 .news details { grid-column: 1 / -1; }
 .news summary { cursor: pointer; font-size: var(--fs-ui); font-weight: 600; }
+.news summary { list-style: none; width: fit-content; } .news summary::-webkit-details-marker { display: none; }
 .older { display: flex; flex-direction: column; gap: 18px; padding-top: 12px; }
 .older .od { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: var(--fs-subtitle); }
 @media (max-width: 760px) { .news { grid-template-columns: 1fr; } .news li { grid-template-columns: 74px minmax(0, 1fr); } }
@@ -464,29 +473,134 @@ const $ = (id) => document.getElementById(id);
 /* Eased page scroll (ease-out, about 0.7s) instead of the browser's jumpy one. Any wheel, touch or key from
    the visitor cancels it; with reduced motion it moves at once. */
 let glideRaf = 0;
-function glideTo(y) {
+let glideEnd = null; /* the running glide's "finished" callback, so a new glide or the visitor can end it cleanly */
+function glideTo(y, done) {
   cancelAnimationFrame(glideRaf);
+  if (glideEnd) { const f = glideEnd; glideEnd = null; f(); }
+  const finish = () => { off(); if (glideEnd === finish) glideEnd = null; done && done(); };
   const max = document.documentElement.scrollHeight - innerHeight;
   const to = Math.max(0, Math.min(max, Math.round(y))), from = scrollY, dist = to - from;
-  if (Math.abs(dist) < 2) return;
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { scrollTo(0, to); return; }
-  const dur = Math.min(900, 420 + Math.abs(dist) * 0.25), t0 = performance.now();
-  const stop = () => { cancelAnimationFrame(glideRaf); off(); };
+  const stop = () => { cancelAnimationFrame(glideRaf); if (glideEnd === finish) { glideEnd = null; finish(); } };
   const off = () => ["wheel", "touchstart", "keydown", "pointerdown"].forEach(ev => removeEventListener(ev, stop));
+  if (Math.abs(dist) < 2) { done && done(); return; }
+  if (calm()) { scrollTo({ top: to, behavior: "instant" }); done && done(); return; }
+  /* The clock starts on the first frame: a frame's timestamp can predate the click, which made the glide step backwards first. */
+  const dur = Math.min(900, 420 + Math.abs(dist) * 0.25); let t0 = null;
+  glideEnd = finish;
   ["wheel", "touchstart", "keydown", "pointerdown"].forEach(ev => addEventListener(ev, stop, { passive: true }));
   const step = now => {
-    const t = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - t, 4);
-    scrollTo(0, from + dist * e);
-    if (t < 1) glideRaf = requestAnimationFrame(step); else off();
+    if (t0 === null) t0 = now;
+    const t = Math.min(1, Math.max(0, (now - t0) / dur)), e = 1 - Math.pow(1 - t, 4);
+    scrollTo({ top: from + dist * e, behavior: "instant" });
+    if (t < 1) glideRaf = requestAnimationFrame(step); else if (glideEnd === finish) { glideEnd = null; finish(); }
   };
   glideRaf = requestAnimationFrame(step);
 }
-/* Bring a section's heading in under the sticky nav. */
-function glideToEl(n, onlyIfHidden) {
-  if (!n) return;
+/* Where to scroll so a section's heading sits just under the sticky nav (null: it is already in sight). */
+function glideTarget(n, onlyIfHidden) {
+  if (!n) return null;
   const r = n.getBoundingClientRect(), navH = document.querySelector("nav.top").getBoundingClientRect().bottom;
-  if (onlyIfHidden && r.top >= navH && r.top + 120 <= innerHeight) return;
-  glideTo(scrollY + r.top - navH - 16);
+  if (onlyIfHidden && r.top >= navH && r.top + 120 <= innerHeight) return null;
+  return scrollY + r.top - navH - 16;
+}
+function glideToEl(n, onlyIfHidden) { const y = glideTarget(n, onlyIfHidden); if (y != null) glideTo(y); }
+
+/* ---------- smooth state changes ----------
+   Views are rebuilt on every change. Done naively that makes the page snap: while the old content is gone the
+   browser clamps the scroll, and opened panels appear at full height in one frame. Everything that changes the
+   page goes through these instead:
+   - rerender(): rebuild in place. The page keeps its height while it is rebuilt, the control you used stays
+     exactly where it was on screen, and the named blocks ease from their old height to the new one.
+   - rerenderAndGlide(): rebuild, then glide to a new place. The old height is held until the glide has landed,
+     so the page never snaps before it moves.
+   - openPanel() / closePanel(): a panel inside a row grows open or folds shut, and the rows below glide along.
+   With reduced motion the same changes happen at once, but nothing ever jumps the scroll position. */
+const SOFT = "cubic-bezier(0.16, 1, 0.3, 1)";
+const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const byKey = k => k ? document.querySelector(`[data-fk="${CSS.escape(k)}"]`) : null;
+let quietRender = false; /* in-place rebuilds: rows already on screen don't replay their entrance */
+let enterAs = null;      /* one-off entrance for the next rebuild: "month-l", "month-r" or "fade" */
+function easeHeight(n, h0) {
+  if (!n || h0 == null || calm()) return;
+  const h1 = n.offsetHeight; if (Math.abs(h1 - h0) < 2) return;
+  n.getAnimations().forEach(a => a.id === "ease-h" && a.cancel());
+  const box = h1 - parseFloat(getComputedStyle(n).height); /* padding and border: heights below are content heights */
+  n.style.overflow = "clip";
+  const a = n.animate([{ height: (h0 - box) + "px" }, { height: (h1 - box) + "px" }], { duration: Math.min(560, 280 + Math.abs(h1 - h0) * 0.2), easing: SOFT });
+  a.id = "ease-h";
+  a.onfinish = a.oncancel = () => { n.style.overflow = ""; };
+}
+function rerender(anchorKey, ease = [], entrance = null) {
+  const c = $("content"), a0 = byKey(anchorKey)?.getBoundingClientRect().top;
+  const before = ease.map(s => document.querySelector(s)?.offsetHeight);
+  c.style.minHeight = c.offsetHeight + "px";
+  quietRender = true; enterAs = entrance;
+  render();
+  quietRender = false; enterAs = null;
+  ease.forEach((s, i) => easeHeight(document.querySelector(s), before[i]));
+  c.style.minHeight = "";
+  const a = byKey(anchorKey);
+  if (a && a0 != null) { const d = a.getBoundingClientRect().top - a0; if (Math.abs(d) > 0.5) scrollTo({ top: scrollY + d, behavior: "instant" }); }
+}
+/* FLIP: remember where a block's parts sit, and after the rebuild slide each part from there to its new place. */
+function flipStart(sel) {
+  const kids = n => n ? [...n.children] : [];
+  const before = kids(document.querySelector(sel)).map(k => k.getBoundingClientRect().top);
+  return () => {
+    if (calm()) return;
+    kids(document.querySelector(sel)).forEach((k, i) => {
+      const dy = before[i] == null ? 0 : before[i] - k.getBoundingClientRect().top;
+      if (Math.abs(dy) > 1) k.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration: 420, easing: SOFT, composite: "add" });
+    });
+  };
+}
+/* Month changes: the heading can change its line count, so its buttons slide to their new place rather than the page shifting under them. */
+function monthChange(ease, entrance) { const fl = flipStart("#mainhead"); rerender(null, ease, entrance); fl(); }
+function rerenderAndGlide(targetEl, onlyIfHidden) {
+  const c = $("content");
+  c.style.minHeight = c.offsetHeight + "px";
+  render();
+  /* Aim no lower than the rebuilt page allows once the held height is let go. */
+  const natural = c.lastElementChild.getBoundingClientRect().bottom - c.getBoundingClientRect().top;
+  const maxY = document.documentElement.scrollHeight - (c.offsetHeight - natural) - innerHeight;
+  const release = () => { if (scrollY <= maxY + 1) c.style.minHeight = ""; else glideTo(maxY, () => { c.style.minHeight = ""; }); };
+  const y = glideTarget(targetEl(), onlyIfHidden);
+  if (y == null) release(); else glideTo(Math.min(y, Math.max(0, maxY)), release);
+}
+function panelFrames(p) {
+  const cs = getComputedStyle(p), gap = parseFloat(getComputedStyle(p.parentElement).rowGap) || 0;
+  return [
+    { height: "0px", paddingTop: "0px", paddingBottom: "0px", marginTop: -gap + "px", opacity: 0 },
+    { height: cs.height, paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, marginTop: "0px", opacity: 1 },
+  ];
+}
+function openPanel(p) {
+  if (!p || calm()) return;
+  p.style.overflow = "clip";
+  const a = p.animate(panelFrames(p), { duration: 460, easing: SOFT });
+  a.onfinish = a.oncancel = () => { p.style.overflow = ""; };
+}
+function closePanel(p) {
+  if (!p || calm()) return Promise.resolve();
+  p.style.overflow = "clip";
+  return p.animate(panelFrames(p).reverse(), { duration: 320, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" }).finished.catch(() => {});
+}
+/* Show/hide the music panel of a gig row or artist row. The chevron turns at once; the panel grows or folds. */
+const panelBusy = new Set();
+function togglePanel(set, id, btn) {
+  const key = btn.dataset.fk;
+  if (panelBusy.has(key)) return;
+  const rowOf = n => n?.closest(".row, .arow"), panelIn = r => r?.querySelector(":scope > .tracks");
+  if (set.has(id)) {
+    panelBusy.add(key); set.delete(id);
+    btn.setAttribute("aria-expanded", "false");
+    closePanel(panelIn(rowOf(btn))).then(() => { panelBusy.delete(key); rerender(key); });
+  } else {
+    set.add(id); rerender(key);
+    const nb = byKey(key);
+    if (nb && !calm()) { nb.setAttribute("aria-expanded", "false"); void nb.offsetWidth; nb.setAttribute("aria-expanded", "true"); }
+    openPanel(panelIn(rowOf(nb)));
+  }
 }
 const pad = (n) => String(n).padStart(2, "0");
 const keyOf = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
@@ -537,7 +651,7 @@ function upcoming() {
   if (filter === "buy") l = l.filter(g => g.status === "available");
   return l.sort((a, b) => a.date.localeCompare(b.date) || (isNear(b) - isNear(a)));
 }
-function goToDay(k) { pendingFocus = "day-" + k; selDay = k; const d = parseKey(k); cursor = new Date(d.getFullYear(), d.getMonth(), 1); setView("month"); render(); requestAnimationFrame(() => glideToEl($("daypanel"))); }
+function goToDay(k) { pendingFocus = "day-" + k; selDay = k; const d = parseKey(k); cursor = new Date(d.getFullYear(), d.getMonth(), 1); setView("month"); rerenderAndGlide(() => $("daypanel")); }
 
 /* ---------- hero ---------- */
 function renderHero() {
@@ -595,7 +709,7 @@ function nearControl() {
   Object.keys(places).filter(k => !k.startsWith("_")).sort().forEach(k => grp.append(opt(k, k.split("|")[0])));
   sel.append(grp);
   sel.value = !here ? "@home" : here.source === "auto" ? "@auto" : here.key;
-  sel.onchange = () => { setNear(sel.value); store.set("near", sel.value === "@auto" ? null : sel.value); render(); };
+  sel.onchange = () => { setNear(sel.value); store.set("near", sel.value === "@auto" ? null : sel.value); const fl = flipStart("#hero"); rerender(null, ["#hero", "#mainhead", "#view"], "fade"); fl(); };
   box.append(sel);
   return box;
 }
@@ -636,7 +750,7 @@ function gigRow(g, level = 3, tracksToggle = true) {
   let tracks = null;
   if (names.length && tracksToggle) {
     const tb = el("button", "tbtn", openTracks.has(g.id) ? "Hide their latest tracks" : "Their latest tracks"); tb.dataset.fk = "tracks-" + g.id; tb.setAttribute("aria-expanded", String(openTracks.has(g.id)));
-    tb.onclick = () => { openTracks.has(g.id) ? openTracks.delete(g.id) : openTracks.add(g.id); render(); };
+    tb.onclick = () => togglePanel(openTracks, g.id, tb);
     info.append(tb);
     if (openTracks.has(g.id)) {
       tracks = el("div", "tracks");
@@ -660,7 +774,7 @@ function filtersEl() {
   const ind = el("span", "seg-ind"); ind.setAttribute("aria-hidden", "true"); f.append(ind);
   [["all", "Everywhere"], ["near", "Near me"], ["buy", "On sale"]].forEach(([k, t]) => {
     const b = fk(el("button", "chip", t), "chip-" + k); b.setAttribute("aria-pressed", String(filter === k));
-    b.onclick = () => { filter = k; render(); };
+    b.onclick = () => { if (filter === k) return; filter = k; rerender("chip-" + k, ["#mainhead", "#view"], "fade"); };
     f.append(b);
   });
   requestAnimationFrame(() => {
@@ -678,9 +792,9 @@ function renderMonth(list) {
   const y = cursor.getFullYear(), m = cursor.getMonth();
   const h2 = el("h2", null, `${FULLMONTHS[m]} ${y}`);
   const nav = el("div", "monthnav");
-  const prev = fk(el("button", "sq"), "m-prev"); prev.append(chev("M10 3 5 8l5 5")); prev.setAttribute("aria-label", "Previous month"); prev.onclick = () => { cursor = new Date(y, m - 1, 1); render(); };
-  const tod = fk(el("button", "sq txt", "Today"), "m-today"); tod.onclick = () => { const n = new Date(); cursor = new Date(n.getFullYear(), n.getMonth(), 1); selDay = todayKey(); render(); };
-  const next = fk(el("button", "sq"), "m-next"); next.append(chev("m6 3 5 5-5 5")); next.setAttribute("aria-label", "Next month"); next.onclick = () => { cursor = new Date(y, m + 1, 1); render(); };
+  const prev = fk(el("button", "sq"), "m-prev"); prev.append(chev("M10 3 5 8l5 5")); prev.setAttribute("aria-label", "Previous month"); prev.onclick = () => { cursor = new Date(y, m - 1, 1); monthChange(["#mainhead", "#view > .grid", "#daypanel"], "month-l"); };
+  const tod = fk(el("button", "sq txt", "Today"), "m-today"); tod.onclick = () => { const n = new Date(), was = cursor.getTime(); cursor = new Date(n.getFullYear(), n.getMonth(), 1); selDay = todayKey(); monthChange(["#mainhead", "#view > .grid", "#daypanel"], cursor.getTime() === was ? "fade" : cursor.getTime() < was ? "month-l" : "month-r"); };
+  const next = fk(el("button", "sq"), "m-next"); next.append(chev("m6 3 5 5-5 5")); next.setAttribute("aria-label", "Next month"); next.onclick = () => { cursor = new Date(y, m + 1, 1); monthChange(["#mainhead", "#view > .grid", "#daypanel"], "month-r"); };
   nav.append(prev, tod, next);
   head.append(h2, nav);
 
@@ -719,7 +833,7 @@ function renderMonth(list) {
     if (items.length > 3) c.append(el("span", "more", `+${items.length - 3} more`));
     const dots = el("span", "dots"); items.slice(0, 5).forEach(g => dots.append(el("i", "dot" + (isNear(g) ? " near" : "")))); c.append(dots);
     c.onclick = () => {
-      if (outM) { selDay = k; cursor = new Date(d.getFullYear(), d.getMonth(), 1); render(); requestAnimationFrame(() => glideToEl($("daypanel"), true)); return; }
+      if (outM) { selDay = k; const back = d < cursor; cursor = new Date(d.getFullYear(), d.getMonth(), 1); pendingFocus = "day-" + k; rerender(null, ["#mainhead", "#view > .grid", "#daypanel"], back ? "month-l" : "month-r"); glideToEl($("daypanel"), true); return; }
       if (k === selDay) { glideToEl($("daypanel"), true); return; }
       /* Same month: mark the new day and swap only the day panel, so nothing above it moves. */
       selDay = k;
@@ -746,7 +860,7 @@ function renderMonth(list) {
 
   v.append(dayPanel());
   function dayPanel() {
-  const panel = el("section"); panel.id = "daypanel"; panel.style.display = "flex"; panel.style.flexDirection = "column"; panel.style.gap = "6px";
+  const panel = el("section"); panel.id = "daypanel"; if (quietRender) panel.classList.add("settled"); panel.style.display = "flex"; panel.style.flexDirection = "column"; panel.style.gap = "6px";
   const items = byDay[selDay] || [];
   const ph = el("div", "shead"); const t = el("h2", "sub", fmtLong(selDay));
   ph.append(t, el("span", "cap", items.length ? `${items.length} gig${items.length > 1 ? "s" : ""}` : "No gigs"));
@@ -838,7 +952,7 @@ function renderArtists(list) {
     if (nx) { const b = fk(el("button", "store", "Next gig"), "next-" + name); b.append(icon("next")); b.onclick = () => goToDay(nx.date); act.append(b); }
     const open = openArtists.has(name);
     const tb = fk(el("button", "tbtn", open ? "Hide music" : "Music and stores"), "music-" + name); tb.setAttribute("aria-expanded", String(open));
-    tb.onclick = () => { open ? openArtists.delete(name) : openArtists.add(name); render(); };
+    tb.onclick = () => togglePanel(openArtists, name, tb);
     act.append(tb);
     row.append(info, act);
     if (open) {
@@ -896,15 +1010,31 @@ function renderNews() {
   if (all > 3) {
     const more = fk(el("button", "tbtn", newsOpen ? "Show fewer" : `Show all ${all} changes`), "news-more");
     more.setAttribute("aria-expanded", String(newsOpen));
-    more.onclick = () => { newsOpen = !newsOpen; renderNews(); };
+    more.onclick = () => {
+      /* the list grows or folds; the button and everything below ride along with it */
+      const list = () => $("news").querySelector(":scope > div > ul");
+      if (!newsOpen) { const h0 = list().offsetHeight; newsOpen = true; renderNews(); easeHeight(list(), h0); return; }
+      const ul = list(), keep = ul.children[3] ? ul.children[3].offsetTop - ul.offsetTop : ul.offsetHeight;
+      const done = () => { newsOpen = false; renderNews(); };
+      if (calm()) { done(); return; }
+      ul.style.overflow = "clip"; more.setAttribute("aria-expanded", "false");
+      ul.animate([{ height: ul.offsetHeight + "px" }, { height: keep + "px" }], { duration: 340, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" }).finished.then(done, done);
+    };
     body.append(more);
   }
   box.append(when, body);
   if (updates.length > 1) {
-    const det = el("details"); det.append(el("summary", null, `Earlier updates (${updates.length - 1}) +`));
+    const det = el("details"); const sum = el("summary", "tbtn", `Earlier updates (${updates.length - 1})`); det.append(sum);
     const older = el("div", "older");
     updates.slice(1).filter(u => gigNews(u).length).forEach(u => { const w = el("div"); w.append(el("div", "od", `${fmtLong(u.date)} · ${newsSummary(gigNews(u))}`), newsItems(u)); older.append(w); });
     det.append(older); box.append(det);
+    /* native <details> snaps open; fold it like the other panels instead */
+    sum.setAttribute("aria-expanded", "false");
+    sum.onclick = e => {
+      e.preventDefault();
+      if (det.open) { sum.setAttribute("aria-expanded", "false"); closePanel(older).then(() => { det.open = false; older.getAnimations().forEach(a => a.cancel()); older.style.overflow = ""; }); }
+      else { det.open = true; sum.setAttribute("aria-expanded", "true"); openPanel(older); }
+    };
   }
   renderHero();
   restoreFocus(keep);
@@ -949,10 +1079,16 @@ function render() {
   if (view === "month") renderMonth(list); else if (view === "list") renderList(list); else renderArtists(list);
   if (gigs.length && decodeURIComponent(location.hash) !== hashFor()) { if (lastView === null || view === lastView) history.replaceState(null, "", hashFor()); else history.pushState(null, "", hashFor()); }
   if (view !== lastView) { const v = $("view"); v.classList.remove("view-enter"); void v.offsetWidth; v.classList.add("view-enter"); lastView = view; }
+  else $("view").classList.remove("view-enter"); /* the view's entrance plays once per view, not again on every rebuild */
+  if (view === lastView && enterAs && !calm()) {
+    /* one-off entrance for in-place changes: the month slides the way you went; filtered content fades in */
+    const n = enterAs === "fade" ? $("view") : $("view").querySelector(".grid");
+    if (n) { n.classList.remove("enter-fade", "enter-month-l", "enter-month-r"); void n.offsetWidth; n.classList.add("enter-" + enterAs); }
+  }
   restoreFocus(keep);
 }
 let lastView = null;
-addEventListener("popstate", () => { readHash(); render(); });
+addEventListener("popstate", () => { readHash(); rerenderAndGlide(() => $("main"), true); });
 /* ---------- scroll motion ----------
    One scroll loop drives everything, eased toward its target each frame so it glides rather than ticking
    with the scrollbar (the scroll itself is never taken over).
@@ -1097,8 +1233,8 @@ addEventListener("popstate", () => { readHash(); render(); });
 })();
 /* View links: switch the main view, then bring it into sight (it sits below the hero and What's new). */
 document.querySelectorAll(".navlinks button[data-v]").forEach(b => b.addEventListener("click", () => {
-  setView(b.dataset.v); render();
-  glideToEl($("main"));
+  if (b.dataset.v === view) { glideToEl($("main"), true); return; }
+  setView(b.dataset.v); rerenderAndGlide(() => $("main"));
 }));
 /* Phones: once you scroll past the hero, the nav keeps only its row of links (wordmark and count hide). */
 (() => { const nav = document.querySelector("nav.top"); const upd = () => nav.classList.toggle("compact", scrollY > 160); addEventListener("scroll", upd, { passive: true }); upd(); })();

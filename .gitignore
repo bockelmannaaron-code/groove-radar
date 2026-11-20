@@ -12,3 +12,6 @@ site/
 .wrangler/
 node_modules/
 .impeccable/hook.cache.json
+
+# Browser test tool output
+.playwright-mcp/
