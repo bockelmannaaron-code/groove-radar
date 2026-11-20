@@ -1,0 +1,40 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/ben-sterling/583787",
+  "name": "Ben Sterling",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Confidence Man, Ewan McVicar, The Trip, Ben Sterling",
+      "date": "2026-11-20",
+      "label": "Chaos",
+      "preorder": false,
+      "title": "Active Scenes Vol Two",
+      "url": "https://www.beatport.com/release/active-scenes-vol-two/7744174"
+    },
+    {
+      "artists": "Deep Mariano, Ben Sterling",
+      "date": "2026-09-25",
+      "label": "Slacker 85",
+      "preorder": false,
+      "title": "Miracles (Extended Mix)",
+      "url": "https://www.beatport.com/release/miracles-extended-mix/7395837"
+    },
+    {
+      "artists": "Ben Sterling, Confidence Man",
+      "date": "2026-07-31",
+      "label": "Chaos",
+      "preorder": false,
+      "title": "Young London (Ben Sterling Remix)",
+      "url": "https://www.beatport.com/release/young-london-ben-sterling-remix/7293921"
+    },
+    {
+      "artists": "Stevie Appleton, Ben Sterling",
+      "date": "2026-04-01",
+      "label": "Counter Records",
+      "preorder": false,
+      "title": "Around The World",
+      "url": "https://www.beatport.com/release/around-the-world/5946938"
+    }
+  ],
+  "updatedAt": "2026-11-20"
+}

@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "groove-radar-site",
+  "compatibility_date": "2026-11-18",
+  "observability": {
+    "enabled": false
+  },
+  "main": "worker.js",
+  "assets": {
+    "directory": "site",
+    "binding": "ASSETS"
+  },
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "drfeelpoo.uk", "custom_domain": true },
+    { "pattern": "www.drfeelpoo.uk", "custom_domain": true }
+  ]
+}

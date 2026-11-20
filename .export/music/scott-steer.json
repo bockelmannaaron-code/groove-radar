@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/scott-steer/1315655",
+  "name": "Scott Steer",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Aleya Mae, HG (UK), Scott Steer",
+      "date": "2026-10-30",
+      "label": "Dionysus Records",
+      "preorder": false,
+      "title": "Fantasy",
+      "url": "https://www.beatport.com/release/fantasy/7444303"
+    },
+    {
+      "artists": "Scott Steer",
+      "date": "2026-08-25",
+      "label": "Isekai Records",
+      "preorder": false,
+      "title": "Take You To Paradise (Extended Mix)",
+      "url": "https://www.beatport.com/release/take-you-to-paradise-extended-mix/7384910"
+    },
+    {
+      "artists": "Scott Steer",
+      "date": "2026-07-31",
+      "label": "blanc",
+      "preorder": false,
+      "title": "I Can Make You (Feel Good) (Extended)",
+      "url": "https://www.beatport.com/release/i-can-make-you-feel-good-extended/7122425"
+    },
+    {
+      "artists": "HG (UK), Scott Steer",
+      "date": "2026-02-27",
+      "label": "Dionysus Records",
+      "preorder": false,
+      "title": "Come Closer",
+      "url": "https://www.beatport.com/release/come-closer/5933707"
+    },
+    {
+      "artists": "Scott Steer",
+      "date": "2025-12-12",
+      "label": "Creamfields Recordings",
+      "preorder": false,
+      "title": "Wanna Feel (Extended Mix)",
+      "url": "https://www.beatport.com/release/wanna-feel-extended-mix/5680218"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

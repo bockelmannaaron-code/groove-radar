@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Reference videos (large, third-party clips)
+*.MP4
+*.mp4
+
+# Build output (python3 build.py regenerates it)
+site/
+
+# Tool caches
+.wrangler/
+node_modules/
+.impeccable/hook.cache.json

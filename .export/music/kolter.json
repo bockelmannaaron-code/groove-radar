@@ -1,0 +1,40 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/kolter/543241",
+  "name": "Kolter",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Empire Of The Sun, Kolter",
+      "date": "2026-11-20",
+      "label": "EMI Recorded Music Australia",
+      "preorder": true,
+      "title": "Way To Go (Kolter Extended Remix)",
+      "url": "https://www.beatport.com/release/way-to-go-kolter-extended-remix/7682541"
+    },
+    {
+      "artists": "Riton, Kolter",
+      "date": "2026-11-06",
+      "label": "Koltrax",
+      "preorder": false,
+      "title": "Rinse & Repeat (Again)",
+      "url": "https://www.beatport.com/release/rinse-repeat-again/7649443"
+    },
+    {
+      "artists": "Kolter, L.P. Rhythm",
+      "date": "2026-11-06",
+      "label": "Positiva",
+      "preorder": false,
+      "title": "Hey Everybody",
+      "url": "https://www.beatport.com/release/hey-everybody/7690922"
+    },
+    {
+      "artists": "Kolter, Thalo Santana",
+      "date": "2026-10-16",
+      "label": "Positiva",
+      "preorder": false,
+      "title": "The Boys (Extended Mix)",
+      "url": "https://www.beatport.com/release/the-boys-extended-mix/7613376"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

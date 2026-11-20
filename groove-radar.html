@@ -1,0 +1,932 @@
+<title>Groove Radar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..700&display=swap">
+<style>
+/* Groove Radar: Egyptian Blue ground, Stone Blue for structure and secondary text, Exotic Pink for anything you act on.
+   Palette from the reference: Egyptian Blue #03203D, Stone Blue #639CC5; its Scarlet Red is replaced by Exotic Pink #FF2E88.
+   Flat colour only: no gradients, no imagery. One dark scheme for everyone. */
+:root {
+  --ground: #03203D; --ground-2: #0A2C50; --ink: #EEF4FA; --ink-2: #639CC5; --muted: #8DB6D6; --line: rgba(99, 156, 197, 0.3);
+  --plum: #639CC5; --plum-text: #639CC5; --accent: #FF2E88; --accent-big: #FF2E88; --accent-ink: #FF5CA2; --accent-soft: rgba(255, 46, 136, 0.14);
+  --on-ink: #03203D; --on-accent: #03203D;
+  --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --r: 6px; --glass: rgba(3, 32, 61, 0.64); --glass-edge: rgba(238, 244, 250, 0.12);
+  color-scheme: dark;
+}
+
+html { scrollbar-color: var(--ink-2) var(--ground); }
+body { background: var(--ground); color: var(--ink); font-family: var(--body); accent-color: var(--accent); -webkit-font-smoothing: antialiased; }
+::selection { background: var(--accent); color: var(--on-accent); }
+a { text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
+section, header { scroll-margin-top: 96px; }
+main { display: flex; flex-direction: column; gap: 44px; min-width: 0; }
+.page { max-width: 1240px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 44px; }
+button { font-family: var(--body); color: inherit; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.cap { text-transform: uppercase; letter-spacing: 0.06em; font-size: 11.5px; font-weight: 600; }
+
+/* Nav */
+nav.top { position: sticky; top: 8px; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 10px 18px; flex-wrap: wrap; padding: 11px 18px; margin-inline: -8px; border-radius: 20px; }
+.brand { font-family: var(--display); font-size: 20px; font-weight: 600; letter-spacing: -0.03em; }
+.brand span { color: var(--plum-text); }
+.navlinks { display: flex; gap: 6px 26px; flex-wrap: wrap; }
+.navlinks button { border: 0; background: none; cursor: pointer; padding: 4px 0; font-size: 14px; font-weight: 500; color: var(--ink); border-bottom: 2px solid transparent; }
+.navlinks button[aria-current="true"] { border-bottom-color: var(--accent); }
+.navlinks .short { display: none; }
+.count { font-size: 14px; font-weight: 500; color: var(--muted); }
+
+@media (max-width: 640px) {
+  nav.top { top: 6px; padding: 10px 14px; border-radius: 16px; }
+  .navlinks { order: 3; width: 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 20px; }
+  .navlinks button { white-space: nowrap; padding: 10px 0 8px; }
+  .navlinks .long { display: none; }
+  .navlinks .short { display: inline; }
+  .navlinks.overflows { -webkit-mask-image: linear-gradient(to right, #000 80%, transparent); mask-image: linear-gradient(to right, #000 80%, transparent); }
+  .navlinks.overflows.at-end { -webkit-mask-image: none; mask-image: none; }
+  .chip { padding: 10px 14px; }
+  .store { padding: 9px 12px; }
+  .sq { width: 44px; height: 44px; }
+  .sq.txt { height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+/* Liquid glass: frosted panels over slowly drifting light. Content stays readable: panels are mostly blue,
+   the light behind them is faint, and nothing moves for people who reduce motion. */
+.amb { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.amb i { position: absolute; border-radius: 50%; opacity: 0.2; will-change: transform, translate; }
+.amb i:nth-child(1) { width: 62vmax; height: 62vmax; left: -18vmax; top: -16vmax; background: radial-gradient(circle, #639CC5 0%, rgba(99, 156, 197, 0) 66%); animation: amb-a 34s ease-in-out infinite alternate; }
+.amb i:nth-child(2) { width: 46vmax; height: 46vmax; right: -14vmax; top: 34vh; background: radial-gradient(circle, #FF2E88 0%, rgba(255, 46, 136, 0) 64%); opacity: 0.13; animation: amb-b 41s ease-in-out infinite alternate; }
+.amb i:nth-child(3) { width: 50vmax; height: 50vmax; left: -10vmax; bottom: -22vmax; background: radial-gradient(circle, #639CC5 0%, rgba(99, 156, 197, 0) 66%); opacity: 0.14; animation: amb-c 47s ease-in-out infinite alternate; }
+@keyframes amb-a { to { transform: translate(9vmax, 6vmax) scale(1.08); } }
+@keyframes amb-b { to { transform: translate(-7vmax, -9vmax) scale(0.94); } }
+@keyframes amb-c { to { transform: translate(8vmax, -5vmax) scale(1.06); } }
+.page { position: relative; z-index: 1; }
+nav.top, .hero aside, .news, .filters, .grid, .acard, .sq, .cta.ghost {
+  --gl-bg: rgba(16, 52, 88, 0.42);
+  background: linear-gradient(150deg, rgba(238, 244, 250, 0.11), rgba(238, 244, 250, 0.02) 46%, rgba(238, 244, 250, 0.05)), var(--gl-bg);
+  -webkit-backdrop-filter: blur(22px) saturate(1.8) brightness(1.06); backdrop-filter: blur(22px) saturate(1.8) brightness(1.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(238, 244, 250, 0.1), 0 18px 40px -22px rgba(0, 6, 20, 0.7);
+  }
+.hero aside, .news, .filters, .grid, .acard, .sq, .cta.ghost { position: relative; }
+nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::before, .acard::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0) 68%, rgba(255, 46, 136, 0.28));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { nav.top, .hero aside, .news, .filters, .grid, .acard, .sq, .cta.ghost { --gl-bg: #0D2E52; } }
+/* Soft motion */
+:root { --soft: cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes soft-in { from { opacity: 0; transform: translateY(10px); } }
+.view-enter > * { animation: soft-in 0.5s var(--soft) backwards; }
+.view-enter > *:nth-child(2) { animation-delay: 60ms; } .view-enter > *:nth-child(3) { animation-delay: 120ms; } .view-enter > *:nth-child(n+4) { animation-delay: 170ms; }
+#daypanel .rows > *, #daypanel .empty { animation: soft-in 0.45s var(--soft) backwards; }
+#daypanel .rows > *:nth-child(2) { animation-delay: 50ms; } #daypanel .rows > *:nth-child(n+3) { animation-delay: 100ms; }
+/* Scroll motion (driven from JS, see "scroll motion"): masked words and letters, 3D panels, nav progress line */
+.mk { display: inline-block; overflow: hidden; vertical-align: top; padding-block: 0.12em; margin-block: -0.12em; }
+.mi { display: inline-block; will-change: translate; }
+.mw { display: inline-block; white-space: nowrap; }
+#newsSec, #main { perspective: 1400px; }
+#news, #view > .grid, #daypanel .rows, #view > .rows, .artists { transform-origin: 50% 0%; }
+.scrollprog { position: absolute; left: 18px; right: 18px; bottom: 0; height: 2px; border-radius: 2px; background: var(--accent); transform-origin: 0 50%; scale: 0 1; pointer-events: none; }
+.seg-ind { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: 10px; background: var(--ink); box-shadow: 0 6px 16px -8px rgba(0, 6, 20, 0.8), inset 0 1px 0 #FFFFFF; transition: left 0.5s var(--soft), width 0.5s var(--soft); }
+@media (prefers-reduced-motion: reduce) { .amb i, .view-enter > *, #daypanel .rows > *, #daypanel .empty { animation: none !important; } }
+
+
+/* Hero */
+.hero { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); gap: 20px 48px; align-items: center; min-height: 0; }
+.hero .big { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; line-height: 1; font-size: clamp(40px, 6.2vw, 88px); margin: 0; overflow-wrap: anywhere; color: var(--ink); text-wrap: balance; }
+.hero .big .l2 { display: block; color: var(--plum); }
+.hero .script { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--on-accent); background: var(--accent); padding: 5px 10px; border-radius: var(--r); }
+.hero aside { display: flex; flex-direction: column; gap: 10px; padding: 22px; border-radius: 22px; }
+.hcard-title { font-family: var(--display); font-size: 26px; font-weight: 500; letter-spacing: -0.03em; line-height: 1.1; margin-top: 4px; }
+.hcard-when { font-size: 15px; font-weight: 500; color: var(--ink); }
+.hero .hcard-note { font-size: 14px; color: var(--muted); }
+.hcard-btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.hero-left { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.where { font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.where-lab { font-weight: 600; color: var(--ink); }
+.month-empty { border: 0; padding: 4px 0; }
+.where select { font: inherit; font-weight: 600; color: var(--ink); background: rgba(238, 244, 250, 0.08); border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; max-width: 100%; }
+.where select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.slashes { display: block; width: 40px; height: 3px; background: var(--plum); font-size: 0; overflow: hidden; }
+.hero p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--muted); }
+.hero .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 14px 24px; grid-column: 1 / -1; padding-top: 8px; }
+.fact { display: flex; flex-direction: column; gap: 4px; }
+.fact b { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: 30px; line-height: 1.05; }
+.fact .rule { width: 24px; height: 3px; background: var(--plum); }
+.cta { position: relative; overflow: hidden; display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: var(--on-accent); text-decoration: none; font-size: 15px; font-weight: 600; padding: 13px 20px; border: 0; border-radius: 12px; cursor: pointer; align-self: flex-start; transition: transform 0.35s var(--soft), box-shadow 0.35s var(--soft), color 0.2s; }
+.cta:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -14px rgba(255, 46, 136, 0.9); }
+.cta.ghost { color: var(--ink); }
+.cta.ghost:hover { color: var(--accent-ink); transform: translateY(-2px); }
+.cta:active { transform: scale(0.97); transition-duration: 0.1s; }
+.cta:not(.ghost)::after { content: ""; position: absolute; inset: 0; background: linear-gradient(105deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0) 70%); transform: translateX(-130%); transition: transform 0.8s var(--soft); pointer-events: none; }
+.cta:not(.ghost):hover::after { transform: translateX(130%); }
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero .big { font-size: clamp(34px, 9.5vw, 46px); }
+  .hero aside { padding: 18px; }
+}
+
+/* Section heads */
+.shead { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.shead h2 { margin: 0; font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: clamp(36px, 5.4vw, 64px); line-height: 1; }
+.shead h2 em { font-style: normal; color: var(--plum); font-weight: 400; margin-left: 12px; }
+.notice { font-size: 14px; color: var(--accent-ink); font-weight: 500; }
+
+/* What's new */
+.news { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px 32px; padding: 26px; border-radius: 24px; }
+.news .when { display: flex; flex-direction: column; gap: 6px; }
+.news .when b { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: 34px; line-height: 1; }
+.newflag { align-self: flex-start; background: var(--accent); color: var(--on-accent); font-size: 11.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 8px; border-radius: var(--r); }
+.news .headline { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: 26px; line-height: 1.15; margin-bottom: 10px; }
+.news ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.news li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.5; }
+.news li a { color: var(--accent-ink); font-weight: 600; padding-block: 4px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.tag { text-transform: uppercase; letter-spacing: 0.06em; font-size: 11.5px; font-weight: 700; padding-top: 3px; }
+.tag.added, .tag.release { color: var(--accent-ink); }
+.news details { grid-column: 1 / -1; }
+.news summary { cursor: pointer; font-size: 14px; font-weight: 600; }
+.older { display: flex; flex-direction: column; gap: 18px; padding-top: 12px; }
+.older .od { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: 20px; }
+@media (max-width: 760px) { .news { grid-template-columns: 1fr; } .news li { grid-template-columns: 74px minmax(0, 1fr); } }
+
+/* Filters */
+.filters { display: inline-flex; gap: 2px; flex-wrap: wrap; padding: 4px; border-radius: 14px; align-self: flex-start; }
+.chip { position: relative; z-index: 1; border: 0; background: transparent; color: var(--ink); font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 10px; cursor: pointer; transition: color 0.35s var(--soft); }
+.chip[aria-pressed="true"] { color: var(--on-ink); }
+.chip:hover:not([aria-pressed="true"]) { color: var(--accent-ink); }
+
+/* Calendar */
+.monthnav { display: flex; align-items: center; gap: 8px; }
+.sq { width: 40px; height: 40px; border: 0; border-radius: 12px; display: inline-grid; place-items: center; font-weight: 700; cursor: pointer; transition: transform 0.3s var(--soft), color 0.3s var(--soft); }
+.sq svg { width: 16px; height: 16px; }
+.sq.txt { width: auto; padding: 0 14px; font-size: 14px; font-weight: 500; }
+.sq:hover { color: var(--accent-ink); transform: translateY(-1px); }
+.grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); border-radius: 20px; overflow: hidden; }
+.dow { padding: 8px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-transform: uppercase; letter-spacing: 0.06em; font-size: 11px; font-weight: 600; }
+.day { min-height: 108px; padding: 8px; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); background: transparent; text-align: left; display: flex; flex-direction: column; gap: 4px; cursor: pointer; min-width: 0; transition: background-color 0.35s var(--soft); }
+.grid > :nth-child(7n) { border-right: 0; }
+.day:hover { background: rgba(238, 244, 250, 0.07); }
+.day .n { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: 22px; line-height: 1; font-variant-numeric: tabular-nums; }
+.day.out .n, .day.past .n { color: var(--muted); }
+.day.today .n { color: var(--accent-ink); font-weight: 700; }
+.day.sel { background: var(--ink); color: var(--on-ink); }
+.day.sel .n { color: var(--on-ink); opacity: 1; }
+.day .n small { font-family: var(--body); font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-left: 5px; }
+.day.mstart { box-shadow: inset 2px 0 0 var(--accent-big); }
+.pastweeks { align-self: flex-start; margin-bottom: -8px; }
+.ev { font-size: 12px; font-weight: 500; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 7px; border-left: 2px solid currentColor; }
+.ev.near { color: var(--accent-ink); border-left: 4px solid var(--accent-big); padding-left: 5px; font-weight: 600; }
+.day.sel .ev.near { color: var(--on-ink); }
+.ev.sold { text-decoration: line-through; color: var(--muted); }
+.day.sel .ev.sold { color: var(--on-ink); }
+.more { font-size: 11.5px; font-weight: 700; text-transform: uppercase; }
+.dots { display: none; gap: 3px; flex-wrap: wrap; }
+.dot { width: 7px; height: 7px; background: currentColor; }
+.dot.near { background: var(--accent-big); border-radius: 50%; width: 8px; height: 8px; }
+@media (max-width: 700px) {
+  .day { min-height: 58px; padding: 6px 4px; align-items: center; }
+  .day .n { font-size: 18px; }
+  .day .n small { display: none; }
+  .ev, .more { display: none; }
+  .dots { display: flex; justify-content: center; }
+  .dow { padding: 6px 2px; text-align: center; font-size: 11.5px; }
+}
+.legend { margin-top: -6px; margin-bottom: 18px; display: flex; gap: 8px 22px; flex-wrap: wrap; text-transform: uppercase; letter-spacing: 0.06em; font-size: 11.5px; font-weight: 600; }
+.legend span { display: inline-flex; gap: 7px; align-items: center; }
+.legend i { width: 12px; height: 12px; display: inline-block; }
+.legend i.round { border-radius: 50%; }
+
+/* Gig rows */
+.rows { display: flex; flex-direction: column; }
+.row { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
+.row:first-child { border-top: 1px solid var(--line); }
+.rdate { font-family: var(--display); font-weight: 500; letter-spacing: -0.03em; line-height: 0.95; }
+.rdate .d { font-size: 40px; display: block; }
+.rdate .m { font-size: 13px; font-weight: 500; letter-spacing: 0; display: block; color: var(--ink-2); margin-top: 4px; }
+.row.near .rdate .d { color: var(--accent-ink); }
+.rinfo { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.rartist { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: clamp(22px, 3vw, 30px); line-height: 1.05; overflow-wrap: anywhere; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.newb { font-family: var(--body); background: var(--accent); color: var(--on-accent); border-radius: var(--r); font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; padding: 3px 7px; }
+.rwhere { font-size: 14px; font-weight: 500; color: var(--ink-2); overflow-wrap: anywhere; }
+.rnear { font-size: 13px; font-weight: 700; color: var(--accent-ink); }
+.rnote { font-size: 12.5px; color: var(--muted); }
+/* Fixed-width action column: every row's status and button share the same left and right edges. */
+.row { grid-template-columns: 96px minmax(0, 1fr) 168px; }
+.ract { display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+.ract .cta { align-self: stretch; justify-content: center; }
+/* Ticket status is plain text with a dot, so the only thing that looks clickable in a row is the button. */
+.st { display: inline-flex; align-items: center; gap: 7px; text-transform: uppercase; letter-spacing: 0.06em; font-size: 11.5px; font-weight: 700; white-space: nowrap; color: var(--ink-2); }
+.st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.st.available { color: var(--accent-ink); }
+.st.sold_out { color: var(--muted); text-decoration: line-through; }
+.st.unknown::before { background: transparent; box-shadow: inset 0 0 0 1.5px currentColor; }
+.tbtn::after { content: ""; display: inline-block; width: 7px; height: 7px; margin-left: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.3s var(--soft); }
+.tbtn[aria-expanded="true"]::after { transform: translateY(1px) rotate(-135deg); }
+.tbtn:hover { color: var(--ink); }
+.tbtn { border: 0; background: none; cursor: pointer; text-align: left; padding: 8px 0; margin: -4px 0; align-self: flex-start; font-size: 14px; font-weight: 600; color: var(--muted); }
+.tracks { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 10px; padding: 12px 0 2px; }
+.tracks .who { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: 20px; }
+@media (max-width: 640px) {
+  .row { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; }
+  .rdate .d { font-size: 32px; }
+  .ract { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: center; }
+  .ract .cta { align-self: center; min-width: 140px; }
+}
+.monthhead { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: 28px; padding: 22px 0 8px; }
+.empty { padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 15px; font-weight: 500; }
+
+/* Releases + stores */
+.rels { display: flex; flex-direction: column; }
+.rel { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); text-decoration: none; color: var(--ink); }
+.rel:hover .rt { color: var(--accent-ink); }
+.rel .rd { text-transform: uppercase; font-size: 11.5px; font-weight: 700; letter-spacing: 0.04em; }
+.rel .rt { font-size: 13.5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rel .rl { font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rel .rb { font-size: 13px; font-weight: 600; color: var(--ink); white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); }
+.rel .rb.pre { color: var(--accent-ink); text-decoration-color: var(--accent-ink); }
+.stores { display: flex; flex-wrap: wrap; gap: 6px; }
+.store { font-size: 13px; font-weight: 600; padding: 6px 10px; border-radius: var(--r); text-decoration: none; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); background: transparent; border: 0; cursor: pointer; }
+.store:hover { box-shadow: inset 0 0 0 1.5px var(--accent); color: var(--accent-ink); }
+.artists { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0 28px; }
+.acard { display: flex; flex-direction: column; gap: 10px; padding: 20px; border-radius: 20px; min-width: 0; }
+.anm { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: 32px; line-height: 1; }
+.asub { font-size: 14px; font-weight: 500; color: var(--muted); }
+.smallnote { font-size: 12.5px; color: var(--muted); }
+
+/* Footer */
+footer { border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+footer .word { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: clamp(56px, 13vw, 190px); line-height: 0.9; overflow-wrap: anywhere; }
+footer .word .r { color: var(--plum); }
+footer p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink-2); max-width: 62ch; }
+footer .legal { display: flex; flex-wrap: wrap; gap: 6px 22px; }
+footer .legal a { display: inline-block; padding: 6px 0; color: var(--ink); font-size: 14px; font-weight: 500; }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 20; background: var(--accent); color: var(--on-accent); padding: 10px 14px; border-radius: var(--r); font-size: 14px; font-weight: 600; }
+.skip:focus { top: 12px; }
+
+/* Intro ("Tagline"): "Every gig . near you" builds, the dot becomes the radar, then the view flies through the ring.
+   About 2s, skipped by any tap/click/key/scroll, never shown with reduced motion. */
+.intro { position: fixed; inset: 0; z-index: 50; background: #03203D; overflow: hidden; font-family: var(--display); }
+.intro .ch { display: inline-block; transform: translateY(110%); }
+.intro-mask { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.08em; }
+.intro-tag { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 0.45em;
+  color: #EEF4FA; font-size: clamp(28px, 5.2vw, 64px); font-weight: 500; letter-spacing: -0.035em; padding: 0 16px; }
+.intro-tag .l { justify-self: end; } .intro-tag .r { justify-self: start; }
+.intro-dot { width: 0.42em; height: 0.42em; border-radius: 50%; background: #FF2E88; transform: translateY(-60vh); }
+.intro-logo { --mk: clamp(56px, 9vw, 120px); position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+.intro-in { display: flex; align-items: center; transform-origin: calc(var(--mk) / 2) 50%; }
+.intro-mark { width: var(--mk); height: var(--mk); flex: none; overflow: visible; }
+.intro-mark .ring { fill: none; stroke: #639CC5; stroke-width: 4; transform: scale(0); opacity: 0; transform-origin: 32px 32px; }
+.intro-mark .ctr { fill: #FF2E88; opacity: 0; transform-origin: 32px 32px; }
+.intro-mark .blip { fill: #FF2E88; transform: scale(0); transform-origin: 44px 22px; }
+.intro-wbox { max-width: 0; overflow: hidden; }
+.intro-word { padding-left: calc(var(--mk) * 0.28); font-size: calc(var(--mk) * 0.72); font-weight: 600; line-height: 1.15; letter-spacing: -0.035em; color: #EEF4FA; white-space: nowrap; }
+.intro-word .rd { color: #FF2E88; }
+.intro .l .ch { animation: intro-up 0.29s cubic-bezier(0.16, 1, 0.3, 1) calc(0.029s + var(--i) * 20ms) forwards; }
+.intro-dot { animation: intro-drop 0.348s cubic-bezier(0.34, 1.56, 0.64, 1) 0.261s forwards, intro-hide 0.006s 1.131s forwards; }
+.intro .r .ch { animation: intro-up 0.29s cubic-bezier(0.16, 1, 0.3, 1) calc(0.435s + var(--i) * 20ms) forwards; }
+.intro-tag .l { animation: intro-off-l 0.261s cubic-bezier(0.7, 0, 0.84, 0) 0.899s forwards; }
+.intro-tag .r { animation: intro-off-r 0.261s cubic-bezier(0.7, 0, 0.84, 0) 0.899s forwards; }
+.intro-mark .ctr { animation: intro-show 0s 1.131s forwards, intro-shrink 0.232s ease 1.189s forwards; }
+.intro-mark .r2 { animation: intro-grow 0.29s cubic-bezier(0.16, 1, 0.3, 1) 1.16s forwards; }
+.intro-mark .r1 { animation: intro-grow 0.319s cubic-bezier(0.16, 1, 0.3, 1) 1.23s forwards; }
+.intro-mark .blip { animation: intro-pop 0.232s ease-out 1.363s forwards; }
+.intro-wbox { animation: intro-widen 0.348s cubic-bezier(0.65, 0, 0.35, 1) 1.305s forwards; }
+.intro-word .ch { animation: intro-up 0.29s cubic-bezier(0.16, 1, 0.3, 1) calc(1.363s + var(--i) * 17ms) forwards; }
+.intro-in { animation: intro-fly 0.348s cubic-bezier(0.7, 0, 0.84, 0) 1.711s forwards; }
+.intro { animation: intro-bg 0.203s ease-out 1.856s forwards; }
+.intro.skip-now { animation: intro-bg 0.116s ease-out forwards; }
+.intro.skip-now * { animation-play-state: paused; }
+html.intro-on { overflow: hidden; }
+html.intro-on .page { animation: intro-land 0.406s cubic-bezier(0.16, 1, 0.3, 1) 1.885s backwards; }
+@keyframes intro-up { to { transform: none; } }
+@keyframes intro-drop { to { transform: none; } }
+@keyframes intro-hide { to { opacity: 0; } }
+@keyframes intro-show { to { opacity: 1; } }
+@keyframes intro-shrink { to { transform: scale(0); } }
+@keyframes intro-off-l { to { transform: translateX(-12vw); opacity: 0; } }
+@keyframes intro-off-r { to { transform: translateX(12vw); opacity: 0; } }
+@keyframes intro-grow { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.15); opacity: 1; } to { transform: scale(1); opacity: 1; } }
+@keyframes intro-pop { 0% { transform: scale(0); } 70% { transform: scale(1.25); } to { transform: scale(1); } }
+@keyframes intro-widen { to { max-width: 80vw; } }
+@keyframes intro-fly { 70% { opacity: 1; } to { transform: scale(28); opacity: 0; } }
+@keyframes intro-bg { to { opacity: 0; visibility: hidden; } }
+@keyframes intro-land { from { opacity: 0; transform: scale(0.97) translateY(18px); } }
+@media (prefers-reduced-motion: reduce) { .intro { display: none; } }
+</style>
+
+<a class="skip" href="#main">Skip to the gig calendar</a>
+<div class="intro" id="intro" aria-hidden="true">
+  <div class="intro-tag"><span class="l intro-mask"><span class="ch" style="--i:0">E</span><span class="ch" style="--i:1">v</span><span class="ch" style="--i:2">e</span><span class="ch" style="--i:3">r</span><span class="ch" style="--i:4">y</span><span class="ch" style="--i:5">&nbsp;</span><span class="ch" style="--i:6">g</span><span class="ch" style="--i:7">i</span><span class="ch" style="--i:8">g</span></span><span class="intro-dot"></span><span class="r intro-mask"><span class="ch" style="--i:0">n</span><span class="ch" style="--i:1">e</span><span class="ch" style="--i:2">a</span><span class="ch" style="--i:3">r</span><span class="ch" style="--i:4">&nbsp;</span><span class="ch" style="--i:5">y</span><span class="ch" style="--i:6">o</span><span class="ch" style="--i:7">u</span></span></div>
+  <div class="intro-logo"><div class="intro-in">
+    <svg class="intro-mark" viewBox="0 0 64 64"><circle class="ctr" cx="32" cy="32" r="6"/><circle class="ring r1" cx="32" cy="32" r="18"/><circle class="ring r2" cx="32" cy="32" r="8"/><circle class="blip" cx="44" cy="22" r="6"/></svg>
+    <div class="intro-wbox"><div class="intro-word"><span class="intro-mask"><span class="ch" style="--i:0">G</span><span class="ch" style="--i:1">r</span><span class="ch" style="--i:2">o</span><span class="ch" style="--i:3">o</span><span class="ch" style="--i:4">v</span><span class="ch" style="--i:5">e</span></span><span class="intro-mask"><span class="ch" style="--i:6">&nbsp;</span></span><span class="intro-mask rd"><span class="ch" style="--i:7">R</span><span class="ch" style="--i:8">a</span><span class="ch" style="--i:9">d</span><span class="ch" style="--i:10">a</span><span class="ch" style="--i:11">r</span></span></div></div>
+  </div></div>
+</div>
+<script>
+(() => {
+  const intro = document.getElementById("intro");
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { intro.remove(); return; }
+  const root = document.documentElement;
+  root.classList.add("intro-on");
+  let done = false;
+  const finish = () => {
+    if (done) return; done = true;
+    root.classList.remove("intro-on");
+    removeEventListener("pointerdown", skip); removeEventListener("keydown", skip); removeEventListener("wheel", skip); removeEventListener("touchmove", skip);
+    setTimeout(() => intro.remove(), 250);
+  };
+  const skip = () => { intro.classList.add("skip-now"); finish(); };
+  addEventListener("pointerdown", skip); addEventListener("keydown", skip); addEventListener("wheel", skip, { passive: true }); addEventListener("touchmove", skip, { passive: true });
+  setTimeout(finish, 2400);
+})();
+</script>
+<div class="amb" aria-hidden="true"><i></i><i></i><i></i></div>
+<div class="page">
+  <nav class="top" aria-label="Groove Radar">
+    <div class="brand">Groove <span>Radar</span></div>
+    <div class="navlinks">
+      <button data-v="month" aria-current="true">Calendar</button>
+      <button data-v="list" aria-current="false">All gigs</button>
+      <button data-v="artists" aria-current="false"><span class="long">Artists &amp; music</span><span class="short">Artists</span></button>
+      <button data-jump="news" aria-current="false"><span class="long">What's new</span><span class="short">News</span></button>
+    </div>
+    <div class="count" id="count">Gigs (…)</div>
+  </nav>
+
+  <main id="content">
+  <header class="hero" id="hero"></header>
+
+  <section id="newsSec" hidden data-reveal>
+    <div class="shead"><h2>What's new <em>today</em></h2></div>
+    <div class="news" id="news" style="margin-top:18px"></div>
+  </section>
+
+  <section id="main" data-reveal>
+    <div class="shead" id="mainhead"></div>
+    <div class="notice" id="notice" role="status" aria-live="polite" hidden style="margin-top:10px"></div>
+    <div id="view" style="margin-top:18px; display:flex; flex-direction:column; gap:18px"></div>
+  </section>
+  </main>
+
+  <footer data-reveal>
+    <div class="word" aria-hidden="true">Groove <span class="r">Radar</span></div>
+    <p>Every European gig and new release from our tech house artists, refreshed every morning from Songkick, venue and ticket sites, and Beatport. Ticket status changes quickly, so check the ticket page before you buy.</p>
+    <nav class="legal" aria-label="Legal"><a href="privacy.html">Privacy policy</a><a href="terms.html">Terms and conditions</a><a href="cookies.html">Cookie policy</a></nav>
+  </footer>
+</div>
+
+<script>
+const NEAR = new Set(["munich", "rheingau"]);
+/* "Near you" adapts to the visitor: within NEAR_KM of their approximate location (from the site's /api/where,
+   or a city they pick). Without a location it falls back to the owner's home zones, Munich and the Rheingau. */
+const NEAR_KM = 150;
+let here = null;        // { lat, lon, label, source: "auto" | "picked" } or null for the home zones
+let autoHere = null;    // what /api/where reported, kept so "My location" can restore it
+let places = {};        // "City|CC": [lat, lon], from data.json
+function kmBetween(a, b, c, d) { const R = 6371, r = Math.PI / 180, x = Math.sin((c - a) * r / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin((d - b) * r / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(x)); }
+function kmTo(g) {
+  if (!here) return g.distanceKm ?? null;
+  if (typeof g.lat !== "number" || typeof g.lon !== "number") return null;
+  return Math.round(kmBetween(here.lat, here.lon, g.lat, g.lon));
+}
+function isNear(g) { if (!here) return HOME_ZONE(g); const k = kmTo(g); return k != null && k <= NEAR_KM; }
+function HOME_ZONE(g) { return NEAR.has(g.zone) }
+function fromLabel(g) { return here ? here.label : (g.zone === "munich" ? "Munich" : "Oestrich-Winkel"); }
+const DOW = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const FULLMONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const COUNTRY = { UK: "UK", IE: "Ireland", DE: "Germany", AT: "Austria", CH: "Switzerland", FR: "France", ES: "Spain", PT: "Portugal", HU: "Hungary", NL: "Netherlands", BE: "Belgium", IT: "Italy", PL: "Poland", CZ: "Czechia", DK: "Denmark", SE: "Sweden", NO: "Norway", HR: "Croatia", GR: "Greece" };
+const ARTISTS = ["Max Dean", "Luke Dean", "Rossi.", "LP Rhythm", "Obskür", "Jamie Fielding", "Tommy Phillips", "Franky Rizardo", "Idemi", "Scott Steer", "Cam Stockman", "Josh Baker", "Bambounou", "Michael Bibi", "PAWSA", "Prospa", "Locklead", "Mason Maynard", "Silva Bumpa", "Ben Sterling", "Kolter", "Sidney Charles", "Chris Stussy", "East End Dubs", "Notre Dame", "Kettama"];
+const STORES = [
+  { name: "Beatport", url: q => `https://www.beatport.com/search?q=${q}` },
+  { name: "Bandcamp", url: q => `https://bandcamp.com/search?q=${q}` },
+  { name: "Traxsource", url: q => `https://www.traxsource.com/search?term=${q}` },
+  { name: "Juno", url: q => `https://www.junodownload.com/search/?q%5Ball%5D%5B%5D=${q}` },
+];
+
+const $ = (id) => document.getElementById(id);
+const SCROLL = () => (matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth");
+const pad = (n) => String(n).padStart(2, "0");
+const keyOf = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseKey = (k) => { const [y, m, d] = k.split("-").map(Number); return new Date(y, m - 1, d); };
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const mondayOf = (d) => addDays(d, -((d.getDay() + 6) % 7));
+const todayKey = () => keyOf(new Date());
+const nkey = s => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+function chev(d) { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("viewBox", "0 0 16 16"); s.setAttribute("aria-hidden", "true"); const p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("d", d); p.setAttribute("fill", "none"); p.setAttribute("stroke", "currentColor"); p.setAttribute("stroke-width", "2"); p.setAttribute("stroke-linecap", "square"); s.append(p); return s; }
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function safeUrl(u) { try { const x = new URL(u); return (x.protocol === "https:" || x.protocol === "http:") ? x.href : null; } catch (e) { return null; } }
+function link(cls, text, href) { const a = el("a", cls, text); const u = safeUrl(href); if (u) { a.href = u; a.target = "_blank"; a.rel = "noopener noreferrer"; a.append(el("span", "sr-only", " (opens in new tab)")); } return a; }
+function statusOf(g) { return ["available", "sold_out"].includes(g.status) ? g.status : "unknown"; }
+function isNew(g) { return !!g.addedAt && (new Date() - parseKey(g.addedAt)) / 86400000 < 3; }
+function artistsIn(str) { const s = (str || "").toLowerCase(); return ARTISTS.filter(a => s.includes(a.toLowerCase().replace(/\.$/, ""))); }
+function fmtLong(k) { const d = parseKey(k); return `${["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getDay()]} ${d.getDate()} ${FULLMONTHS[d.getMonth()]}`; }
+function dotted(k) { const d = parseKey(k); return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`; }
+
+let gigs = [], music = {}, updates = [], meta = null;
+let view = "month", filter = "all";
+if (!["month", "list", "artists"].includes(view)) view = "month";
+if (location.hash) readHash();
+if (!["all", "near", "buy"].includes(filter)) filter = "all";
+let cursor = new Date(); cursor = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+let selDay = todayKey();
+let showPastWeeks = false;
+const openTracks = new Set();
+
+function allUpcoming() { return gigs.filter(g => g.date && g.date >= todayKey()).sort((a, b) => a.date.localeCompare(b.date)); }
+function upcoming() {
+  let l = allUpcoming();
+  if (filter === "near") l = l.filter(g => isNear(g));
+  if (filter === "buy") l = l.filter(g => g.status === "available");
+  return l.sort((a, b) => a.date.localeCompare(b.date) || (isNear(b) - isNear(a)));
+}
+function goToDay(k) { selDay = k; const d = parseKey(k); cursor = new Date(d.getFullYear(), d.getMonth(), 1); setView("month"); render(); setTimeout(() => $("daypanel")?.scrollIntoView({ behavior: SCROLL(), block: "start" }), 40); }
+
+/* ---------- hero ---------- */
+function renderHero() {
+  /* Morning verdict: one honest line about near-you gigs and today's changes, then the next near-you gig as a compact card. */
+  const h = $("hero"); h.replaceChildren();
+  const up = allUpcoming();
+  const STATUS_RANK = { available: 0, unknown: 1, sold_out: 2 };
+  const nearUp = up.filter(g => isNear(g)).sort((a, b) => a.date.localeCompare(b.date) || STATUS_RANK[statusOf(a)] - STATUS_RANK[statusOf(b)] || (kmTo(a) ?? 1e9) - (kmTo(b) ?? 1e9));
+  const soonLimit = keyOf(addDays(new Date(), 30));
+  const nearSoon = nearUp.filter(g => g.date <= soonLimit);
+  const latest = updates[0];
+  const changes = latest && latest.date === todayKey() ? gigNews(latest).length : 0;
+  const newThisWeek = up.filter(isNew).length;
+  const big = el("h1", "big");
+  let line1, line2;
+  if (!up.length) { line1 = "Groove Radar"; line2 = "Loading your gigs"; }
+  else {
+    line1 = nearSoon.length ? `${nearSoon.length} gig${nearSoon.length > 1 ? "s" : ""} near you this month` : nearUp.length ? (here ? "Quiet near you" : "Quiet near home") : (here ? "Nothing near you yet" : "Nothing near home yet");
+    line2 = changes ? `${changes} change${changes > 1 ? "s" : ""} today` : newThisWeek ? `${newThisWeek} new this week` : "Nothing new today";
+  }
+  big.append(el("span", null, line1), el("span", "l2", line2));
+  const left = el("div", "hero-left"); left.append(big, nearControl()); h.append(left);
+  const feat = nearUp[0] || up[0];
+  if (!feat) return;
+  const near = isNear(feat);
+  const card = el("aside");
+  card.append(el("span", "script", near ? (nearSoon.includes(feat) ? "Next near you" : `Next near you · ${fmtShort(feat.date)}`) : "Next gig"));
+  const names = artistsIn(feat.artist);
+  const t = el("div", "hcard-title", feat.event || names.join(", ") || feat.artist);
+  const when = el("div", "hcard-when", `${fmtLong(feat.date)} · ${[feat.venue, feat.city].filter(Boolean).join(", ")}${near && kmTo(feat) != null ? (kmTo(feat) < 8 && here ? "" : ` · ${kmTo(feat)} km from ${fromLabel(feat)}`) : ""}`);
+  card.append(t, when);
+  if (names.length && feat.event) card.append(el("p", null, names.join(", ")));
+  if (feat.note) card.append(el("p", "hcard-note", feat.note));
+  const btns = el("div", "hcard-btns");
+  const s = statusOf(feat);
+  const url = feat.ticketUrl || feat.sourceUrl;
+  if (safeUrl(url)) btns.append(link(s === "sold_out" ? "cta ghost" : "cta", s === "available" ? "Buy tickets ↗" : s === "sold_out" ? "Sold out · resale ↗" : "See event ↗", url));
+  const b = el("button", "cta ghost", "Show in calendar"); b.onclick = () => goToDay(feat.date); btns.append(b);
+  card.append(btns);
+  h.append(card);
+}
+function nearControl() {
+  const box = el("div", "where");
+  const label = here ? `Near you means within ${NEAR_KM} km of ${here.label}${here.source === "auto" ? " (from your connection)" : ""}.` : "Near you means the Munich area and the Rheingau.";
+  box.append(el("span", null, label));
+  const lab = el("label", "where-lab", "Measure from"); lab.htmlFor = "near-from"; box.append(lab);
+  const sel = el("select"); sel.setAttribute("aria-label", "Measure near from");
+  const opt = (v, t) => { const o = el("option", null, t); o.value = v; return o; };
+  sel.id = "near-from";
+  if (autoHere) sel.append(opt("@auto", `My location (${autoHere.label})`));
+  sel.append(opt("@home", "Munich and the Rheingau"));
+  const grp = el("optgroup"); grp.label = "A city";
+  Object.keys(places).filter(k => !k.startsWith("_")).sort().forEach(k => grp.append(opt(k, k.split("|")[0])));
+  sel.append(grp);
+  sel.value = !here ? "@home" : here.source === "auto" ? "@auto" : here.key;
+  sel.onchange = () => { setNear(sel.value); render(); };
+  box.append(sel);
+  return box;
+}
+function fmtShort(k) { const d = parseKey(k); return `${d.getDate()} ${MONTHS[d.getMonth()]}`; }
+
+/* ---------- shared ---------- */
+function storeLinks(name) { const q = encodeURIComponent(name.replace(/\.$/, "")); return STORES.map(s => link("store", s.name + " ↗", s.url(q))); }
+function releaseList(name, max) {
+  const m = music[nkey(name)]; if (!m) return null;
+  const box = el("div", "rels");
+  if (!m.releases || !m.releases.length) { if (m.note) box.append(el("div", "smallnote", m.note)); return box; }
+  m.releases.slice(0, max).forEach(r => {
+    const a = link("rel", null, r.url);
+    const d = r.date ? parseKey(r.date) : null;
+    a.append(el("span", "rd", d ? `${d.getDate()} ${MONTHS[d.getMonth()]} ${String(d.getFullYear()).slice(2)}` : ""));
+    const t = el("span"); t.style.minWidth = "0";
+    t.append(el("div", "rt", r.title), el("div", "rl", [r.artists, r.label].filter(Boolean).join(" · ")));
+    a.append(t, el("span", "rb" + (r.preorder ? " pre" : ""), r.preorder ? "Pre-order ↗" : "Buy ↗"));
+    box.append(a);
+  });
+  return box;
+}
+function gigRow(g) {
+  const near = isNear(g);
+  const row = el("article", "row" + (near ? " near" : ""));
+  const d = parseKey(g.date);
+  const rd = el("div", "rdate"); rd.append(el("span", "d", pad(d.getDate())), el("span", "m", `${MONTHS[d.getMonth()]} · ${DOW[(d.getDay() + 6) % 7]}`));
+  const info = el("div", "rinfo");
+  const an = el("div", "rartist", g.artist || "TBA"); if (isNew(g)) an.append(el("span", "newb", "NEW"));
+  info.append(an);
+  info.append(el("div", "rwhere", [g.event, g.venue, g.city, COUNTRY[g.country] || g.country].filter(Boolean).join(" · ")));
+  if (near) info.append(el("div", "rnear", `near you · ${kmTo(g) ?? "?"} km from ${fromLabel(g)}`));
+  if (g.note) info.append(el("div", "rnote", g.note));
+  const names = artistsIn(g.artist);
+  let tracks = null;
+  if (names.length) {
+    const tb = el("button", "tbtn", openTracks.has(g.id) ? "Hide their latest tracks" : "Their latest tracks"); tb.setAttribute("aria-expanded", String(openTracks.has(g.id)));
+    tb.onclick = () => { openTracks.has(g.id) ? openTracks.delete(g.id) : openTracks.add(g.id); render(); };
+    info.append(tb);
+    if (openTracks.has(g.id)) {
+      tracks = el("div", "tracks");
+      names.forEach(n => { tracks.append(el("div", "who", n)); const rl = releaseList(n, 3); if (rl) tracks.append(rl); const st = el("div", "stores"); st.append(...storeLinks(n)); tracks.append(st); });
+    }
+  }
+  const act = el("div", "ract");
+  const s = statusOf(g);
+  act.append(el("span", "st " + s, s === "available" ? "On sale" : s === "sold_out" ? "Sold out" : "Status unknown"));
+  const url = g.ticketUrl || g.sourceUrl;
+  if (safeUrl(url)) act.append(link("cta" + (s === "available" ? "" : " ghost"), s === "available" ? "Tickets ↗" : s === "sold_out" ? "Resale ↗" : "Event ↗", url));
+  row.append(rd, info, act);
+  if (tracks) row.append(tracks);
+  return row;
+}
+let segLast = null;
+function filtersEl() {
+  const f = el("div", "filters");
+  f.setAttribute("role", "group"); f.setAttribute("aria-label", "Filter gigs");
+  const ind = el("span", "seg-ind"); ind.setAttribute("aria-hidden", "true"); f.append(ind);
+  [["all", "All gigs"], ["near", "Near me"], ["buy", "On sale"]].forEach(([k, t]) => {
+    const b = el("button", "chip", t); b.setAttribute("aria-pressed", String(filter === k));
+    b.onclick = () => { filter = k; render(); };
+    f.append(b);
+  });
+  requestAnimationFrame(() => {
+    const cur = f.querySelector('[aria-pressed="true"]'); if (!cur || !f.isConnected) return;
+    if (segLast) { ind.style.transition = "none"; ind.style.left = segLast.l + "px"; ind.style.width = segLast.w + "px"; void ind.offsetWidth; ind.style.transition = ""; }
+    ind.style.left = cur.offsetLeft + "px"; ind.style.width = cur.offsetWidth + "px";
+    segLast = { l: cur.offsetLeft, w: cur.offsetWidth };
+  });
+  return f;
+}
+
+/* ---------- views ---------- */
+function renderMonth(list) {
+  const head = $("mainhead");
+  const y = cursor.getFullYear(), m = cursor.getMonth();
+  const h2 = el("h2", null, `${FULLMONTHS[m]} ${y}`);
+  const nav = el("div", "monthnav");
+  const prev = el("button", "sq"); prev.append(chev("M10 3 5 8l5 5")); prev.setAttribute("aria-label", "Previous month"); prev.onclick = () => { cursor = new Date(y, m - 1, 1); render(); };
+  const tod = el("button", "sq txt", "Today"); tod.onclick = () => { const n = new Date(); cursor = new Date(n.getFullYear(), n.getMonth(), 1); selDay = todayKey(); render(); };
+  const next = el("button", "sq"); next.append(chev("m6 3 5 5-5 5")); next.setAttribute("aria-label", "Next month"); next.onclick = () => { cursor = new Date(y, m + 1, 1); render(); };
+  nav.append(prev, tod, next);
+  head.append(h2, nav);
+
+  const v = $("view");
+  v.append(filtersEl());
+  const byDay = {}; list.forEach(g => (byDay[g.date] ||= []).push(g));
+  const monthKey = `${y}-${pad(m + 1)}`;
+  if (filter !== "all" && !list.some(g => g.date.startsWith(monthKey))) {
+    const nx = list.find(g => g.date > `${monthKey}-31`);
+    const e = el("div", "empty month-empty", `No ${filter === "near" ? "near-you" : "on-sale"} gigs in ${FULLMONTHS[m]}.`);
+    if (nx) { const b = el("button", "cta ghost", `Go to ${FULLMONTHS[parseKey(nx.date).getMonth()]}: ${nx.artist.split(",")[0]} · ${fmtShort(nx.date)}`); b.onclick = () => goToDay(nx.date); e.append(b); }
+    v.append(e);
+  }
+  const grid = el("div", "grid");
+  DOW.forEach(d => grid.append(el("div", "dow", d)));
+  const monthStart = mondayOf(new Date(y, m, 1));
+  const monthWeeks = Math.ceil((((new Date(y, m, 1).getDay() + 6) % 7) + new Date(y, m + 1, 0).getDate()) / 7);
+  const tk = todayKey();
+  /* In the current month, start at this week (past weeks are empty by definition) and show at least 5 weeks, running into next month. */
+  const now = new Date();
+  const thisWeek = mondayOf(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+  const hiddenWeeks = Math.round((thisWeek - monthStart) / (7 * 86400000));
+  const compact = !showPastWeeks && y === now.getFullYear() && m === now.getMonth() && hiddenWeeks > 0;
+  const start = compact ? thisWeek : monthStart;
+  const weeks = compact ? Math.max(monthWeeks - hiddenWeeks, 5) : monthWeeks;
+  if (compact) { const last = addDays(start, weeks * 7 - 1); if (last.getMonth() !== m) h2.textContent = `${FULLMONTHS[m]} – ${FULLMONTHS[last.getMonth()]} ${last.getFullYear()}`; }
+  if (hiddenWeeks > 0 && y === now.getFullYear() && m === now.getMonth()) {
+    const pb = el("button", "tbtn pastweeks", compact ? `Show earlier weeks (${new Date(y, m, 1).getDate()}–${addDays(thisWeek, -1).getDate()} ${MONTHS[m]})` : "Hide earlier weeks");
+    pb.setAttribute("aria-expanded", String(!compact));
+    pb.onclick = () => { showPastWeeks = !showPastWeeks; render(); };
+    v.append(pb);
+  }
+  for (let i = 0; i < weeks * 7; i++) {
+    const d = addDays(start, i), k = keyOf(d), items = byDay[k] || [];
+    const outM = d.getMonth() !== m;
+    const c = el("button", "day" + (outM && !compact ? " out" : "") + (k < tk ? " past" : "") + (k === tk ? " today" : "") + (k === selDay ? " sel" : "") + (compact && d.getDate() === 1 ? " mstart" : ""));
+    const nearN = items.filter(g => isNear(g)).length;
+    c.setAttribute("aria-label", `${k === tk ? "Today, " : ""}${d.getDate()} ${FULLMONTHS[d.getMonth()]}: ${items.length ? items.length + " gig" + (items.length > 1 ? "s" : "") : "no gigs"}${nearN ? `, ${nearN} near you` : ""}`);
+    if (k === tk) c.setAttribute("aria-current", "date");
+    c.setAttribute("aria-pressed", String(k === selDay));
+    const num = el("span", "n", pad(d.getDate()));
+    if (compact && d.getDate() === 1) num.append(el("small", null, MONTHS[d.getMonth()]));
+    c.append(num);
+    items.slice(0, 3).forEach(g => c.append(el("span", "ev" + (isNear(g) ? " near" : "") + (statusOf(g) === "sold_out" ? " sold" : ""), `${g.artist.split(",")[0]} · ${g.city || ""}`)));
+    if (items.length > 3) c.append(el("span", "more", `+${items.length - 3} more`));
+    const dots = el("span", "dots"); items.slice(0, 5).forEach(g => dots.append(el("i", "dot" + (isNear(g) ? " near" : "")))); c.append(dots);
+    c.onclick = () => { selDay = k; if (outM && !compact) cursor = new Date(d.getFullYear(), d.getMonth(), 1); render(); setTimeout(() => $("daypanel")?.scrollIntoView({ behavior: SCROLL(), block: "nearest" }), 30); };
+    grid.append(c);
+  }
+  v.append(grid);
+  const lg = el("div", "legend");
+  [["var(--accent-big)", (here ? `Near you, within ${NEAR_KM} km` : "Near you") + " (round dot, thick line)", "round"], ["var(--ink)", "Elsewhere in Europe", ""], ["var(--muted)", "Sold out (crossed out)", ""]].forEach(([bg, t, cls]) => { const s = el("span"); const i = el("i", cls || null); i.style.background = bg; i.setAttribute("aria-hidden", "true"); s.append(i, t); lg.append(s); });
+  v.append(lg);
+
+  const panel = el("section"); panel.id = "daypanel"; panel.style.display = "flex"; panel.style.flexDirection = "column"; panel.style.gap = "6px"; panel.style.scrollMarginTop = "16px";
+  const items = byDay[selDay] || [];
+  const ph = el("div", "shead"); const t = el("h2", null, fmtLong(selDay)); t.style.fontSize = "clamp(28px,4.5vw,44px)";
+  ph.append(t, el("span", "cap", items.length ? `${items.length} gig${items.length > 1 ? "s" : ""}` : "No gigs"));
+  panel.append(ph);
+  if (items.length) { const r = el("div", "rows"); items.forEach(x => r.append(gigRow(x))); panel.append(r); }
+  else {
+    const all = allUpcoming().filter(g => g.date === selDay).length;
+    const e = el("div", "empty", all && filter !== "all" ? `No ${filter === "near" ? "near-you" : "on-sale"} gigs this day · ${all} more with the filter off.` : "Nothing from your artists this day.");
+    const nx = list.find(g => g.date > selDay);
+    if (nx) { const b = el("button", "cta ghost", `Next: ${nx.artist.split(",")[0]} · ${parseKey(nx.date).getDate()} ${MONTHS[parseKey(nx.date).getMonth()]}  →`); b.onclick = () => goToDay(nx.date); e.append(b); }
+    panel.append(e);
+  }
+  v.append(panel);
+}
+
+function renderList(list) {
+  const head = $("mainhead");
+  head.append(el("h2", null, filter === "near" ? "Near-you gigs" : filter === "buy" ? "Gigs on sale" : "All gigs"), el("span", "cap", `${list.length} upcoming`));
+  const v = $("view");
+  v.append(filtersEl());
+  if (!list.length) { v.append(el("div", "empty", filter === "near" ? "No near-you gigs coming up right now. Switch to All gigs to see the rest of Europe." : "No upcoming gigs match this filter.")); return; }
+  let last = "";
+  let rows = null;
+  list.forEach(g => {
+    const mk = g.date.slice(0, 7);
+    if (mk !== last) { last = mk; const d = parseKey(g.date); v.append(el("div", "monthhead", `${FULLMONTHS[d.getMonth()]} ${d.getFullYear()}`)); rows = el("div", "rows"); v.append(rows); }
+    rows.append(gigRow(g));
+  });
+}
+
+function renderArtists() {
+  const head = $("mainhead");
+  head.append(el("h2", null, "Artists & music"), el("span", "cap", `${ARTISTS.length} artists`));
+  const all = allUpcoming();
+  const grid = el("div", "artists");
+  ARTISTS.forEach(name => {
+    const mine = all.filter(g => artistsIn(g.artist).includes(name));
+    const c = el("div", "acard");
+    c.append(el("div", "anm", name));
+    const nx = mine[0];
+    c.append(el("div", "asub", mine.length ? `${mine.length} gig${mine.length > 1 ? "s" : ""} in Europe · next ${parseKey(nx.date).getDate()} ${MONTHS[parseKey(nx.date).getMonth()]}, ${nx.city || ""}` : "No European gigs listed right now"));
+    const rl = releaseList(name, 5); if (rl) c.append(rl);
+    const st = el("div", "stores"); st.append(...storeLinks(name));
+    if (nx) { const b = el("button", "store", "Next gig →"); b.onclick = () => goToDay(nx.date); st.append(b); }
+    c.append(st);
+    grid.append(c);
+  });
+  $("view").append(grid);
+}
+
+/* ---------- news ---------- */
+let newsOpen = false;
+const NEWS_ORDER = { added: 0, soldout: 1, changed: 2, release: 3 };
+function gigNews(u) { return (u.items || []).filter(it => it.type in NEWS_ORDER).sort((a, b) => NEWS_ORDER[a.type] - NEWS_ORDER[b.type]); }
+function newsSummary(items) {
+  const n = t => items.filter(it => it.type === t).length, parts = [];
+  if (n("added")) parts.push(`${n("added")} new gig${n("added") > 1 ? "s" : ""}`);
+  if (n("soldout")) parts.push(`${n("soldout")} sold out`);
+  if (n("changed")) parts.push(`${n("changed")} update${n("changed") > 1 ? "s" : ""}`);
+  if (n("release")) parts.push(`${n("release")} new release${n("release") > 1 ? "s" : ""}`);
+  return parts.length ? parts.join(" · ") : "No gig news today";
+}
+function newsItems(u, limit) {
+  const ul = el("ul");
+  const labels = { added: "New gig", removed: "Removed", soldout: "Sold out", release: "Release", changed: "Changed", info: "Note" };
+  const items = gigNews(u);
+  (limit ? items.slice(0, limit) : items).forEach(it => {
+    const li = el("li"); li.append(el("span", "tag " + (labels[it.type] ? it.type : "info"), labels[it.type] || "Note"));
+    const t = el("span", null, it.text || "");
+    if (safeUrl(it.url)) { t.append(" "); t.append(link(null, it.linkText || "Open ↗", it.url)); }
+    li.append(t); ul.append(li);
+  });
+  return ul;
+}
+function renderNews() {
+  const sec = $("newsSec"), box = $("news"); box.replaceChildren();
+  if (!updates.length) { sec.hidden = true; return; }
+  sec.hidden = false;
+  const latest = updates[0];
+  const when = el("div", "when");
+  const d = parseKey(latest.date);
+  when.append(el("span", "cap", ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getDay()]), el("b", null, `${d.getDate()} ${MONTHS[d.getMonth()]}`));
+  if (latest.date === todayKey()) when.append(el("span", "newflag", "New"));
+  const body = el("div");
+  body.append(el("div", "headline", newsSummary(gigNews(latest))));
+  const all = gigNews(latest).length;
+  body.append(newsItems(latest, newsOpen ? 0 : 3));
+  if (all > 3) {
+    const more = el("button", "tbtn", newsOpen ? "Show fewer" : `Show all ${all} changes`);
+    more.setAttribute("aria-expanded", String(newsOpen));
+    more.onclick = () => { newsOpen = !newsOpen; renderNews(); };
+    body.append(more);
+  }
+  box.append(when, body);
+  if (updates.length > 1) {
+    const det = el("details"); det.append(el("summary", null, `Earlier updates (${updates.length - 1}) +`));
+    const older = el("div", "older");
+    updates.slice(1).filter(u => gigNews(u).length).forEach(u => { const w = el("div"); w.append(el("div", "od", `${fmtLong(u.date)} · ${newsSummary(gigNews(u))}`), newsItems(u)); older.append(w); });
+    det.append(older); box.append(det);
+  }
+  renderHero();
+}
+
+/* ---------- render ---------- */
+function updatedLabel() {
+  if (!meta || !meta.lastRun) return "";
+  const t = new Date(meta.lastRun); if (isNaN(t)) return "";
+  const days = Math.floor((new Date(new Date().toDateString()) - new Date(t.toDateString())) / 86400000);
+  const hm = `${pad(t.getHours())}:${pad(t.getMinutes())}`;
+  return days <= 0 ? ` · updated ${hm}` : days === 1 ? " · updated yesterday" : ` · updated ${days} days ago`;
+}
+/* views and filters live in the URL (#list, #month-near, ...) so Back works and links can be shared */
+function setNear(v) {
+  if (v === "@auto") here = autoHere;
+  else if (v === "@home") here = null;
+  else if (places[v]) { const [lat, lon] = places[v]; here = { lat, lon, label: v.split("|")[0], source: "picked", key: v }; }
+}
+function readHash() {
+  const [main, at] = decodeURIComponent(location.hash.slice(1) || "").split("@");
+  const [v, f] = main.split("-");
+  if (["month", "list", "artists"].includes(v)) view = v;
+  filter = ["near", "buy"].includes(f) ? f : "all";
+  if (at) setNear(at === "home" ? "@home" : at); else if (autoHere) here = autoHere;
+}
+function hashFor() {
+  const at = !here ? (autoHere ? "@home" : "") : here.source === "picked" ? "@" + here.key : "";
+  return "#" + view + (filter !== "all" ? "-" + filter : "") + at;
+}
+function setView(v) { view = v; }
+function render() {
+  document.querySelectorAll(".navlinks button[data-v]").forEach(b => b.setAttribute("aria-current", String(b.dataset.v === view)));
+  $("count").textContent = `${allUpcoming().length} gigs${updatedLabel()}`;
+  renderHero();
+  $("mainhead").replaceChildren(); $("view").replaceChildren();
+  const list = upcoming();
+  if (view === "month") renderMonth(list); else if (view === "list") renderList(list); else renderArtists();
+  if (gigs.length && decodeURIComponent(location.hash) !== hashFor()) { if (lastView === null || view === lastView) history.replaceState(null, "", hashFor()); else history.pushState(null, "", hashFor()); }
+  if (view !== lastView) { const v = $("view"); v.classList.remove("view-enter"); void v.offsetWidth; v.classList.add("view-enter"); lastView = view; }
+}
+let lastView = null;
+addEventListener("popstate", () => { readHash(); render(); });
+/* ---------- scroll motion ----------
+   One scroll loop drives everything, eased toward its target each frame so it glides rather than ticking
+   with the scrollbar (the scroll itself is never taken over).
+   - Hero: headline and city picker lag behind and fade; the next-gig card floats; background glows drift.
+   - Section headings: each word rises out of a hidden slot, one after another.
+   - Glass panels (news, calendar, gig list): tip back from a slight 3D tilt and settle flat as they arrive.
+   - Gig rows: slide in from the right, each a beat after the one above.
+   - Footer: the "Groove Radar" wordmark rises letter by letter as you reach the bottom.
+   - Nav: a thin pink line shows how far down the page you are.
+   Uses the individual `translate` / `rotate` / `scale` properties so it adds to, not replaces, existing animations.
+   prefers-reduced-motion: everything sits in its final state. */
+(() => {
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const PX = [ /* selector, speed, fade: hero layers, driven by page scroll */
+    [".amb i:nth-child(1)", -0.10], [".amb i:nth-child(2)", -0.26], [".amb i:nth-child(3)", -0.05],
+    [".hero .big", 0.34, true], [".hero .where", 0.24, true], [".hero aside", 0.12],
+  ];
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  const clamp = t => t < 0 ? 0 : t > 1 ? 1 : t;
+  const prog = document.createElement("i"); prog.className = "scrollprog"; prog.setAttribute("aria-hidden", "true");
+  document.querySelector("nav.top").append(prog);
+
+  /* split text into masked pieces; keeps child elements (like the coloured "today"/"Radar" spans) and their styling */
+  function split(node, unit) {
+    if (node.dataset.split) return;
+    node.dataset.split = unit;
+    const label = node.textContent.replace(/\s+/g, " ").trim();
+    const wrapText = (text, parent) => {
+      const frag = document.createDocumentFragment();
+      text.split(/(\s+)/).forEach(t => {
+        if (!t) return;
+        if (/^\s+$/.test(t)) { frag.append(" "); return; }
+        if (unit === "word") { const m = el("span", "mk"), i = el("span", "mi", t); m.append(i); frag.append(m); return; }
+        const w = el("span", "mw"); /* letters of one word stay on one line */
+        [...t].forEach(ch => { const m = el("span", "mk"), i = el("span", "mi", ch); m.append(i); w.append(m); });
+        frag.append(w);
+      });
+      parent.append(frag);
+    };
+    [...node.childNodes].forEach(c => {
+      if (c.nodeType === 3) { const t = c.textContent; c.remove(); const holder = document.createDocumentFragment(); const tmp = el("span"); wrapText(t, tmp); holder.append(...tmp.childNodes); node.insertBefore(holder, null); }
+      else if (c.nodeType === 1) { const t = c.textContent; c.textContent = ""; wrapText(t, c); node.append(c); }
+    });
+    if (node.getAttribute("aria-hidden") !== "true") node.setAttribute("aria-label", label);
+    node.querySelectorAll(".mk").forEach(m => m.setAttribute("aria-hidden", "true"));
+  }
+
+  const state = new WeakMap(); /* element -> eased progress */
+  const bootAt = performance.now();
+  let last = 0, raf = 0;
+  function progressOf(n, vh, start, span) { const r = n.getBoundingClientRect(); return clamp((vh * start - r.top) / (vh * span)); }
+  function step(n, target, dt, fresh) {
+    let cur = state.get(n);
+    /* new elements: animate in from 0 during page load, otherwise (re-renders) start where they belong */
+    if (cur === undefined || fresh) cur = performance.now() - bootAt < 3500 ? 0 : target;
+    else cur += (target - cur) * (1 - Math.exp(-dt / 110));
+    if (Math.abs(target - cur) < 0.001) cur = target;
+    state.set(n, cur);
+    return cur;
+  }
+
+  function frame(t) {
+    raf = 0;
+    const dt = last ? Math.min(t - last, 64) : 16; last = t;
+    const vh = innerHeight, y = scrollY, k = innerWidth < 700 ? 0.6 : 1, off = reduce.matches;
+    let moving = false;
+    const track = (n, target) => { const seen = state.has(n); const c = off ? 1 : step(n, target, dt, !seen); if (c !== target) moving = true; return c; };
+
+    /* nav progress */
+    const max = document.documentElement.scrollHeight - vh;
+    prog.style.scale = `${max > 0 ? clamp(y / max) : 0} 1`;
+
+    /* hero parallax */
+    PX.forEach(([sel, speed, fade]) => document.querySelectorAll(sel).forEach(n => {
+      if (off) { n.style.translate = ""; n.style.opacity = ""; return; }
+      const c = track(n, Math.min(y, vh * 1.6));
+      n.style.translate = `0 ${(c * speed * k).toFixed(1)}px`;
+      if (fade) n.style.opacity = Math.max(0, 1 - c / (vh * 0.75)).toFixed(3);
+    }));
+
+    /* headings: words rise out of a mask */
+    document.querySelectorAll(".shead h2").forEach(h => {
+      split(h, "word");
+      const c = track(h, progressOf(h, vh, 0.98, 0.42));
+      const ws = h.querySelectorAll(".mi"), n = ws.length;
+      ws.forEach((w, i) => { const p = ease(clamp(c * (1 + n * 0.35) - i * 0.35)); w.style.translate = off ? "" : `0 ${((1 - p) * 105).toFixed(1)}%`; });
+    });
+
+    /* glass panels tilt back to flat */
+    document.querySelectorAll("#news, #view > .grid, #daypanel .rows, #view > .rows, .artists").forEach(n => {
+      const c = ease(track(n, progressOf(n, vh, 1.02, 0.5)));
+      if (off) { n.style.rotate = n.style.scale = n.style.opacity = ""; return; }
+      n.style.rotate = `x ${((1 - c) * 14).toFixed(2)}deg`;
+      n.style.scale = (0.93 + 0.07 * c).toFixed(4);
+      n.style.opacity = (0.25 + 0.75 * c).toFixed(3);
+    });
+
+    /* gig rows slide in, staggered */
+    document.querySelectorAll(".rows > .row").forEach((n, i) => {
+      const c = ease(track(n, progressOf(n, vh, 1.04, 0.32)));
+      if (off) { n.style.translate = n.style.opacity = ""; return; }
+      n.style.translate = `${((1 - c) * 56 * k).toFixed(1)}px 0`;
+      n.style.opacity = (0.15 + 0.85 * c).toFixed(3);
+    });
+
+    /* footer wordmark: letters rise in sequence */
+    const word = document.querySelector("footer .word");
+    if (word) {
+      split(word, "letter");
+      const target = clamp((vh - word.getBoundingClientRect().top) / (word.offsetHeight + vh * 0.25));
+      const c = track(word, target);
+      const ls = word.querySelectorAll(".mi"), n = ls.length;
+      ls.forEach((l, i) => { const p = ease(clamp(c * (1 + n * 0.12) - i * 0.12)); l.style.translate = off ? "" : `0 ${((1 - p) * 102).toFixed(1)}%`; });
+    }
+
+    if (moving) raf = requestAnimationFrame(frame); else last = 0;
+  }
+  const queue = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  addEventListener("scroll", queue, { passive: true }); addEventListener("resize", queue);
+  reduce.addEventListener?.("change", queue);
+  new MutationObserver(queue).observe($("content"), { childList: true, subtree: true }); /* views are rebuilt on every render */
+  queue();
+})();
+/* Fade the right edge of the tab bar while more tabs are hidden off-screen (phones). */
+(() => {
+  const nl = document.querySelector(".navlinks");
+  const upd = () => { const over = nl.scrollWidth > nl.clientWidth + 1; nl.classList.toggle("overflows", over); nl.classList.toggle("at-end", over && nl.scrollLeft + nl.clientWidth >= nl.scrollWidth - 2); };
+  nl.addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd();
+})();
+document.querySelector('.navlinks button[data-jump="news"]').addEventListener("click", () => { const s = $("newsSec"); if (!s.hidden) s.scrollIntoView({ behavior: SCROLL(), block: "start" }); });
+
+render();
+
+(async () => {
+  const db = await claude.use("db");
+  const notice = $("notice");
+  if (!db) { notice.hidden = false; notice.textContent = "Sign in to claude.ai to see your gigs."; return; }
+  const timer = setTimeout(() => { notice.hidden = false; notice.textContent = "Your gigs can't be reached right now. What's shown may be out of date."; }, 10000);
+  let first = true;
+  db.collection("gigs").onSnapshot(snap => {
+    gigs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (!snap.metadata.fromCache) { clearTimeout(timer); notice.hidden = true; }
+    if (first && gigs.length) {
+      first = false;
+      const up = upcoming();
+      if (up.length && !up.some(g => g.date === selDay)) { selDay = up[0].date; const d = parseKey(up[0].date); cursor = new Date(d.getFullYear(), d.getMonth(), 1); }
+    }
+    render();
+  }, err => { clearTimeout(timer); notice.hidden = false; notice.textContent = "Couldn't load gigs (" + err.code + ")."; });
+  db.collection("music").onSnapshot(snap => { music = {}; snap.docs.forEach(d => { const m = d.data(); music[nkey(m.name)] = m; }); render(); }, () => {});
+  db.collection("updates").orderBy("date", "desc").limit(14).onSnapshot(snap => { updates = snap.docs.map(d => d.data()); renderNews(); }, () => {});
+  db.doc("meta/run").onSnapshot(s => { meta = s.exists ? s.data() : null; }, () => {});
+})();
+</script>

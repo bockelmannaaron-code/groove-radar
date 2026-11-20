@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-20",
+  "headline": "Calendar trimmed to Europe, Boardmasters added, Mint XL Leeds sold out",
+  "items": [
+    {
+      "linkText": "Tickets ↗",
+      "text": "Still nothing near Munich or Oestrich-Winkel. The closest gig is Time Warp Mannheim on 3 Apr (Josh Baker, Ben Sterling), with tickets on sale.",
+      "type": "info",
+      "url": "https://www.eventim.de/en/artist/time-warp-festival/"
+    },
+    {
+      "linkText": "Tickets ↗",
+      "text": "Max Dean and Chris Stussy at Boardmasters, Newquay (UK), 4 to 8 Aug 2027. Early-bird tickets are on sale; the official line-up isn't out yet.",
+      "type": "added",
+      "url": "https://boardmasters.com/"
+    },
+    {
+      "linkText": "Event ↗",
+      "text": "Gaskin at Mint XL Leeds on 18 Dec (Sidney Charles) is sold out. Doors at 22:00.",
+      "type": "soldout",
+      "url": "https://www.songkick.com/concerts/43483747-gaskin-dj-at-mint-xl"
+    },
+    {
+      "text": "Tickets are confirmed on sale for Chris Stussy (Blackstone, 22 Nov), Sidney Charles (DOCUMENT Bristol 26 Dec, Idra 28 Dec), Alisha at Depot Mayfield (27 Dec, doors 14:00), Kolter at OVO Arena (1 Jan) and Sziget. Kolter in Angers on 12 Dec: doors 21:30.",
+      "type": "changed"
+    },
+    {
+      "text": "Removed 65 gigs outside Europe (US, Canada, Mexico, Brazil, Australia, Dubai, Egypt, Thailand, Japan).",
+      "type": "removed"
+    },
+    {
+      "linkText": "Buy on Beatport ↗",
+      "text": "Out today: L.P. Rhythm \"How Ya Feelin’\" (Traumer Remix) on Lost Property.",
+      "type": "release",
+      "url": "https://www.beatport.com/release/how-ya-feelin-traumer-remix/7705972"
+    },
+    {
+      "linkText": "Buy on Beatport ↗",
+      "text": "Out today: \"Active Scenes Vol Two\" on Chaos, with Ben Sterling.",
+      "type": "release",
+      "url": "https://www.beatport.com/release/active-scenes-vol-two/7744174"
+    },
+    {
+      "linkText": "Buy on Beatport ↗",
+      "text": "Also out today: Idemi \"Feel The Power\" and Kolter's remix of Empire Of The Sun \"Way To Go\". PAWSA \"WORLDWIDE\" is out on 27 Nov.",
+      "type": "release",
+      "url": "https://www.beatport.com/release/feel-the-power-extended-mix/7677630"
+    }
+  ]
+}

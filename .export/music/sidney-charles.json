@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/sidney-charles/154816",
+  "name": "Sidney Charles",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Sidney Charles, Kolter",
+      "date": "2026-05-29",
+      "label": "Koltrax",
+      "preorder": false,
+      "title": "Back 2 Da Beat",
+      "url": "https://www.beatport.com/release/back-2-da-beat/6914918"
+    },
+    {
+      "artists": "Sidney Charles",
+      "date": "2026-05-01",
+      "label": "Heavy House Society",
+      "preorder": false,
+      "title": "Bass Rider EP",
+      "url": "https://www.beatport.com/release/bass-rider-ep/6810295"
+    },
+    {
+      "artists": "Sidney Charles",
+      "date": "2026-03-06",
+      "label": "Factory 93 Records",
+      "preorder": false,
+      "title": "Face Your Fear EP",
+      "url": "https://www.beatport.com/release/face-your-fear-ep/5767574"
+    },
+    {
+      "artists": "Sidney Charles",
+      "date": "2026-02-06",
+      "label": "Up The Stuss",
+      "preorder": false,
+      "title": "On My Mind",
+      "url": "https://www.beatport.com/release/on-my-mind/5802051"
+    },
+    {
+      "artists": "Sidney Charles",
+      "date": "2025-11-14",
+      "label": "Heavy House Society",
+      "preorder": false,
+      "title": "Take It Back EP",
+      "url": "https://www.beatport.com/release/take-it-back-ep/5543330"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

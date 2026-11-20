@@ -1,0 +1,40 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/mason-maynard/626594",
+  "name": "Mason Maynard",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Mason Maynard",
+      "date": "2026-07-17",
+      "label": "Xscape",
+      "preorder": false,
+      "title": "Push Your Body",
+      "url": "https://www.beatport.com/release/push-your-body/7115385"
+    },
+    {
+      "artists": "Mason Maynard",
+      "date": "2026-02-13",
+      "label": "Xscape",
+      "preorder": false,
+      "title": "Nu Classic",
+      "url": "https://www.beatport.com/release/nu-classic/5830167"
+    },
+    {
+      "artists": "Mason Maynard",
+      "date": "2025-09-19",
+      "label": "Xscape",
+      "preorder": false,
+      "title": "Forever",
+      "url": "https://www.beatport.com/release/forever/5337058"
+    },
+    {
+      "artists": "Mason Maynard",
+      "date": "2024-09-06",
+      "label": "Xscape",
+      "preorder": false,
+      "title": "Fallin'",
+      "url": "https://www.beatport.com/release/fallin/4723767"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

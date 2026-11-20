@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/idemi/1084022",
+  "name": "Idemi",
+  "note": "",
+  "releases": [
+    {
+      "artists": "IDEMI",
+      "date": "2026-11-20",
+      "label": "Rendezvous Sound",
+      "preorder": true,
+      "title": "Feel The Power (Extended Mix)",
+      "url": "https://www.beatport.com/release/feel-the-power-extended-mix/7677630"
+    },
+    {
+      "artists": "IDEMI",
+      "date": "2026-09-04",
+      "label": "Disorder",
+      "preorder": false,
+      "title": "THE MOB / Seamless",
+      "url": "https://www.beatport.com/release/the-mob-seamless/7350503"
+    },
+    {
+      "artists": "IDEMI",
+      "date": "2026-06-19",
+      "label": "Disorder",
+      "preorder": false,
+      "title": "Like An Angel (Touch Me) / Word Play",
+      "url": "https://www.beatport.com/release/like-an-angel-touch-me-word-play/7042318"
+    },
+    {
+      "artists": "IDEMI, TWOFACED (NZ)",
+      "date": "2026-06-05",
+      "label": "Disorder",
+      "preorder": false,
+      "title": "Teach You Desire (TWOFACED Remix)",
+      "url": "https://www.beatport.com/release/teach-you-desire-twofaced-remix/7014461"
+    },
+    {
+      "artists": "IDEMI",
+      "date": "2026-05-01",
+      "label": "Insomniac Records",
+      "preorder": false,
+      "title": "Reflections",
+      "url": "https://www.beatport.com/release/reflections/6811740"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

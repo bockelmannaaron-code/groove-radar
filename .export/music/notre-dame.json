@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/notre-dame/647629",
+  "name": "Notre Dame",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Notre Dame, Moontalk",
+      "date": "2026-11-13",
+      "label": "Paranormal",
+      "preorder": false,
+      "title": "What's So Funny",
+      "url": "https://www.beatport.com/release/whats-so-funny/7616227"
+    },
+    {
+      "artists": "Notre Dame",
+      "date": "2026-10-23",
+      "label": "Paranormal",
+      "preorder": false,
+      "title": "After Ego",
+      "url": "https://www.beatport.com/release/after-ego/7509781"
+    },
+    {
+      "artists": "Sebastien Tellier, Kid Cudi, Notre Dame, Harry Kaze",
+      "date": "2026-07-17",
+      "label": "Because Music / Horizons",
+      "preorder": false,
+      "title": "Amnesia (Notre Dame & Harry Kaze Remix)",
+      "url": "https://www.beatport.com/release/amnesia-notre-dame-harry-kaze-remix/7157231"
+    },
+    {
+      "artists": "Notre Dame, KayteK, Møsard",
+      "date": "2026-06-26",
+      "label": "Paranormal",
+      "preorder": false,
+      "title": "Triptych, Vol. 1",
+      "url": "https://www.beatport.com/release/triptych-vol-1/6984814"
+    },
+    {
+      "artists": "Notre Dame",
+      "date": "2026-05-01",
+      "label": "Diynamic",
+      "preorder": false,
+      "title": "No Rules EP",
+      "url": "https://www.beatport.com/release/no-rules-ep/6821323"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

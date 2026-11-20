@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/bambounou/129400",
+  "name": "Bambounou",
+  "note": "",
+  "releases": [
+    {
+      "artists": "DJ Slugo, Bambounou",
+      "date": "2026-11-13",
+      "label": "Fool's Gold Records",
+      "preorder": false,
+      "title": "OxAgen",
+      "url": "https://www.beatport.com/release/oxagen/7607175"
+    },
+    {
+      "artists": "Bambounou, Low Jack, Boukan Records",
+      "date": "2026-11-12",
+      "label": "Boukan Records",
+      "preorder": false,
+      "title": "Ay Que Rico",
+      "url": "https://www.beatport.com/release/ay-que-rico/7436407"
+    },
+    {
+      "artists": "DJ Slugo, Bambounou",
+      "date": "2026-10-30",
+      "label": "Fool's Gold Records",
+      "preorder": false,
+      "title": "Let Me Eat That",
+      "url": "https://www.beatport.com/release/let-me-eat-that/7593915"
+    },
+    {
+      "artists": "Will Saul, Bambounou",
+      "date": "2026-09-10",
+      "label": "Aus Music",
+      "preorder": false,
+      "title": "I can send you to space (Will Saul Remix)",
+      "url": "https://www.beatport.com/release/i-can-send-you-to-space-will-saul-remix/7337270"
+    },
+    {
+      "artists": "Peven Everett, Bambounou",
+      "date": "2026-08-21",
+      "label": "King Street Sounds",
+      "preorder": false,
+      "title": "I Can't Believe I Loved Her",
+      "url": "https://www.beatport.com/release/i-cant-believe-i-loved-her/7277691"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

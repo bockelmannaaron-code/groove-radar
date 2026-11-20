@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/josh-baker/597279",
+  "name": "Josh Baker",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Josh Baker, Rhys from the Sticks",
+      "date": "2026-10-02",
+      "label": "Baker's Dozen",
+      "preorder": false,
+      "title": "Souvenir",
+      "url": "https://www.beatport.com/release/souvenir/7544090"
+    },
+    {
+      "artists": "Josh Baker, LEILAH, Capo Lee, Anabel Englund",
+      "date": "2026-08-28",
+      "label": "You&Me Records",
+      "preorder": false,
+      "title": "Breaking Point EP",
+      "url": "https://www.beatport.com/release/breaking-point-ep/7365597"
+    },
+    {
+      "artists": "Josh Baker, Poppy Baskcomb",
+      "date": "2026-08-07",
+      "label": "Baker's Dozen",
+      "preorder": false,
+      "title": "My Place (ADR Remix)",
+      "url": "https://www.beatport.com/release/my-place-adr-remix/7315760"
+    },
+    {
+      "artists": "Josh Baker, Poppy Baskcomb",
+      "date": "2026-07-03",
+      "label": "Baker's Dozen",
+      "preorder": false,
+      "title": "My Place",
+      "url": "https://www.beatport.com/release/my-place/7041149"
+    },
+    {
+      "artists": "Josh Baker, Eliza Rose",
+      "date": "2026-03-27",
+      "label": "Baker's Dozen",
+      "preorder": false,
+      "title": "Down To The Bone",
+      "url": "https://www.beatport.com/release/down-to-the-bone/6483051"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

@@ -1,0 +1,40 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/rossi/723794",
+  "name": "Rossi.",
+  "note": "",
+  "releases": [
+    {
+      "artists": "A.B.C., Rossi., Silva Bumpa",
+      "date": "2026-10-23",
+      "label": "Room Two Recordings",
+      "preorder": false,
+      "title": "PEOPLE IN THE PLACE (Extended)",
+      "url": "https://www.beatport.com/release/people-in-the-place-extended/7598638"
+    },
+    {
+      "artists": "Rossi.",
+      "date": "2026-09-11",
+      "label": "ROSSI.HOME//GRXWN.",
+      "preorder": false,
+      "title": "Misery",
+      "url": "https://www.beatport.com/release/misery/7361235"
+    },
+    {
+      "artists": "Rossi., bbyclose",
+      "date": "2026-07-24",
+      "label": "Chaos",
+      "preorder": false,
+      "title": "On Your Mind (Extended Mix)",
+      "url": "https://www.beatport.com/release/on-your-mind-extended-mix/7261129"
+    },
+    {
+      "artists": "Rossi.",
+      "date": "2026-02-20",
+      "label": "ROSSI.HOME//GRXWN.",
+      "preorder": false,
+      "title": "Home",
+      "url": "https://www.beatport.com/release/home/5912494"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

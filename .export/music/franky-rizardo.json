@@ -1,0 +1,40 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/franky-rizardo/34714",
+  "name": "Franky Rizardo",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Franky Rizardo, Valeria Vix",
+      "date": "2026-10-02",
+      "label": "LTF Records",
+      "preorder": false,
+      "title": "Marido Dansa EP",
+      "url": "https://www.beatport.com/release/marido-dansa-ep/7494961"
+    },
+    {
+      "artists": "Franky Rizardo",
+      "date": "2026-06-19",
+      "label": "LTF Records",
+      "preorder": false,
+      "title": "Feel",
+      "url": "https://www.beatport.com/release/feel/7058326"
+    },
+    {
+      "artists": "Franky Rizardo",
+      "date": "2026-03-20",
+      "label": "LTF Records",
+      "preorder": false,
+      "title": "Shinjuku",
+      "url": "https://www.beatport.com/release/shinjuku/5962946"
+    },
+    {
+      "artists": "Franky Rizardo",
+      "date": "2026-02-20",
+      "label": "LTF Records",
+      "preorder": false,
+      "title": "Zero Azucar",
+      "url": "https://www.beatport.com/release/zero-azucar/5885424"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

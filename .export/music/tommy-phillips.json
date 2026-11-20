@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/tommy-phillips/912685",
+  "name": "Tommy Phillips",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Tommy Phillips",
+      "date": "2026-11-13",
+      "label": "Positiva",
+      "preorder": false,
+      "title": "Pressure (Extended Mix)",
+      "url": "https://www.beatport.com/release/pressure-extended-mix/7688295"
+    },
+    {
+      "artists": "Tommy Phillips",
+      "date": "2026-08-19",
+      "label": "Safelight Records.",
+      "preorder": false,
+      "title": "Sun is Shining (Lovelee Dae) (Extended Mix)",
+      "url": "https://www.beatport.com/release/sun-is-shining-lovelee-dae-extended-mix/7318244"
+    },
+    {
+      "artists": "Tommy Phillips",
+      "date": "2026-03-27",
+      "label": "Warner Records",
+      "preorder": false,
+      "title": "Million Things (Extended)",
+      "url": "https://www.beatport.com/release/million-things-extended/6590833"
+    },
+    {
+      "artists": "Tommy Phillips",
+      "date": "2026-03-27",
+      "label": "neXup recz",
+      "preorder": false,
+      "title": "Million Things",
+      "url": "https://www.beatport.com/release/million-things/6882574"
+    },
+    {
+      "artists": "Tommy Phillips",
+      "date": "2025-07-11",
+      "label": "neXup recz",
+      "preorder": false,
+      "title": "Fixation EP",
+      "url": "https://www.beatport.com/release/fixation-ep/5145401"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

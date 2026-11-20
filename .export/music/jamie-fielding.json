@@ -1,0 +1,40 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/jamie-fielding/900676",
+  "name": "Jamie Fielding",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Detroit's Filthiest, Jamie Fielding",
+      "date": "2026-05-29",
+      "label": "SPINNIN' DEEP",
+      "preorder": false,
+      "title": "Party Over Here (feat. Detroit's Filthiest) (Extended Mix)",
+      "url": "https://www.beatport.com/release/party-over-here-feat-detroits-filthiest-extended-mix/6915675"
+    },
+    {
+      "artists": "Jamie Fielding",
+      "date": "2026-03-13",
+      "label": "GRADUATION*",
+      "preorder": false,
+      "title": "In My House",
+      "url": "https://www.beatport.com/release/in-my-house/5942601"
+    },
+    {
+      "artists": "Jamie Fielding, Poppy Wright",
+      "date": "2025-10-17",
+      "label": "GRADUATION*",
+      "preorder": false,
+      "title": "Mystery - Extended Mix",
+      "url": "https://www.beatport.com/release/mystery-extended-mix/5567441"
+    },
+    {
+      "artists": "Jamie Fielding, Poppy Wright",
+      "date": "2025-10-17",
+      "label": "in the FIELD",
+      "preorder": false,
+      "title": "Mystery",
+      "url": "https://www.beatport.com/release/mystery/5441488"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

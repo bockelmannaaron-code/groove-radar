@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/prospa/460053",
+  "name": "Prospa",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Prospa, Kettama, Rohan Pinnock-Hamilton",
+      "date": "2026-10-16",
+      "label": "Steel City Dance Discs",
+      "preorder": false,
+      "title": "Think of You (Extended)",
+      "url": "https://www.beatport.com/release/think-of-you-extended/7545183"
+    },
+    {
+      "artists": "Tristan Henry, Cloonee, Prospa",
+      "date": "2026-07-24",
+      "label": "Hellbent Records",
+      "preorder": false,
+      "title": "Good Girl",
+      "url": "https://www.beatport.com/release/good-girl/7207264"
+    },
+    {
+      "artists": "Prospa, Murda Beatz",
+      "date": "2026-05-08",
+      "label": "CircoLoco Records",
+      "preorder": false,
+      "title": "Baby (Extended Mix)",
+      "url": "https://www.beatport.com/release/baby-extended-mix/6857591"
+    },
+    {
+      "artists": "Sybil, Cloonee, Prospa",
+      "date": "2026-03-27",
+      "label": "CircoLoco Records",
+      "preorder": false,
+      "title": "Free Your Mind (Extended Mix)",
+      "url": "https://www.beatport.com/release/free-your-mind-extended-mix/6430614"
+    },
+    {
+      "artists": "Prospa, Kosmo Kint",
+      "date": "2025-10-03",
+      "label": "CircoLoco Records",
+      "preorder": false,
+      "title": "Love Songs (feat. Kosmo Kint) (Extended Mix)",
+      "url": "https://www.beatport.com/release/love-songs-feat-kosmo-kint-extended-mix/5439129"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

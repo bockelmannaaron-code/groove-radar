@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/east-end-dubs/266182",
+  "name": "East End Dubs",
+  "note": "",
+  "releases": [
+    {
+      "artists": "East End Dubs",
+      "date": "2026-06-05",
+      "label": "DUBS",
+      "preorder": false,
+      "title": "Out Of My Mind",
+      "url": "https://www.beatport.com/release/out-of-my-mind/7009866"
+    },
+    {
+      "artists": "East End Dubs, Di Chiara Brothers",
+      "date": "2026-05-01",
+      "label": "Eastenderz",
+      "preorder": false,
+      "title": "Face Bass",
+      "url": "https://www.beatport.com/release/face-bass/6792292"
+    },
+    {
+      "artists": "Jazzy, East End Dubs",
+      "date": "2026-03-06",
+      "label": "Chaos",
+      "preorder": false,
+      "title": "On A Wave (Extended Mix)",
+      "url": "https://www.beatport.com/release/on-a-wave-extended-mix/5900161"
+    },
+    {
+      "artists": "East End Dubs",
+      "date": "2025-04-11",
+      "label": "East End Dubs",
+      "preorder": false,
+      "title": "Dancing With You",
+      "url": "https://www.beatport.com/release/dancing-with-you/5006512"
+    },
+    {
+      "artists": "East End Dubs, Wheats",
+      "date": "2024-11-01",
+      "label": "Solid Grooves Records",
+      "preorder": false,
+      "title": "Searching",
+      "url": "https://www.beatport.com/release/searching/4788133"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

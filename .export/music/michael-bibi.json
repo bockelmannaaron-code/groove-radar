@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/michael-bibi/350292",
+  "name": "Michael Bibi",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Michael Bibi, Baby Tate",
+      "date": "2026-08-31",
+      "label": "Warner Records",
+      "preorder": false,
+      "title": "Feel This Grip (feat. Baby Tate) (Extended Mix)",
+      "url": "https://www.beatport.com/release/feel-this-grip-feat-baby-tate-extended-mix/7412236"
+    },
+    {
+      "artists": "Wu-Tang Clan, Michael Bibi, Kettama",
+      "date": "2026-08-14",
+      "label": "CircoLoco Records",
+      "preorder": false,
+      "title": "MYSTERY OF RAW (Extended Mix)",
+      "url": "https://www.beatport.com/release/mystery-of-raw-extended-mix/7309054"
+    },
+    {
+      "artists": "Michael Bibi",
+      "date": "2026-07-10",
+      "label": "ELOVATE",
+      "preorder": false,
+      "title": "Mobile Groove (Extended Club Mix)",
+      "url": "https://www.beatport.com/release/mobile-groove-extended-club-mix/7160146"
+    },
+    {
+      "artists": "Michael Bibi",
+      "date": "2026-05-15",
+      "label": "EMPIRE",
+      "preorder": false,
+      "title": "Bad Wolf (feat. UNIIQU3)",
+      "url": "https://www.beatport.com/release/bad-wolf-feat-uniiqu3/6885651"
+    },
+    {
+      "artists": "Michael Bibi",
+      "date": "2025-07-24",
+      "label": "ELOVATE",
+      "preorder": false,
+      "title": "Front & Back Seat",
+      "url": "https://www.beatport.com/release/front-back-seat/5178145"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

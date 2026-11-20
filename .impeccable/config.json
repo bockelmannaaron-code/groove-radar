@@ -1,0 +1,20 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-11-20T12:37:04.479Z",
+        "reason": "Incumbent body face recorded in DESIGN.md (Inter for captions/body under Anton display); deliberate part of the documented system"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "neue\",arial,sans-serif",
+        "createdAt": "2026-11-20T13:21:27.603Z",
+        "reason": "False positive: fragment of the Inter fallback stack (Inter, Helvetica Neue, Arial, sans-serif) declared in DESIGN.md, split by the font shorthand on the legal pages"
+      }
+    ]
+  }
+}

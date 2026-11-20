@@ -1,0 +1,40 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/pawsa/386381",
+  "name": "PAWSA",
+  "note": "",
+  "releases": [
+    {
+      "artists": "PAWSA",
+      "date": "2026-11-27",
+      "label": "PAWZ",
+      "preorder": true,
+      "title": "WORLDWIDE",
+      "url": "https://www.beatport.com/release/worldwide/7690004"
+    },
+    {
+      "artists": "PAWSA",
+      "date": "2025-06-27",
+      "label": "Atlantic Records",
+      "preorder": false,
+      "title": "DOUBLE C (From F1® The Movie - Extended Mix)",
+      "url": "https://www.beatport.com/release/double-c-from-f1-the-movie-extended-mix/5142828"
+    },
+    {
+      "artists": "PAWSA, Malachiii",
+      "date": "2025-04-18",
+      "label": "PAWZ",
+      "preorder": false,
+      "title": "BANG BANG",
+      "url": "https://www.beatport.com/release/bang-bang/5024270"
+    },
+    {
+      "artists": "Adventures Of Stevie V, PAWSA",
+      "date": "2024-11-15",
+      "label": "Altra Moda",
+      "preorder": false,
+      "title": "Dirty Cash (Money Talks) - Extended Mix",
+      "url": "https://www.beatport.com/release/dirty-cash-money-talks-extended-mix/4809201"
+    }
+  ],
+  "updatedAt": "2026-11-19"
+}

@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/l-p-rhythm/1128862",
+  "name": "LP Rhythm",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Traumer, L.P. Rhythm",
+      "date": "2026-11-20",
+      "label": "Lost Property",
+      "preorder": false,
+      "title": "How Ya Feelin’ (Traumer Remix)",
+      "url": "https://www.beatport.com/release/how-ya-feelin-traumer-remix/7705972"
+    },
+    {
+      "artists": "Kolter, L.P. Rhythm",
+      "date": "2026-11-06",
+      "label": "Positiva",
+      "preorder": false,
+      "title": "Hey Everybody",
+      "url": "https://www.beatport.com/release/hey-everybody/7690922"
+    },
+    {
+      "artists": "Kolter, L.P. Rhythm",
+      "date": "2026-10-16",
+      "label": "Positiva",
+      "preorder": false,
+      "title": "Hey Everybody (L.P. Rhythm Extended Mix)",
+      "url": "https://www.beatport.com/release/hey-everybody-lp-rhythm-extended-mix/7598477"
+    },
+    {
+      "artists": "L.P. Rhythm",
+      "date": "2026-09-04",
+      "label": "Lost Property",
+      "preorder": false,
+      "title": "How Ya Feelin’ (Extended Mix)",
+      "url": "https://www.beatport.com/release/how-ya-feelin-extended-mix/7403066"
+    },
+    {
+      "artists": "DJ Dre, L.P. Rhythm",
+      "date": "2026-05-22",
+      "label": "Disorder",
+      "preorder": false,
+      "title": "Like That (Extended Mix)",
+      "url": "https://www.beatport.com/release/like-that-extended-mix/6936432"
+    }
+  ],
+  "updatedAt": "2026-11-20"
+}
