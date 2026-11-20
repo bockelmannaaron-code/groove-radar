@@ -203,7 +203,7 @@ One centred column (max 1240px, 16px side gutter respecting safe areas), section
 - The hero is a morning verdict: a two-line headline ("Quiet near home" / "7 changes today", second line Stone Blue) beside a glass card for the next near-you gig (tag, event, date, venue, distance, ticket and calendar buttons); one column under 760px. Near means zone munich or rheingau (up to ~150 km), everywhere.
 - What's new shows the latest 3 changes with a "Show all" disclosure.
 - Gig rows are full width, divided by hairlines: date on the left, details in the middle, status and ticket button on the right.
-- The calendar is a 7-column hairline grid; on phones days shrink and events become dots (round pink dots for near you).
+- The calendar is a 7-column hairline grid that always starts with the 1st in the top-left cell; the weekday headers begin at the 1st's weekday so every date stays under its correct day, and the last row runs into the next month, muted. On phones days shrink and events become dots (round pink dots for near you).
 - Spacing steps: 8, 12, 18, 24 and 44px.
 
 ## Elevation & Depth

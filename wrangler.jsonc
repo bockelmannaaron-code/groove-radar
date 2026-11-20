@@ -8,7 +8,8 @@
   "main": "worker.js",
   "assets": {
     "directory": "site",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    "run_worker_first": true
   },
   "workers_dev": false,
   "preview_urls": false,
