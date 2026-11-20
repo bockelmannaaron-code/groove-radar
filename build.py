@@ -80,7 +80,7 @@ LOADER = """(async () => {
       const w = await (await fetch("/api/where", { cache: "no-store", signal: ctl.signal })).json(); clearTimeout(t);
       if (typeof w.lat === "number" && w.continent === "EU") { autoHere = { lat: w.lat, lon: w.lon, label: w.city || w.country || "your area", source: "auto" }; here = autoHere; }
     } catch (e) { /* no location: near stays the Munich and Rheingau home zones */ }
-    if (location.hash.includes("@")) readHash();
+    if (location.hash.includes("@") || store.get("near")) readHash();
     music = {}; (d.music || []).forEach(m => { music[nkey(m.name)] = m; });
     updates = (d.updates || []).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14);
     meta = d.meta || null;
@@ -113,8 +113,15 @@ def build_index():
     head_bits = re.sub(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com[^>]*>\n?', "", head_bits)
     head_bits = re.sub(r"<title>[^<]*</title>\n?", "", head_bits)
     html = head("Groove Radar") + head_bits + "</head>\n<body>\n" + page[body_start:] + "\n</body>\n</html>\n"
-    if "googleapis" in html or "gstatic" in html or "claude.use" in html or "localStorage" in html:
-        sys.exit("Build check failed: index.html still references Google Fonts, claude.ai or localStorage.")
+    if "googleapis" in html or "gstatic" in html or "claude.use" in html:
+        sys.exit("Build check failed: index.html still references Google Fonts or claude.ai.")
+    # Device storage goes only through the `store` helper, and every key it uses must be listed on the cookie page.
+    if html.count("localStorage") != 3:
+        sys.exit("Build check failed: localStorage is used outside the store helper.")
+    cookie_page = (LEGAL / "cookies.html").read_text(encoding="utf-8")
+    missing = [k for k in set(re.findall(r'store\.(?:get|set)\("([a-z-]+)"', html)) if f"gr-{k}" not in cookie_page]
+    if missing:
+        sys.exit(f"Build check failed: stored keys not listed on the cookie page: {', '.join(sorted(missing))}")
     return html
 
 

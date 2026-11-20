@@ -228,8 +228,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .st { display: inline-flex; align-items: center; gap: 7px; text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--fs-label); font-weight: 700; white-space: nowrap; color: var(--muted); }
 .st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .st.available { color: var(--accent-ink); }
-.st.sold_out { color: var(--muted); text-decoration: line-through; }
-.st.unknown::before { background: transparent; box-shadow: inset 0 0 0 1.5px currentColor; }
+.st.sold_out { color: var(--muted); }
 .tbtn::after { content: ""; display: inline-block; width: 7px; height: 7px; margin-left: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.3s var(--soft); }
 .tbtn[aria-expanded="true"]::after { transform: translateY(1px) rotate(-135deg); }
 .tbtn:hover { color: var(--ink); }
@@ -367,13 +366,22 @@ html.intro-on .page { animation: intro-land 0.406s cubic-bezier(0.16, 1, 0.3, 1)
   </div></div>
 </div>
 <script>
+/* The two things remembered on this device (listed on the cookie page): the place picked under "Measure from",
+   and the day the intro last played. Storage can be blocked (private windows, embeds), so every call is guarded. */
+const store = {
+  get(k) { try { return localStorage.getItem("gr-" + k); } catch (e) { return null; } },
+  set(k, v) { try { if (v == null) localStorage.removeItem("gr-" + k); else localStorage.setItem("gr-" + k, v); } catch (e) { /* not remembered */ } },
+};
 /* Always open at the top (the morning verdict): browsers otherwise restore the last scroll position on reload
    or when a phone reopens the tab, and the intro then lands you mid-page. */
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
 if (!document.querySelector(":target")) scrollTo(0, 0);
 (() => {
   const intro = document.getElementById("intro");
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { intro.remove(); return; }
+  /* The intro greets the first visit of the day only; later checks that day go straight to the gigs. */
+  const today = new Date().toDateString();
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || store.get("intro") === today) { intro.remove(); return; }
+  store.set("intro", today);
   const root = document.documentElement;
   root.classList.add("intro-on");
   let done = false;
@@ -587,7 +595,7 @@ function nearControl() {
   Object.keys(places).filter(k => !k.startsWith("_")).sort().forEach(k => grp.append(opt(k, k.split("|")[0])));
   sel.append(grp);
   sel.value = !here ? "@home" : here.source === "auto" ? "@auto" : here.key;
-  sel.onchange = () => { setNear(sel.value); render(); };
+  sel.onchange = () => { setNear(sel.value); store.set("near", sel.value === "@auto" ? null : sel.value); render(); };
   box.append(sel);
   return box;
 }
@@ -637,7 +645,8 @@ function gigRow(g, level = 3, tracksToggle = true) {
   }
   const act = el("div", "ract");
   const s = statusOf(g);
-  act.append(el("span", "st " + s, s === "available" ? "On sale" : s === "sold_out" ? "Sold out" : "Status unknown"));
+  /* Most gigs have no known ticket status; saying so on every row buried the ones that matter, so only known states show. */
+  if (s !== "unknown") act.append(el("span", "st " + s, s === "available" ? "On sale" : "Sold out"));
   const url = g.ticketUrl || g.sourceUrl;
   if (safeUrl(url)) act.append(fk(link("cta" + (s === "available" ? "" : " ghost"), s === "available" ? "Tickets" : s === "sold_out" ? "Resale" : "Event", url), "tix-" + g.id));
   row.append(rd, info, act);
@@ -920,7 +929,10 @@ function readHash() {
   const [v, f] = main.split("-");
   if (["month", "list", "artists"].includes(v)) view = v;
   filter = ["near", "buy"].includes(f) ? f : "all";
-  if (at) setNear(at === "home" ? "@home" : at); else if (autoHere) here = autoHere;
+  const saved = store.get("near");
+  if (at) setNear(at === "home" ? "@home" : at);
+  else if (saved === "@home" || places[saved]) setNear(saved);
+  else if (autoHere) here = autoHere;
 }
 function hashFor() {
   const at = !here ? (autoHere ? "@home" : "") : here.source === "picked" ? "@" + here.key : "";
