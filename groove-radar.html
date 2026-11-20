@@ -331,6 +331,10 @@ html.intro-on .page { animation: intro-land 0.406s cubic-bezier(0.16, 1, 0.3, 1)
   </div></div>
 </div>
 <script>
+/* Always open at the top (the morning verdict): browsers otherwise restore the last scroll position on reload
+   or when a phone reopens the tab, and the intro then lands you mid-page. */
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+if (!document.querySelector(":target")) scrollTo(0, 0);
 (() => {
   const intro = document.getElementById("intro");
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) { intro.remove(); return; }
