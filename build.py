@@ -73,6 +73,7 @@ LOADER = """(async () => {
     if (!r.ok) throw new Error("HTTP " + r.status);
     const d = await r.json();
     gigs = d.gigs || [];
+    loadState = "ready";
     places = d.places || {};
     try {
       const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 2500);
@@ -91,6 +92,7 @@ LOADER = """(async () => {
       if (!isNaN(t)) document.querySelector("footer p").append(" Last updated " + t.toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) + ".");
     }
   } catch (e) {
+    loadState = "error"; render();
     notice.hidden = false;
     notice.textContent = "The gig list couldn't be loaded. Check your connection, then try again. ";
     const again = document.createElement("button"); again.className = "cta ghost"; again.textContent = "Try again"; again.onclick = () => location.reload(); notice.append(again);
@@ -118,23 +120,23 @@ def build_index():
 
 LEGAL_CSS = """<style>
 :root { --ground: #03203D; --ink: #EEF4FA; --ink-2: #8DB6D6; --line: rgba(99, 156, 197, 0.3); --plum: #639CC5; --accent: #FF2E88; --accent-ink: #FF5CA2; color-scheme: dark; }
-body { background: var(--ground); color: var(--ink); font: 17px/1.6 "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { background: var(--ground); color: var(--ink); font-family: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif; font-size: 1rem; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 ::selection { background: var(--accent); color: #03203D; }
 .wrap { max-width: 720px; margin: 0 auto; padding: 18px max(16px, env(safe-area-inset-left, 0px)) 56px; }
 .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
-.brand { font-size: 20px; font-weight: 600; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; }
+.brand { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; }
 .brand span { color: var(--plum); }
-.back { font-size: 14px; font-weight: 500; color: var(--ink); }
-h1 { font-size: clamp(40px, 8vw, 64px); font-weight: 500; letter-spacing: -0.035em; line-height: 1; margin: 40px 0 10px; }
-h2 { font-size: 24px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 36px 0 8px; }
-.updated { font-size: 14px; font-weight: 500; color: var(--ink-2); margin: 0 0 8px; }
-p, li { max-width: 68ch; }
+.back { font-size: 0.875rem; font-weight: 500; color: var(--ink); }
+h1 { font-size: clamp(2.25rem, 5.4vw, 4rem); text-wrap: balance; font-weight: 500; letter-spacing: -0.035em; line-height: 1; margin: 40px 0 10px; }
+h2 { font-size: clamp(1.375rem, 3vw, 1.875rem); font-weight: 500; letter-spacing: -0.035em; line-height: 1.2; margin: 36px 0 8px; }
+.updated { font-size: 0.875rem; font-weight: 500; color: var(--ink-2); margin: 0 0 8px; }
+p, li { max-width: 68ch; text-wrap: pretty; }
 ul { padding-left: 1.2em; }
 a { color: var(--accent-ink); text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
 a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); }
 footer nav { display: flex; flex-wrap: wrap; gap: 4px 24px; }
-footer a { display: inline-block; padding: 6px 0; color: var(--ink); font-size: 14px; font-weight: 500; }
+footer a { display: inline-block; padding: 6px 0; color: var(--ink); font-size: 0.875rem; font-weight: 500; }
 footer a[aria-current="page"] { text-decoration-color: var(--accent); }
 </style>"""
 

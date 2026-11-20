@@ -10,39 +10,89 @@ colors:
   hairline: "rgba(99, 156, 197, 0.3)"
   exotic-pink: "#FF2E88"
   exotic-pink-text: "#FF5CA2"
+  glass-edge: "rgba(255, 255, 255, 0.5)"
 typography:
   display:
     fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
-    fontSize: "clamp(40px, 6.2vw, 88px)"
+    fontSize: "clamp(2.25rem, 6.2vw, 5.5rem)"
     fontWeight: 500
     lineHeight: 1
     letterSpacing: "-0.035em"
   headline:
     fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
-    fontSize: "clamp(36px, 5.4vw, 64px)"
+    fontSize: "clamp(2.25rem, 5.4vw, 4rem)"
     fontWeight: 500
     lineHeight: 1
     letterSpacing: "-0.035em"
+  subhead:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(1.75rem, 4.5vw, 2.75rem)"
+    fontWeight: 500
+    lineHeight: 1
+    letterSpacing: "-0.035em"
+  figure:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(2rem, 4vw, 2.5rem)"
+    fontWeight: 500
+    lineHeight: 0.95
+    letterSpacing: "-0.035em"
   title:
     fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
-    fontSize: "clamp(22px, 3vw, 30px)"
+    fontSize: "clamp(1.375rem, 3vw, 1.875rem)"
     fontWeight: 500
     lineHeight: 1.05
     letterSpacing: "-0.035em"
+  day:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(1.125rem, 2vw, 1.375rem)"
+    fontWeight: 500
+    lineHeight: 1
+    letterSpacing: "-0.035em"
+  subtitle:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "1.25rem"
+    fontWeight: 500
+    lineHeight: 1.2
+    letterSpacing: "-0.03em"
   body:
     fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
-    fontSize: "15px"
+    fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.5
+  ui:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "0.875rem"
+    fontWeight: 500
+    lineHeight: 1.4
+  meta:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "0.8125rem"
+    fontWeight: 500
+    lineHeight: 1.35
   label:
     fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
-    fontSize: "11.5px"
+    fontSize: "0.71875rem"
     fontWeight: 600
     lineHeight: 1.3
     letterSpacing: "0.06em"
+  wordmark:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(3.5rem, 13vw, 11.875rem)"
+    fontWeight: 500
+    lineHeight: 0.9
+    letterSpacing: "-0.035em"
+  intro:
+    fontFamily: "Schibsted Grotesk, Helvetica Neue, Arial, sans-serif"
+    fontSize: "clamp(1.75rem, 5.2vw, 4rem)"
+    fontWeight: 500
+    lineHeight: 1
+    letterSpacing: "-0.035em"
 rounded:
   sm: "6px"
+  md: "8px"
+  lg: "12px"
   nav: "18px"
+  panel: "20px"
 spacing:
   xs: "8px"
   sm: "12px"
@@ -53,7 +103,7 @@ components:
   button-primary:
     backgroundColor: "{colors.exotic-pink}"
     textColor: "{colors.egyptian-blue}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.lg}"
     padding: "13px 20px"
   button-primary-hover:
     backgroundColor: "{colors.frost}"
@@ -61,12 +111,12 @@ components:
   button-ghost:
     backgroundColor: "transparent"
     textColor: "{colors.frost}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.lg}"
     padding: "13px 20px"
   chip:
     backgroundColor: "transparent"
     textColor: "{colors.frost}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.md}"
     padding: "7px 14px"
   chip-selected:
     backgroundColor: "{colors.frost}"
@@ -129,11 +179,19 @@ Two blues and one pink, at roughly 75 / 20 / 5.
 **Character:** Precise and modern; personality comes from scale and tight tracking, not from a second face.
 
 ### Hierarchy
-- **Display** (500, clamp(40px, 6.2vw, 88px), 1): the hero verdict, two lines, second line in Stone Blue.
-- **Headline** (500, clamp(36px, 5.4vw, 64px)): section heads and the calendar month; a Stone Blue word may follow ("What's new today").
-- **Title** (500, clamp(22px, 3vw, 30px)): artist names in rows and cards, big dates, fact values.
-- **Body** (400, 15 to 17px, 1.5): descriptions, news items, notes; keep under 70ch.
-- **Label** (600, 11.5px, 0.06em, uppercase): metadata only, such as weekday names, fact labels, tags and status. Buttons, chips and navigation are sentence case.
+Sizes are rem so the visitor's own text size is respected (1rem = 16px by default). In code each role is a `--fs-*` custom property.
+- **Display** (500, clamp(2.25rem, 6.2vw, 5.5rem), 1): the hero verdict, two lines, second line in Stone Blue.
+- **Headline** (500, clamp(2.25rem, 5.4vw, 4rem)): section heads, the calendar month and legal page titles; a Stone Blue word may follow ("What's new today").
+- **Subhead** (500, clamp(1.75rem, 4.5vw, 2.75rem)): the selected day's heading under the calendar.
+- **Figure** (500, clamp(2rem, 4vw, 2.5rem)): big dates in gig rows and What's new.
+- **Title** (500, clamp(1.375rem, 3vw, 1.875rem)): artist names in rows and cards, the hero card title, the What's new summary, month dividers, legal section heads.
+- **Day** (500, clamp(1.125rem, 2vw, 1.375rem)): calendar day numbers.
+- **Subtitle** (500, 1.25rem): the wordmark in the nav, artist names inside track lists, earlier-update dates.
+- **Body** (400, 1rem, 1.5): descriptions, news items, primary buttons, legal text; keep under 70ch.
+- **UI** (500, 0.875rem): navigation, chips, small buttons, notes, venue lines, footer text.
+- **Meta** (500, 0.8125rem): small supporting text such as calendar event lines, release labels, store links and distance notes.
+- **Label** (600, 0.71875rem, 0.06em, uppercase): metadata only, such as weekday names, tags and status. Buttons, chips and navigation are sentence case.
+- **Wordmark** (500, clamp(3.5rem, 13vw, 11.875rem)) and **Intro** (500, clamp(1.75rem, 5.2vw, 4rem)): the footer wordmark and the intro tagline only.
 
 ### Named Rules
 **The Sentence Case Rule.** Headlines, buttons and navigation are sentence case. Capitals are for tiny metadata labels only.
@@ -150,13 +208,13 @@ One centred column (max 1240px, 16px side gutter respecting safe areas), section
 
 ## Elevation & Depth
 
-Depth is Liquid Glass. Panels are translucent Egyptian Blue (`rgba(16, 52, 88, 0.42)` with a faint white sheen) behind a 22px backdrop blur with 1.8 saturation, lit by a 1px edge highlight that is bright at the top-left and fades to a hint of pink at the bottom-right, plus an inset top highlight and a soft drop shadow. Behind everything, three large, very faint lights drift over 34 to 47 seconds. Where backdrop blur is unsupported, panels fall back to solid `#0D2E52`.
+Depth is Liquid Glass. Panels are translucent Egyptian Blue (`rgba(16, 52, 88, 0.42)` with a faint white sheen) behind a 22px backdrop blur with 1.8 saturation, lit by a 1px edge highlight (`glass-edge`) that is bright at the top-left and fades to a hint of pink at the bottom-right, plus an inset top highlight and a soft drop shadow. Behind everything, three large, very faint lights drift over 34 to 47 seconds. Where backdrop blur is unsupported, panels fall back to solid `#0D2E52`.
 
-Glass is used for: the sticky nav, the hero's description-and-tickets panel, the What's new panel, the calendar grid, the filter control, artist cards, month buttons and ghost buttons. Dense lists (gig rows, news items) stay flat inside their panel.
+Glass is used for: the sticky nav, the hero's description-and-tickets panel, the What's new panel, the calendar grid, the filter control, artist cards and month buttons. Ghost buttons are flat outlines, never glass, so a list of gigs never stacks dozens of blurs and a button inside a glass panel never becomes glass on glass. Dense lists (gig rows, news items) stay flat.
 
 ### Motion
 - Ease: `cubic-bezier(0.16, 1, 0.3, 1)` for everything soft.
-- Sections fade up 28px once as they enter the viewport; views fade up 10px when switched; the selected day's gigs fade in with a small stagger.
+- Section headings rise word by word; glass panels tip back from a slight 3D tilt to flat; gig rows slide in from the right. Text is never faded on scroll, so it is readable mid-motion. Views fade up 10px when switched; the selected day's gigs fade in with a small stagger.
 - The filter control has a Frost highlight that slides to the chosen option (0.5s).
 - Pink buttons lift 2px with a soft pink shadow and a light sheen sweeps across on hover; buttons press to 0.97.
 - With reduced motion, the lights stop and everything appears without movement.
@@ -166,13 +224,13 @@ Glass is used for: the sticky nav, the hero's description-and-tickets panel, the
 
 ## Shapes
 
-Controls and tags have softly rounded corners (6px); the navigation bar is the only larger radius (18px). Layout (sections, rows, calendar grid) is square. Rules are 1px hairlines; emphasis rules are 2 to 3px in Stone Blue.
+Tags and badges are 6px (`sm`); chips, the city picker and the filter highlight 8px (`md`); buttons, month buttons and the filter control 12px (`lg`); the navigation bar 18px (`nav`); glass panels (hero card, What's new, calendar grid, artist cards) 20px (`panel`). Rows and section layout are square. Rules are 1px hairlines; emphasis rules are 2 to 3px in Stone Blue.
 
 ## Components
 
 ### Buttons
-- **Primary:** Exotic Pink with Egyptian Blue text, 15px 600, 13px × 20px. Hover turns it Frost.
-- **Ghost:** transparent with a 1.5px Frost outline; hover turns outline and text pink.
+- **Primary:** Exotic Pink with Egyptian Blue text, body size 600, 13px × 20px, 12px corners. Hover lifts it with a soft pink shadow and a light sheen.
+- **Ghost:** transparent with a 1.5px Frost outline, never glass; hover turns outline and text pink.
 - **Focus:** 2px pink outline, 3px offset.
 
 ### Chips

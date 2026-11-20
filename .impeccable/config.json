@@ -14,6 +14,42 @@
         "value": "neue\",arial,sans-serif",
         "createdAt": "2026-11-20T13:21:27.603Z",
         "reason": "False positive: fragment of the Inter fallback stack (Inter, Helvetica Neue, Arial, sans-serif) declared in DESIGN.md, split by the font shorthand on the legal pages"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "groove-radar.html"
+        ],
+        "createdAt": "2026-11-20T18:30:17.594Z",
+        "reason": "Claude: claude.ai artifact source fragment renders without its page background in the static scan; the built page site/index.html is scanned rendered and has no contrast findings (2026-11-20)"
+      },
+      {
+        "rule": "design-system-color",
+        "value": "rgb(0, 0, 0)",
+        "files": [
+          "groove-radar.html"
+        ],
+        "createdAt": "2026-11-20T18:30:17.612Z",
+        "reason": "Claude: same fragment artifact, default black before body styles apply; no black in the built page (2026-11-20)"
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "site/index.html"
+        ],
+        "createdAt": "2026-11-20T18:30:17.628Z",
+        "reason": "Claude: DESIGN.md Elevation names three very faint drifting background lights as the only sanctioned gradient; opacity 0.13-0.2 behind glass"
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "groove-radar.html"
+        ],
+        "createdAt": "2026-11-20T18:30:17.642Z",
+        "reason": "Claude: same documented drifting lights, source of site/index.html"
       }
     ]
   }
