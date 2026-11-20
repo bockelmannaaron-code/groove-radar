@@ -156,7 +156,8 @@ def build_legal(path):
 
 def no_em_dashes(value):
     if isinstance(value, str):
-        return value.replace(" — ", ", ").replace("—", ", ")
+        # No em dashes and no arrow symbols or emoji in stored text: the page draws its own link icons.
+        return re.sub(r"\s*[\u2190-\u21FF\u2794-\u27BF\u2B00-\u2BFF\uFE0F\U0001F000-\U0001FAFF]+", "", value.replace(" — ", ", ").replace("—", ", "))
     if isinstance(value, list):
         return [no_em_dashes(v) for v in value]
     if isinstance(value, dict):

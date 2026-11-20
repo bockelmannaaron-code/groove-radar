@@ -153,6 +153,9 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .news ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .news li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); font-size: var(--fs-body); line-height: 1.5; text-wrap: pretty; }
 .news li a { color: var(--accent-ink); font-weight: 600; padding-block: 4px; }
+.ico { width: 0.85em; height: 0.85em; flex: none; margin-left: 0.4em; vertical-align: -0.06em; }
+.cta .ico { margin-left: 0; }
+.store { display: inline-flex; align-items: center; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .tag { text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--fs-label); font-weight: 700; padding-top: 3px; }
 .tag.added, .tag.release { color: var(--accent-ink); }
@@ -427,7 +430,11 @@ const nkey = s => (s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase
 function chev(d) { const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("viewBox", "0 0 16 16"); s.setAttribute("aria-hidden", "true"); const p = document.createElementNS("http://www.w3.org/2000/svg", "path"); p.setAttribute("d", d); p.setAttribute("fill", "none"); p.setAttribute("stroke", "currentColor"); p.setAttribute("stroke-width", "2"); p.setAttribute("stroke-linecap", "square"); s.append(p); return s; }
 function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 function safeUrl(u) { try { const x = new URL(u); return (x.protocol === "https:" || x.protocol === "http:") ? x.href : null; } catch (e) { return null; } }
-function link(cls, text, href) { const a = el("a", cls, text); const u = safeUrl(href); if (u) { a.href = u; a.target = "_blank"; a.rel = "noopener noreferrer"; a.append(el("span", "sr-only", " (opens in new tab)")); } return a; }
+/* Drawn icons in one 2px stroke. Never Unicode arrows or emoji: phones render those as colour emoji. */
+const ICONS = { out: "M3.5 12.5 12.5 3.5M5 3.5h7.5V11", next: "M2 8h12M9 3l5 5-5 5" };
+function icon(kind) { const s = chev(ICONS[kind]); s.classList.add("ico"); return s; }
+const plain = (t) => t == null ? t : String(t).replace(/\s*[\u2190-\u21FF\u2794-\u27BF\u2B00-\u2BFF\uFE0F]+\s*$/u, "");
+function link(cls, text, href) { const a = el("a", cls, plain(text)); const u = safeUrl(href); if (u) { a.href = u; a.target = "_blank"; a.rel = "noopener noreferrer"; if (text != null) a.append(icon("out")); a.append(el("span", "sr-only", " (opens in new tab)")); } return a; }
 function statusOf(g) { return ["available", "sold_out"].includes(g.status) ? g.status : "unknown"; }
 function isNew(g) { return !!g.addedAt && (new Date() - parseKey(g.addedAt)) / 86400000 < 3; }
 function artistsIn(str) { const s = (str || "").toLowerCase(); return ARTISTS.filter(a => s.includes(a.toLowerCase().replace(/\.$/, ""))); }
@@ -502,7 +509,7 @@ function renderHero() {
   const btns = el("div", "hcard-btns");
   const s = statusOf(feat);
   const url = feat.ticketUrl || feat.sourceUrl;
-  if (safeUrl(url)) btns.append(fk(link(s === "sold_out" ? "cta ghost" : "cta", s === "available" ? "Buy tickets ↗" : s === "sold_out" ? "Sold out · resale ↗" : "See event ↗", url), "hero-tix"));
+  if (safeUrl(url)) btns.append(fk(link(s === "sold_out" ? "cta ghost" : "cta", s === "available" ? "Buy tickets" : s === "sold_out" ? "Sold out · resale" : "See event", url), "hero-tix"));
   const b = fk(el("button", "cta ghost", "Show in calendar"), "hero-cal"); b.onclick = () => goToDay(feat.date); btns.append(b);
   card.append(btns);
   h.append(card);
@@ -530,7 +537,7 @@ function noteFor(g) { if (!g.note) return null; if (here && /\bkm\b/.test(g.note
 function fmtShort(k) { const d = parseKey(k); return `${d.getDate()} ${MONTHS[d.getMonth()]}`; }
 
 /* ---------- shared ---------- */
-function storeLinks(name) { const q = encodeURIComponent(name.replace(/\.$/, "")); return STORES.map(s => link("store", s.name + " ↗", s.url(q))); }
+function storeLinks(name) { const q = encodeURIComponent(name.replace(/\.$/, "")); return STORES.map(s => link("store", s.name, s.url(q))); }
 function releaseList(name, max) {
   const m = music[nkey(name)]; if (!m) return null;
   const box = el("div", "rels");
@@ -541,7 +548,8 @@ function releaseList(name, max) {
     a.append(el("span", "rd", d ? `${d.getDate()} ${MONTHS[d.getMonth()]} ${String(d.getFullYear()).slice(2)}` : ""));
     const t = el("span"); t.style.minWidth = "0";
     t.append(el("div", "rt", r.title), el("div", "rl", [r.artists, r.label].filter(Boolean).join(" · ")));
-    a.append(t, el("span", "rb" + (r.preorder ? " pre" : ""), r.preorder ? "Pre-order ↗" : "Buy ↗"));
+    const rb = el("span", "rb" + (r.preorder ? " pre" : ""), r.preorder ? "Pre-order" : "Buy"); rb.append(icon("out"));
+    a.append(t, rb);
     box.append(a);
   });
   return box;
@@ -572,7 +580,7 @@ function gigRow(g, level = 3) {
   const s = statusOf(g);
   act.append(el("span", "st " + s, s === "available" ? "On sale" : s === "sold_out" ? "Sold out" : "Status unknown"));
   const url = g.ticketUrl || g.sourceUrl;
-  if (safeUrl(url)) act.append(fk(link("cta" + (s === "available" ? "" : " ghost"), s === "available" ? "Tickets ↗" : s === "sold_out" ? "Resale ↗" : "Event ↗", url), "tix-" + g.id));
+  if (safeUrl(url)) act.append(fk(link("cta" + (s === "available" ? "" : " ghost"), s === "available" ? "Tickets" : s === "sold_out" ? "Resale" : "Event", url), "tix-" + g.id));
   row.append(rd, info, act);
   if (tracks) row.append(tracks);
   return row;
@@ -671,7 +679,7 @@ function renderMonth(list) {
     const all = allUpcoming().filter(g => g.date === selDay).length;
     const e = el("div", "empty", all && filter !== "all" ? `No ${filter === "near" ? "near-you" : "on-sale"} gigs this day · ${all} more with the filter off.` : "Nothing from your artists this day.");
     const nx = list.find(g => g.date > selDay);
-    if (nx) { const b = el("button", "cta ghost", `Next: ${nx.artist.split(",")[0]} · ${parseKey(nx.date).getDate()} ${MONTHS[parseKey(nx.date).getMonth()]}  →`); b.onclick = () => goToDay(nx.date); e.append(b); }
+    if (nx) { const b = el("button", "cta ghost", `Next: ${nx.artist.split(",")[0]} · ${parseKey(nx.date).getDate()} ${MONTHS[parseKey(nx.date).getMonth()]}`); b.append(icon("next")); b.onclick = () => goToDay(nx.date); e.append(b); }
     panel.append(e);
   }
   v.append(panel);
@@ -705,7 +713,7 @@ function renderArtists() {
     c.append(el("div", "asub", loadState !== "ready" ? waitingText() : mine.length ? `${mine.length} gig${mine.length > 1 ? "s" : ""} in Europe · next ${parseKey(nx.date).getDate()} ${MONTHS[parseKey(nx.date).getMonth()]}, ${nx.city || ""}` : "No European gigs listed right now"));
     const rl = releaseList(name, 5); if (rl) c.append(rl);
     const st = el("div", "stores"); st.append(...storeLinks(name));
-    if (nx) { const b = el("button", "store", "Next gig →"); b.onclick = () => goToDay(nx.date); st.append(b); }
+    if (nx) { const b = el("button", "store", "Next gig"); b.append(icon("next")); b.onclick = () => goToDay(nx.date); st.append(b); }
     c.append(st);
     grid.append(c);
   });
@@ -731,7 +739,7 @@ function newsItems(u, limit) {
   (limit ? items.slice(0, limit) : items).forEach(it => {
     const li = el("li"); li.append(el("span", "tag " + (labels[it.type] ? it.type : "info"), labels[it.type] || "Note"));
     const t = el("span", null, it.text || "");
-    if (safeUrl(it.url)) { t.append(" "); t.append(link(null, it.linkText || "Open ↗", it.url)); }
+    if (safeUrl(it.url)) { t.append(" "); t.append(link(null, it.linkText || "Open", it.url)); }
     li.append(t); ul.append(li);
   });
   return ul;
