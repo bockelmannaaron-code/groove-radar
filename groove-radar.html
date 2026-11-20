@@ -78,14 +78,15 @@ nav.top { position: sticky; top: 8px; z-index: 10; display: flex; align-items: c
 .page { position: relative; z-index: 1; }
 nav.top, .hero aside, .news, .filters, .grid, .sq {
   --gl-bg: rgba(16, 52, 88, 0.42);
-  background: linear-gradient(150deg, rgba(238, 244, 250, 0.11), rgba(238, 244, 250, 0.02) 46%, rgba(238, 244, 250, 0.05)), var(--gl-bg);
+  /* Sheen stops are pinned to the corners (px, capped at the old %), so a panel that grows or shrinks keeps its light where it was instead of sliding it across. */
+  background: linear-gradient(150deg, rgba(238, 244, 250, 0.11) 0, rgba(238, 244, 250, 0.02) min(46%, 340px), rgba(238, 244, 250, 0.02) max(46%, calc(100% - 340px)), rgba(238, 244, 250, 0.05) 100%), var(--gl-bg);
   -webkit-backdrop-filter: blur(22px) saturate(1.8) brightness(1.06); backdrop-filter: blur(22px) saturate(1.8) brightness(1.06);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(238, 244, 250, 0.1), 0 18px 40px -22px rgba(0, 6, 20, 0.7);
   }
 .hero aside, .news, .filters, .grid, .sq { position: relative; }
 nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::before {
   content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0) 68%, rgba(255, 46, 136, 0.28));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0, rgba(255, 255, 255, 0) min(32%, 180px), rgba(255, 255, 255, 0) max(68%, calc(100% - 180px)), rgba(255, 46, 136, 0.28) 100%);
   -webkit-mask: linear-gradient(var(--ink) 0 0) content-box, linear-gradient(var(--ink) 0 0); -webkit-mask-composite: xor; mask: linear-gradient(var(--ink) 0 0) content-box exclude, linear-gradient(var(--ink) 0 0); }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { nav.top, .hero aside, .news, .filters, .grid, .sq { --gl-bg: #0D2E52; } }
 /* Soft motion */
@@ -618,7 +619,10 @@ const plain = (t) => t == null ? t : String(t).replace(/\s*[\u2190-\u21FF\u2794-
 function link(cls, text, href) { const a = el("a", cls, plain(text)); const u = safeUrl(href); if (u) { a.href = u; a.target = "_blank"; a.rel = "noopener noreferrer"; if (text != null) a.append(icon("out")); a.append(el("span", "sr-only", " (opens in new tab)")); } return a; }
 function statusOf(g) { return ["available", "sold_out"].includes(g.status) ? g.status : "unknown"; }
 function isNew(g) { return !!g.addedAt && (new Date() - parseKey(g.addedAt)) / 86400000 < 3; }
-function artistsIn(str) { const s = (str || "").toLowerCase(); return ARTISTS.filter(a => s.includes(a.toLowerCase().replace(/\.$/, ""))); }
+/* Which of our artists a gig names. Called for every row on every rebuild, so names are prepared once and answers remembered. */
+const ARTIST_KEYS = ARTISTS.map(a => [a, a.toLowerCase().replace(/\.$/, "")]);
+const artistsMemo = new Map();
+function artistsIn(str) { const s = (str || "").toLowerCase(); let r = artistsMemo.get(s); if (!r) { r = ARTIST_KEYS.filter(([, k]) => s.includes(k)).map(([a]) => a); artistsMemo.set(s, r); } return r; }
 function fmtLong(k) { const d = parseKey(k); return `${["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][d.getDay()]} ${d.getDate()} ${FULLMONTHS[d.getMonth()]}`; }
 function dotted(k) { const d = parseKey(k); return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`; }
 
@@ -993,7 +997,7 @@ function newsItems(u, limit) {
   });
   return ul;
 }
-function renderNews() {
+function renderNews(withHero = true) {
   const keep = focusKey();
   const sec = $("newsSec"), box = $("news"); box.replaceChildren();
   if (!updates.length) { sec.hidden = true; return; }
@@ -1013,9 +1017,9 @@ function renderNews() {
     more.onclick = () => {
       /* the list grows or folds; the button and everything below ride along with it */
       const list = () => $("news").querySelector(":scope > div > ul");
-      if (!newsOpen) { const h0 = list().offsetHeight; newsOpen = true; renderNews(); easeHeight(list(), h0); return; }
+      if (!newsOpen) { const h0 = list().offsetHeight; newsOpen = true; renderNews(false); easeHeight(list(), h0); return; }
       const ul = list(), keep = ul.children[3] ? ul.children[3].offsetTop - ul.offsetTop : ul.offsetHeight;
-      const done = () => { newsOpen = false; renderNews(); };
+      const done = () => { newsOpen = false; renderNews(false); };
       if (calm()) { done(); return; }
       ul.style.overflow = "clip"; more.setAttribute("aria-expanded", "false");
       ul.animate([{ height: ul.offsetHeight + "px" }, { height: keep + "px" }], { duration: 340, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" }).finished.then(done, done);
@@ -1036,7 +1040,7 @@ function renderNews() {
       else { det.open = true; sum.setAttribute("aria-expanded", "true"); openPanel(older); }
     };
   }
-  renderHero();
+  if (withHero) renderHero(); /* the hero only needs rebuilding when the news itself changed, not when it is expanded */
   restoreFocus(keep);
 }
 
@@ -1078,12 +1082,13 @@ function render() {
   const list = upcoming();
   if (view === "month") renderMonth(list); else if (view === "list") renderList(list); else renderArtists(list);
   if (gigs.length && decodeURIComponent(location.hash) !== hashFor()) { if (lastView === null || view === lastView) history.replaceState(null, "", hashFor()); else history.pushState(null, "", hashFor()); }
-  if (view !== lastView) { const v = $("view"); v.classList.remove("view-enter"); void v.offsetWidth; v.classList.add("view-enter"); lastView = view; }
+  /* The rebuilt children are new elements, so their entrance plays without restarting the class (the old reflow trick forced a full layout mid-click). */
+  if (view !== lastView) { $("view").classList.add("view-enter"); lastView = view; }
   else $("view").classList.remove("view-enter"); /* the view's entrance plays once per view, not again on every rebuild */
   if (view === lastView && enterAs && !calm()) {
     /* one-off entrance for in-place changes: the month slides the way you went; filtered content fades in */
     const n = enterAs === "fade" ? $("view") : $("view").querySelector(".grid");
-    if (n) { n.classList.remove("enter-fade", "enter-month-l", "enter-month-r"); void n.offsetWidth; n.classList.add("enter-" + enterAs); }
+    if (n) { n.classList.remove("enter-fade", "enter-month-l", "enter-month-r"); if (n === $("view")) [...n.children].forEach(c => c.getAnimations().forEach(a => a.cancel())); n.classList.add("enter-" + enterAs); }
   }
   restoreFocus(keep);
 }
@@ -1191,13 +1196,14 @@ addEventListener("popstate", () => { readHash(); rerenderAndGlide(() => $("main"
     heads.forEach((h, hi) => {
       const c = track(h, progressAt(headTop[hi], vh, 0.98, 0.42));
       const ws = h.querySelectorAll(".mi"), n = ws.length;
-      ws.forEach((w, i) => { const p = ease(clamp(c * (1 + n * 0.35) - i * 0.35)); w.style.translate = off ? "" : `0 ${((1 - p) * 105).toFixed(1)}%`; });
+      ws.forEach((w, i) => { const p = ease(clamp(c * (1 + n * 0.35) - i * 0.35)); w.style.translate = off || p >= 0.999 ? "" : `0 ${((1 - p) * 105).toFixed(1)}%`; });
     });
 
     /* glass panels tilt back to flat */
     panels.forEach((n, pi) => {
       const c = ease(track(n, progressAt(panelTop[pi], vh, 1.02, 0.5)));
       if (off) { n.style.rotate = n.style.scale = ""; return; }
+      if (c >= 0.999) { n.style.rotate = n.style.scale = ""; return; } /* flat: no transform left on the glass */
       n.style.rotate = `x ${((1 - c) * 14).toFixed(2)}deg`;
       n.style.scale = (0.93 + 0.07 * c).toFixed(4);
     });
@@ -1206,7 +1212,7 @@ addEventListener("popstate", () => { readHash(); rerenderAndGlide(() => $("main"
     rows.forEach((n, ri) => {
       const c = ease(track(n, progressAt(rowTop[ri], vh, 1.04, 0.32)));
       if (off) { n.style.translate = ""; return; }
-      n.style.translate = `${((1 - c) * 56 * k).toFixed(1)}px 0`;
+      n.style.translate = c >= 0.999 ? "" : `${((1 - c) * 56 * k).toFixed(1)}px 0`;
     });
 
     /* footer wordmark: letters rise in sequence */
