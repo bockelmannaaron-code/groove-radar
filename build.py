@@ -11,6 +11,7 @@
 
 Run:  python3 build.py
 """
+import datetime
 import json
 import pathlib
 import re
@@ -24,6 +25,7 @@ EXPORT = ROOT / ".export"
 LEGAL = ROOT / "legal"
 FONTS = ROOT / "fonts-src"
 SITE = ROOT / "site"
+YEAR = datetime.date.today().year
 OWNER = json.loads((ROOT / "site.json").read_text(encoding="utf-8"))
 GEO = {k: v for k, v in json.loads((ROOT / "geo.json").read_text(encoding="utf-8")).items() if not k.startswith("_")}
 
@@ -113,6 +115,8 @@ def build_index():
     head_bits = re.sub(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com[^>]*>\n?', "", head_bits)
     head_bits = re.sub(r"<title>[^<]*</title>\n?", "", head_bits)
     html = head("Groove Radar") + head_bits + "</head>\n<body>\n" + page[body_start:] + "\n</body>\n</html>\n"
+    # The copyright year follows the build date, so the morning rebuild rolls it over on 1 January.
+    html = re.sub(r"© \d{4} ", f"© {YEAR} ", html)
     if "googleapis" in html or "gstatic" in html or "claude.use" in html:
         sys.exit("Build check failed: index.html still references Google Fonts or claude.ai.")
     # Device storage goes only through the `store` helper, and every key it uses must be listed on the cookie page.
@@ -219,6 +223,7 @@ footer p { margin: 0; font-size: var(--fs-ui); line-height: 1.5; color: var(--in
 footer .legal { display: flex; flex-wrap: wrap; gap: 6px 22px; }
 footer .legal a { display: inline-block; padding: 6px 0; color: var(--ink); font-size: var(--fs-ui); font-weight: 500; }
 footer .legal a[aria-current="page"] { text-decoration-color: var(--accent); }
+footer .copy { font-size: var(--fs-meta); }
 
 @media (max-width: 860px) {
   .doc { grid-template-columns: 1fr; padding: 22px 18px; }
@@ -279,7 +284,7 @@ def build_legal(path):
             f'<nav class="toc" aria-label="On this page"><span class="cap">On this page</span>{toc_html}</nav></aside>\n'
             f'<div class="text" id="text">\n{text}</div>\n</div>\n</main>\n'
             f'<footer>\n<div class="word" aria-hidden="true">Groove <span class="r">Radar</span></div>\n<p>{FOOT_TEXT}</p>\n'
-            f'<nav class="legal" aria-label="Legal">{foot}</nav>\n</footer>\n</div>\n</body>\n</html>\n')
+            f'<nav class="legal" aria-label="Legal">{foot}</nav>\n<p class="copy">© {YEAR} {OWNER["ownerName"]}</p>\n</footer>\n</div>\n</body>\n</html>\n')
 
 
 def no_em_dashes(value):
