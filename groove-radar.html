@@ -50,6 +50,7 @@ nav.top { position: sticky; top: 8px; z-index: 10; display: flex; align-items: c
 .navlinks button { border: 0; background: none; cursor: pointer; padding: 4px 0; font-size: var(--fs-ui); font-weight: 500; color: var(--ink); border-bottom: 2px solid transparent; }
 .navlinks button[aria-current="true"] { border-bottom-color: var(--accent); }
 .navlinks .short { display: none; }
+.navlinks .jump { padding-left: 26px; box-shadow: inset 1px 0 0 var(--line); border-bottom-color: transparent !important; }
 .count { font-size: var(--fs-ui); font-weight: 500; color: var(--muted); }
 
 @media (max-width: 640px) {
@@ -100,7 +101,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .mw { display: inline-block; white-space: nowrap; }
 #newsSec, #main { perspective: 1400px; }
 #news, #view > .grid, #daypanel .rows, #view > .rows { transform-origin: 50% 0%; }
-.scrollprog { position: absolute; left: 18px; right: 18px; bottom: 0; height: 2px; background: var(--accent); transform-origin: 0 50%; scale: 0 1; pointer-events: none; }
+.scrollprog { position: absolute; left: 18px; right: 18px; bottom: 0; height: 2px; background: var(--stone); transform-origin: 0 50%; scale: 0 1; pointer-events: none; }
 .seg-ind { position: absolute; top: 4px; bottom: 4px; left: 0; width: 0; border-radius: var(--r-md); background: var(--ink); box-shadow: 0 6px 16px -8px rgba(0, 6, 20, 0.7), inset 0 1px 0 #FFFFFF; transition: left 0.5s var(--soft), width 0.5s var(--soft); }
 @media (prefers-reduced-motion: reduce) { .amb i, .view-enter > *, #daypanel .rows > *, #daypanel .empty { animation: none !important; } }
 
@@ -150,7 +151,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .news .headline { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: var(--fs-title); line-height: 1.15; margin-bottom: 10px; }
 .news ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .news li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); font-size: var(--fs-body); line-height: 1.5; text-wrap: pretty; }
-.news li a { color: var(--accent-ink); font-weight: 600; padding-block: 4px; }
+.news li a { color: var(--accent-ink); font-weight: 600; padding-block: 12px; }
 .ico { width: 0.85em; height: 0.85em; flex: none; margin-left: 0.4em; vertical-align: -0.06em; }
 .cta .ico { margin-left: 0; }
 .store { display: inline-flex; align-items: center; }
@@ -171,7 +172,7 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 
 /* Calendar */
 .monthnav { display: flex; align-items: center; gap: 8px; }
-.sq { width: 40px; height: 40px; border: 0; border-radius: var(--r-lg); display: inline-grid; place-items: center; font-weight: 700; cursor: pointer; transition: transform 0.3s var(--soft), color 0.3s var(--soft); }
+.sq { width: 44px; height: 44px; border: 0; border-radius: var(--r-lg); display: inline-grid; place-items: center; font-weight: 700; cursor: pointer; transition: transform 0.3s var(--soft), color 0.3s var(--soft); }
 .sq svg { width: 16px; height: 16px; }
 .sq.txt { width: auto; padding: 0 14px; font-size: var(--fs-ui); font-weight: 500; }
 .sq:hover { color: var(--accent-ink); transform: translateY(-1px); }
@@ -350,6 +351,10 @@ html.intro-on .page { animation: intro-land 0.406s cubic-bezier(0.16, 1, 0.3, 1)
   section, header { scroll-margin-top: 120px; }
   /* What's new: the type label sits above its text so the text gets the full width. */
   .news li { grid-template-columns: 1fr; gap: 4px; }
+  nav.top.compact .brand, nav.top.compact .count { display: none; }
+  /* Gig rows: status and a compact ticket button share the info column instead of a full-width line. */
+  .row .ract { grid-column: 2; justify-content: flex-start; gap: 14px; }
+  .row .ract .cta { min-width: 0; min-height: 44px; padding: 0 16px; font-size: var(--fs-ui); }
 }
 </style>
 
@@ -390,8 +395,8 @@ if (!document.querySelector(":target")) scrollTo(0, 0);
     <div class="navlinks">
       <button data-v="month" aria-current="true">Calendar</button>
       <button data-v="list" aria-current="false">All gigs</button>
-      <button data-v="artists" aria-current="false"><span class="long">Artists &amp; music</span><span class="short">Artists</span></button>
-      <button data-jump="news" aria-current="false"><span class="long">What's new</span><span class="short">News</span></button>
+      <button data-v="artists" aria-current="false" aria-label="Artists &amp; music"><span class="long">Artists &amp; music</span><span class="short">Artists</span></button>
+      <button data-jump="news" class="jump" aria-label="What's new"><span class="long">What's new</span><span class="short">News</span></button>
     </div>
     <div class="count" id="count">Gigs (…)</div>
   </nav>
@@ -582,7 +587,7 @@ function releaseList(name, max) {
   });
   return box;
 }
-function gigRow(g, level = 3) {
+function gigRow(g, level = 3, tracksToggle = true) {
   const near = isNear(g);
   const row = el("article", "row" + (near ? " near" : ""));
   const d = parseKey(g.date);
@@ -595,7 +600,7 @@ function gigRow(g, level = 3) {
   const note = noteFor(g); if (note) info.append(el("div", "rnote", note));
   const names = artistsIn(g.artist);
   let tracks = null;
-  if (names.length) {
+  if (names.length && tracksToggle) {
     const tb = el("button", "tbtn", openTracks.has(g.id) ? "Hide their latest tracks" : "Their latest tracks"); tb.dataset.fk = "tracks-" + g.id; tb.setAttribute("aria-expanded", String(openTracks.has(g.id)));
     tb.onclick = () => { openTracks.has(g.id) ? openTracks.delete(g.id) : openTracks.add(g.id); render(); };
     info.append(tb);
@@ -618,7 +623,7 @@ function filtersEl() {
   const f = el("div", "filters");
   f.setAttribute("role", "group"); f.setAttribute("aria-label", "Filter gigs");
   const ind = el("span", "seg-ind"); ind.setAttribute("aria-hidden", "true"); f.append(ind);
-  [["all", "All gigs"], ["near", "Near me"], ["buy", "On sale"]].forEach(([k, t]) => {
+  [["all", "Everywhere"], ["near", "Near me"], ["buy", "On sale"]].forEach(([k, t]) => {
     const b = fk(el("button", "chip", t), "chip-" + k); b.setAttribute("aria-pressed", String(filter === k));
     b.onclick = () => { filter = k; render(); };
     f.append(b);
@@ -696,7 +701,7 @@ function renderMonth(list) {
   [["var(--accent)", (here ? `Near you, within ${NEAR_KM} km` : "Near you") + " (round dot, thick line)", "round"], ["var(--ink)", "Elsewhere in Europe", ""], ["var(--muted)", "Sold out (crossed out)", ""]].forEach(([bg, t, cls]) => { const s = el("span"); const i = el("i", cls || null); i.style.background = bg; i.setAttribute("aria-hidden", "true"); s.append(i, t); lg.append(s); });
   v.append(lg);
 
-  const panel = el("section"); panel.id = "daypanel"; panel.style.display = "flex"; panel.style.flexDirection = "column"; panel.style.gap = "6px"; panel.style.scrollMarginTop = "16px";
+  const panel = el("section"); panel.id = "daypanel"; panel.style.display = "flex"; panel.style.flexDirection = "column"; panel.style.gap = "6px";
   const items = byDay[selDay] || [];
   const ph = el("div", "shead"); const t = el("h2", "sub", fmtLong(selDay));
   ph.append(t, el("span", "cap", items.length ? `${items.length} gig${items.length > 1 ? "s" : ""}` : "No gigs"));
@@ -718,13 +723,13 @@ function renderList(list) {
   head.append(el("h2", null, filter === "near" ? "Near-you gigs" : filter === "buy" ? "Gigs on sale" : "All gigs"), el("span", "cap", `${list.length} upcoming`));
   const v = $("view");
   v.append(filtersEl());
-  if (!list.length) { v.append(el("div", "empty", loadState !== "ready" ? waitingText() : filter === "near" ? "No near-you gigs coming up right now. Switch to All gigs to see the rest of Europe." : "No upcoming gigs match this filter.")); return; }
+  if (!list.length) { v.append(el("div", "empty", loadState !== "ready" ? waitingText() : filter === "near" ? "No near-you gigs coming up right now. Switch to Everywhere to see the rest of Europe." : "No upcoming gigs match this filter.")); return; }
   let last = "";
   let rows = null;
   list.forEach(g => {
     const mk = g.date.slice(0, 7);
     if (mk !== last) { last = mk; const d = parseKey(g.date); v.append(el("h3", "monthhead", `${FULLMONTHS[d.getMonth()]} ${d.getFullYear()}`)); rows = el("div", "rows"); v.append(rows); }
-    rows.append(gigRow(g, 4));
+    rows.append(gigRow(g, 4, false));
   });
 }
 
@@ -1035,6 +1040,8 @@ document.querySelectorAll(".navlinks button[data-v]").forEach(b => b.addEventLis
   setView(b.dataset.v); render();
   $("main").scrollIntoView({ behavior: SCROLL(), block: "start" });
 }));
+/* Phones: once you scroll past the hero, the nav keeps only its row of links (wordmark and count hide). */
+(() => { const nav = document.querySelector("nav.top"); const upd = () => nav.classList.toggle("compact", scrollY > 160); addEventListener("scroll", upd, { passive: true }); upd(); })();
 document.querySelector('.navlinks button[data-jump="news"]').addEventListener("click", () => { const s = $("newsSec"); if (!s.hidden) s.scrollIntoView({ behavior: SCROLL(), block: "start" }); });
 
 render();

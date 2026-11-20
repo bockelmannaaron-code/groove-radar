@@ -234,13 +234,13 @@ Tags and badges are 6px (`sm`); chips, the city picker and the filter highlight 
 - **Focus:** 2px pink outline, 3px offset.
 
 ### Chips
-Filters (All gigs, Near me, On sale): 1.5px Frost outline, sentence case; selected chips fill Frost with Egyptian Blue text.
+Filters (Everywhere, Near me, On sale; never named like a view): 1.5px Frost outline, sentence case; selected chips fill Frost with Egyptian Blue text.
 
 ### Status tags
 On sale: solid Frost. Sold out: muted outline, struck through. Unknown: Frost outline. New: solid pink.
 
 ### Navigation
-Sticky Liquid Glass bar: wordmark ("Groove" in Frost, "Radar" in Stone Blue), view links with a 2px pink underline on the current view, gig count on the right. On phones the links scroll sideways in one row.
+Sticky Liquid Glass bar: wordmark ("Groove" in Frost, "Radar" in Stone Blue), view links with a 2px pink underline on the current view, gig count on the right. "What's new" jumps down the page rather than switching view, so it sits after a hairline divider and never takes the underline. A thin Stone Blue line under the bar shows scroll progress (never pink). On phones the links scroll sideways in one row, and once you scroll past the hero the wordmark and count hide so the bar is a single row of links.
 
 ### Intro (signature)
 "Every gig ● near you" builds letter by letter on Egyptian Blue with a pink dot dropping between the words; the words slide away, the dot ripples out into the Stone Blue radar rings, the pink blip pops and "Groove Radar" rises beside it, then the view flies through the ring into the page. About 2 seconds, skipped by any tap, click, scroll or key, never shown with reduced motion.
