@@ -259,3 +259,4 @@ Sticky Liquid Glass bar: wordmark ("Groove" in Frost, "Radar" in Stone Blue), vi
 - **Don't** put white text on Exotic Pink.
 - **Don't** stack glass on glass or let the background lights get bright enough to cut body-text contrast.
 - **Don't** use all-caps for headlines or buttons.
+- **Don't** use emoji, or Unicode arrows and symbols (↗, →, ✓, ★ and the like) as icons, anywhere: in buttons, links, labels or stored text. Phones render many of them as colour emoji. Icons are drawn SVG in one 2px stroke (`icon()` in the page).
