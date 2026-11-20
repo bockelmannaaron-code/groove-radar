@@ -50,6 +50,33 @@
         ],
         "createdAt": "2026-11-20T18:30:17.642Z",
         "reason": "Claude: same documented drifting lights, source of site/index.html"
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "site/cookies.html"
+        ],
+        "createdAt": "2026-11-20T19:44:15.587Z",
+        "reason": "Claude: DESIGN.md sanctions the faint drifting background lights ('the faint background lights and the glass sheen are the only' gradients); same .amb lights as the main page"
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "site/terms.html"
+        ],
+        "createdAt": "2026-11-20T19:44:15.605Z",
+        "reason": "Claude: DESIGN.md sanctions the faint drifting background lights ('the faint background lights and the glass sheen are the only' gradients); same .amb lights as the main page"
+      },
+      {
+        "rule": "radial-halo",
+        "value": "*",
+        "files": [
+          "site/privacy.html"
+        ],
+        "createdAt": "2026-11-20T19:44:15.623Z",
+        "reason": "Claude: DESIGN.md sanctions the faint drifting background lights ('the faint background lights and the glass sheen are the only' gradients); same .amb lights as the main page"
       }
     ]
   }

@@ -126,26 +126,120 @@ def build_index():
 
 
 LEGAL_CSS = """<style>
-:root { --ground: #03203D; --ink: #EEF4FA; --ink-2: #8DB6D6; --line: rgba(99, 156, 197, 0.3); --plum: #639CC5; --accent: #FF2E88; --accent-ink: #FF5CA2; color-scheme: dark; }
-body { background: var(--ground); color: var(--ink); font-family: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif; font-size: 1rem; line-height: 1.6; -webkit-font-smoothing: antialiased; }
-::selection { background: var(--accent); color: #03203D; }
-.wrap { max-width: 720px; margin: 0 auto; padding: 18px max(16px, env(safe-area-inset-left, 0px)) 56px; }
-.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
-.brand { font-size: 1.25rem; font-weight: 600; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; }
-.brand span { color: var(--plum); }
-.back { font-size: 0.875rem; font-weight: 500; color: var(--ink); }
-h1 { font-size: clamp(2.25rem, 5.4vw, 4rem); text-wrap: balance; font-weight: 500; letter-spacing: -0.035em; line-height: 1; margin: 40px 0 10px; }
-h2 { font-size: clamp(1.375rem, 3vw, 1.875rem); font-weight: 500; letter-spacing: -0.035em; line-height: 1.2; margin: 36px 0 8px; }
-.updated { font-size: 0.875rem; font-weight: 500; color: var(--ink-2); margin: 0 0 8px; }
-p, li { max-width: 68ch; text-wrap: pretty; }
-ul { padding-left: 1.2em; }
+/* The legal pages wear the main page's system (groove-radar.html): same tokens, drifting lights, glass nav,
+   glass reading panel, section heads and footer. Keep these in step with the main page when it changes. */
+:root {
+  --ground: #03203D; --ink: #EEF4FA; --ink-2: #639CC5; --muted: #8DB6D6; --line: rgba(99, 156, 197, 0.3);
+  --stone: #639CC5; --accent: #FF2E88; --accent-ink: #FF5CA2; --on-accent: #03203D;
+  --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif; --body: var(--display);
+  --fs-label: 0.75rem; --fs-meta: 0.8125rem; --fs-ui: 0.875rem; --fs-body: 1rem; --fs-subtitle: 1.25rem;
+  --fs-title: clamp(1.375rem, 3vw, 1.875rem); --fs-figure: clamp(2rem, 4vw, 2.5rem);
+  --fs-headline: clamp(2.25rem, 5.4vw, 4rem); --fs-wordmark: clamp(3.5rem, 13vw, 11.875rem);
+  --r: 6px; --r-nav: 18px; --r-panel: 20px;
+  color-scheme: dark;
+}
+html { scrollbar-color: var(--ink-2) var(--ground); }
+body { background: var(--ground); color: var(--ink); font-family: var(--body); font-size: var(--fs-body); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+::selection { background: var(--accent); color: var(--on-accent); }
 a { color: var(--accent-ink); text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
 a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--line); }
-footer nav { display: flex; flex-wrap: wrap; gap: 4px 24px; }
-footer a { display: inline-block; padding: 6px 0; color: var(--ink); font-size: 0.875rem; font-weight: 500; }
-footer a[aria-current="page"] { text-decoration-color: var(--accent); }
+.cap { text-transform: uppercase; letter-spacing: 0.06em; font-size: var(--fs-label); font-weight: 600; }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 20; background: var(--accent); color: var(--on-accent); padding: 10px 14px; border-radius: var(--r); font-size: var(--fs-ui); font-weight: 600; text-decoration: none; }
+.skip:focus { top: 12px; }
+.page { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding-block: 18px 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 44px; }
+h2[id] { scroll-margin-top: 96px; }
+
+/* Drifting lights behind the glass */
+.amb { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.amb i { position: absolute; border-radius: 50%; opacity: 0.2; }
+.amb i:nth-child(1) { width: 62vmax; height: 62vmax; left: -18vmax; top: -16vmax; background: radial-gradient(circle, #639CC5 0%, rgba(99, 156, 197, 0) 66%); animation: amb-a 34s ease-in-out infinite alternate; }
+.amb i:nth-child(2) { width: 46vmax; height: 46vmax; right: -14vmax; top: 34vh; background: radial-gradient(circle, #FF2E88 0%, rgba(255, 46, 136, 0) 64%); opacity: 0.13; animation: amb-b 41s ease-in-out infinite alternate; }
+.amb i:nth-child(3) { width: 50vmax; height: 50vmax; left: -10vmax; bottom: -22vmax; background: radial-gradient(circle, #639CC5 0%, rgba(99, 156, 197, 0) 66%); opacity: 0.14; animation: amb-c 47s ease-in-out infinite alternate; }
+@keyframes amb-a { to { transform: translate(9vmax, 6vmax) scale(1.08); } }
+@keyframes amb-b { to { transform: translate(-7vmax, -9vmax) scale(0.94); } }
+@keyframes amb-c { to { transform: translate(8vmax, -5vmax) scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .amb i { animation: none; } html { scroll-behavior: auto; } }
+
+/* Glass, exactly as on the main page */
+nav.top, .doc {
+  --gl-bg: rgba(16, 52, 88, 0.42); position: relative;
+  background: linear-gradient(150deg, rgba(238, 244, 250, 0.11), rgba(238, 244, 250, 0.02) 46%, rgba(238, 244, 250, 0.05)), var(--gl-bg);
+  -webkit-backdrop-filter: blur(22px) saturate(1.8) brightness(1.06); backdrop-filter: blur(22px) saturate(1.8) brightness(1.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.05), inset 0 0 0 1px rgba(238, 244, 250, 0.1), 0 18px 40px -22px rgba(0, 6, 20, 0.7);
+}
+nav.top::before, .doc::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 32%, rgba(255, 255, 255, 0) 68%, rgba(255, 46, 136, 0.28));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#fff 0 0) content-box exclude, linear-gradient(#fff 0 0); }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { nav.top, .doc { --gl-bg: #0D2E52; } }
+
+/* Nav */
+nav.top { position: sticky; top: 8px; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 10px 18px; flex-wrap: wrap; padding: 11px 18px; margin-inline: -8px; border-radius: var(--r-nav); }
+.brand { font-family: var(--display); font-size: var(--fs-subtitle); font-weight: 600; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; }
+.brand span { color: var(--stone); }
+.navlinks { display: flex; gap: 6px 26px; flex-wrap: wrap; align-items: center; }
+.navlinks a { padding: 4px 0; font-size: var(--fs-ui); font-weight: 500; color: var(--ink); text-decoration: none; border-bottom: 2px solid transparent; }
+.navlinks a[aria-current="page"] { border-bottom-color: var(--accent); }
+.navlinks a:hover { color: var(--muted); }
+.navlinks .back { padding-left: 26px; box-shadow: inset 1px 0 0 var(--line); }
+.navlinks .short { display: none; }
+
+/* Section head, as on the main page */
+.shead { border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-top: 12px; }
+.shead h1 { margin: 0; font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: var(--fs-headline); line-height: 1; text-wrap: balance; }
+.shead h1 em { font-style: normal; color: var(--stone); font-weight: 400; }
+
+/* Reading panel: the date and section list on the left, the text on the right (like What's new) */
+.doc { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 20px 32px; margin-top: 24px; padding: 26px; border-radius: var(--r-panel); }
+.doc aside { display: flex; flex-direction: column; gap: 6px; }
+.doc aside .cap { color: var(--muted); }
+.doc aside b { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: var(--fs-figure); line-height: 1; }
+.doc aside .yr { font-size: var(--fs-ui); font-weight: 500; color: var(--muted); }
+.toc { position: sticky; top: 96px; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
+.toc .cap { margin-bottom: 6px; }
+.toc a { padding: 4px 0; font-size: var(--fs-ui); font-weight: 500; line-height: 1.35; color: var(--ink); text-decoration: none; }
+.toc a:hover { color: var(--muted); }
+.text { min-width: 0; }
+.text > :first-child { margin-top: 0; }
+.text h2 { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: var(--fs-title); line-height: 1.15; margin: 36px 0 10px; padding-top: 16px; border-top: 1px solid var(--line); text-wrap: balance; }
+.text > h2:first-child { padding-top: 0; border-top: 0; }
+.text p, .text li { max-width: 68ch; text-wrap: pretty; }
+.text p { margin: 0 0 12px; }
+.text ul { margin: 0 0 12px; padding-left: 1.2em; }
+.text li { margin-bottom: 6px; }
+.text li::marker { color: var(--stone); }
+.text strong { font-weight: 600; }
+
+/* Footer, as on the main page */
+footer { border-top: 1px solid var(--line); padding-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+footer .word { font-family: var(--display); font-weight: 500; letter-spacing: -0.035em; font-size: var(--fs-wordmark); line-height: 0.9; overflow-wrap: anywhere; }
+footer .word .r { color: var(--stone); }
+footer p { margin: 0; font-size: var(--fs-ui); line-height: 1.5; color: var(--ink-2); max-width: 62ch; }
+footer .legal { display: flex; flex-wrap: wrap; gap: 6px 22px; }
+footer .legal a { display: inline-block; padding: 6px 0; color: var(--ink); font-size: var(--fs-ui); font-weight: 500; }
+footer .legal a[aria-current="page"] { text-decoration-color: var(--accent); }
+
+@media (max-width: 860px) {
+  .doc { grid-template-columns: 1fr; padding: 22px 18px; }
+  .doc aside { flex-direction: row; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; }
+  .doc aside b { font-size: var(--fs-subtitle); letter-spacing: -0.02em; }
+  .toc { display: none; }
+}
+@media (max-width: 640px) {
+  nav.top { top: 6px; padding: 10px 14px; }
+  .navlinks { order: 3; width: 100%; flex-wrap: nowrap; gap: 20px; }
+  .navlinks a { white-space: nowrap; display: inline-flex; align-items: center; min-height: 44px; padding: 0; }
+  .navlinks .long { display: none; }
+  .navlinks .short { display: inline; }
+  .navlinks .back { margin-left: auto; padding-left: 20px; }
+  h2[id] { scroll-margin-top: 120px; }
+  footer .legal a { display: inline-flex; align-items: center; min-height: 44px; padding: 0; }
+}
 </style>"""
+
+LEGAL_LINKS = [("privacy.html", "Privacy policy", "Privacy"), ("terms.html", "Terms and conditions", "Terms"), ("cookies.html", "Cookie policy", "Cookies")]
+FOOT_TEXT = ("Every European gig and new release from our tech house artists, refreshed every morning from Songkick, "
+             "venue and ticket sites, and Beatport. Ticket status changes quickly, so check the ticket page before you buy.")
 
 
 def build_legal(path):
@@ -153,12 +247,38 @@ def build_legal(path):
     title = re.search(r"<!-- title: (.*?) -->", text).group(1)
     text = re.sub(r"<!-- title: .*? -->\n?", "", text)
     text = text.replace("{{OWNER_NAME}}", OWNER["ownerName"]).replace("{{OWNER_EMAIL}}", OWNER["ownerEmail"])
-    links = [("privacy.html", "Privacy policy"), ("terms.html", "Terms and conditions"), ("cookies.html", "Cookie policy")]
-    current = ' aria-current="page"'
-    foot = "".join(f'<a href="{h}"{current if h == path.name else ""}>{t}</a>' for h, t in links)
-    return (head(f"{title} | Groove Radar", LEGAL_CSS) + "</head>\n<body>\n<div class=\"wrap\">\n"
-            '<header class="top"><a class="brand" href="./">Groove <span>Radar</span></a><a class="back" href="./">Back to the gigs</a></header>\n'
-            f"<main>\n{text}</main>\n<footer><nav aria-label=\"Legal\">{foot}</nav></footer>\n</div>\n</body>\n</html>\n")
+    # The heading and date move into the page frame; the rest of the file is the reading text.
+    text = re.sub(r"<h1>.*?</h1>\n?", "", text)
+    m = re.search(r'<p class="updated">Last updated (\d{1,2}) (\w+) (\d{4})</p>\n?', text)
+    if not m:
+        sys.exit(f"Build check failed: {path.name} needs a 'Last updated D Month YYYY' line.")
+    text = text.replace(m.group(0), "")
+    day, month, year = m.groups()
+    # Every section head gets an id so the section list can link to it.
+    toc = []
+    def anchor(h):
+        label = re.sub(r"<[^>]+>", "", h.group(1))
+        slug = re.sub(r"[^a-z0-9]+", "-", label.lower()).strip("-")
+        toc.append((slug, label))
+        return f'<h2 id="{slug}">{h.group(1)}</h2>'
+    text = re.sub(r"<h2>(.*?)</h2>", anchor, text)
+    words = title.rsplit(" ", 1)
+    heading = f"{words[0]} <em>{words[1]}</em>" if len(words) == 2 else title
+    cur = lambda h: ' aria-current="page"' if h == path.name else ""
+    nav = "".join(f'<a href="{h}"{cur(h)}><span class="long">{t}</span><span class="short">{s}</span></a>' for h, t, s in LEGAL_LINKS)
+    foot = "".join(f'<a href="{h}"{cur(h)}>{t}</a>' for h, t, _ in LEGAL_LINKS)
+    toc_html = "".join(f'<a href="#{slug}">{label}</a>' for slug, label in toc)
+    return (head(f"{title} | Groove Radar", LEGAL_CSS) + "</head>\n<body>\n"
+            '<a class="skip" href="#text">Skip to the text</a>\n'
+            '<div class="amb" aria-hidden="true"><i></i><i></i><i></i></div>\n<div class="page">\n'
+            f'<nav class="top" aria-label="Groove Radar"><a class="brand" href="./">Groove <span>Radar</span></a>'
+            f'<div class="navlinks">{nav}<a class="back" href="./"><span class="long">Back to the gigs</span><span class="short">Gigs</span></a></div></nav>\n'
+            f'<main>\n<header class="shead"><h1>{heading}</h1></header>\n'
+            f'<div class="doc">\n<aside><span class="cap">Last updated</span><b>{day} {month[:3]}</b><span class="yr">{year}</span>'
+            f'<nav class="toc" aria-label="On this page"><span class="cap">On this page</span>{toc_html}</nav></aside>\n'
+            f'<div class="text" id="text">\n{text}</div>\n</div>\n</main>\n'
+            f'<footer>\n<div class="word" aria-hidden="true">Groove <span class="r">Radar</span></div>\n<p>{FOOT_TEXT}</p>\n'
+            f'<nav class="legal" aria-label="Legal">{foot}</nav>\n</footer>\n</div>\n</body>\n</html>\n')
 
 
 def no_em_dashes(value):
