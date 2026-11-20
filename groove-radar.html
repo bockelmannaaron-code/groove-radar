@@ -184,9 +184,6 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .day.today .n { color: var(--accent-ink); font-weight: 700; }
 .day.sel { background: var(--ink); color: var(--on-ink); }
 .day.sel .n { color: var(--on-ink); opacity: 1; }
-.day .n small { font-family: var(--body); font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-left: 5px; }
-.day.mstart { box-shadow: inset 2px 0 0 var(--accent); }
-.pastweeks { align-self: flex-start; margin-bottom: -8px; }
 .ev { font-size: var(--fs-meta); font-weight: 500; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-left: 7px; border-left: 2px solid currentColor; }
 .ev.near { color: var(--accent-ink); border-left: 4px solid var(--accent); padding-left: 5px; font-weight: 600; }
 .day.sel .ev.near { color: var(--on-ink); }
@@ -198,7 +195,6 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .dot.near { background: var(--accent); border-radius: 50%; width: 8px; height: 8px; }
 @media (max-width: 700px) {
   .day { min-height: 58px; padding: 6px 4px; align-items: center; }
-  .day .n small { display: none; }
   .ev, .more { display: none; }
   .dots { display: flex; justify-content: center; }
   .dow { padding: 6px 2px; text-align: center; }
@@ -455,7 +451,6 @@ if (location.hash) readHash();
 if (!["all", "near", "buy"].includes(filter)) filter = "all";
 let cursor = new Date(); cursor = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
 let selDay = todayKey();
-let showPastWeeks = false;
 const openTracks = new Set();
 
 function allUpcoming() { return gigs.filter(g => g.date && g.date >= todayKey()).sort((a, b) => a.date.localeCompare(b.date)); }
@@ -627,36 +622,24 @@ function renderMonth(list) {
   const monthStart = mondayOf(new Date(y, m, 1));
   const monthWeeks = Math.ceil((((new Date(y, m, 1).getDay() + 6) % 7) + new Date(y, m + 1, 0).getDate()) / 7);
   const tk = todayKey();
-  /* In the current month, start at this week (past weeks are empty by definition) and show at least 5 weeks, running into next month. */
-  const now = new Date();
-  const thisWeek = mondayOf(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
-  const hiddenWeeks = Math.round((thisWeek - monthStart) / (7 * 86400000));
-  const compact = !showPastWeeks && y === now.getFullYear() && m === now.getMonth() && hiddenWeeks > 0;
-  const start = compact ? thisWeek : monthStart;
-  const weeks = compact ? Math.max(monthWeeks - hiddenWeeks, 5) : monthWeeks;
-  if (compact) { const last = addDays(start, weeks * 7 - 1); if (last.getMonth() !== m) h2.textContent = `${FULLMONTHS[m]} – ${FULLMONTHS[last.getMonth()]} ${last.getFullYear()}`; }
-  if (hiddenWeeks > 0 && y === now.getFullYear() && m === now.getMonth()) {
-    const pb = el("button", "tbtn pastweeks", compact ? `Show earlier weeks (${new Date(y, m, 1).getDate()}–${addDays(thisWeek, -1).getDate()} ${MONTHS[m]})` : "Hide earlier weeks");
-    pb.dataset.fk = "pastweeks"; pb.setAttribute("aria-expanded", String(!compact));
-    pb.onclick = () => { showPastWeeks = !showPastWeeks; render(); };
-    v.append(pb);
-  }
+  /* A standard month grid: the 1st sits in the first row under its own weekday, and the weeks before and after
+     are filled with the neighbouring months' days, muted. Past days in the current month are muted too. */
+  const start = monthStart, weeks = monthWeeks;
   for (let i = 0; i < weeks * 7; i++) {
     const d = addDays(start, i), k = keyOf(d), items = byDay[k] || [];
     const outM = d.getMonth() !== m;
-    const c = el("button", "day" + (outM && !compact ? " out" : "") + (k < tk ? " past" : "") + (k === tk ? " today" : "") + (k === selDay ? " sel" : "") + (compact && d.getDate() === 1 ? " mstart" : ""));
+    const c = el("button", "day" + (outM ? " out" : "") + (k < tk ? " past" : "") + (k === tk ? " today" : "") + (k === selDay ? " sel" : ""));
     const nearN = items.filter(g => isNear(g)).length;
     c.setAttribute("aria-label", `${k === tk ? "Today, " : ""}${d.getDate()} ${FULLMONTHS[d.getMonth()]}: ${items.length ? items.length + " gig" + (items.length > 1 ? "s" : "") : "no gigs"}${nearN ? `, ${nearN} near you` : ""}`);
     c.dataset.fk = "day-" + k; c.tabIndex = -1;
     if (k === tk) c.setAttribute("aria-current", "date");
     c.setAttribute("aria-pressed", String(k === selDay));
     const num = el("span", "n", pad(d.getDate()));
-    if (compact && d.getDate() === 1) num.append(el("small", null, MONTHS[d.getMonth()]));
     c.append(num);
     items.slice(0, 3).forEach(g => c.append(el("span", "ev" + (isNear(g) ? " near" : "") + (statusOf(g) === "sold_out" ? " sold" : ""), `${g.artist.split(",")[0]} · ${g.city || ""}`)));
     if (items.length > 3) c.append(el("span", "more", `+${items.length - 3} more`));
     const dots = el("span", "dots"); items.slice(0, 5).forEach(g => dots.append(el("i", "dot" + (isNear(g) ? " near" : "")))); c.append(dots);
-    c.onclick = () => { selDay = k; if (outM && !compact) cursor = new Date(d.getFullYear(), d.getMonth(), 1); render(); setTimeout(() => $("daypanel")?.scrollIntoView({ behavior: SCROLL(), block: "nearest" }), 30); };
+    c.onclick = () => { selDay = k; if (outM) cursor = new Date(d.getFullYear(), d.getMonth(), 1); render(); setTimeout(() => $("daypanel")?.scrollIntoView({ behavior: SCROLL(), block: "nearest" }), 30); };
     grid.append(c);
   }
   (grid.querySelector(".day.sel") || grid.querySelector(".day.today") || grid.querySelector(".day:not(.out)") || grid.querySelector(".day")).tabIndex = 0;
