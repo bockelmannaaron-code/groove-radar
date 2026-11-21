@@ -240,6 +240,10 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .st.available { color: var(--accent-ink); }
 .st.sold_out { color: var(--muted); }
 .st.played { color: var(--muted); }
+.st.played::before { background: transparent; box-shadow: inset 0 0 0 1.5px currentColor; }
+/* Past days keep their gigs visible, quieter than upcoming ones. */
+.day.past .ev, .day.past .dot { opacity: 0.6; }
+.day.sel.past .ev, .day.sel.past .dot { opacity: 1; }
 .row.past .rdate .d, .row.past .rartist { color: var(--muted); }
 .pastbtn { align-self: flex-start; margin-top: 22px; }
 .tbtn::after { content: ""; display: inline-block; width: 7px; height: 7px; margin-left: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.3s var(--soft); }
@@ -654,16 +658,20 @@ let selDay = todayKey();
 const openTracks = new Set();
 
 function allUpcoming() { return gigs.filter(g => g.date && g.date >= todayKey()).sort((a, b) => a.date.localeCompare(b.date)); }
-function isPast(g) { return g.date < todayKey(); }
-function applyFilter(l) {
+function upcoming() {
+  let l = allUpcoming();
   if (filter === "near") l = l.filter(g => isNear(g));
-  if (filter === "buy") l = l.filter(g => g.status === "available" && !isPast(g));
+  if (filter === "buy") l = l.filter(g => g.status === "available");
   return l.sort((a, b) => a.date.localeCompare(b.date) || (isNear(b) - isNear(a)));
 }
-function upcoming() { return applyFilter(allUpcoming()); }
-/* Gigs whose date has passed stay in the data (the morning job keeps them for a year), shown as "Played". */
-function played() { return applyFilter(gigs.filter(g => g.date && isPast(g))).reverse(); }
-function calendarGigs() { return applyFilter(gigs.filter(g => g.date)); }
+/* Gigs that already happened stay in the calendar (marked "Played"), so you can look back at what was on.
+   "On sale" never includes them; "Near me" still applies. */
+function pastGigs() {
+  if (filter === "buy") return [];
+  let l = gigs.filter(g => g.date && g.date < todayKey());
+  if (filter === "near") l = l.filter(g => isNear(g));
+  return l.sort((a, b) => a.date.localeCompare(b.date) || (isNear(b) - isNear(a)));
+}
 let showPast = false;
 function goToDay(k) { pendingFocus = "day-" + k; selDay = k; const d = parseKey(k); cursor = new Date(d.getFullYear(), d.getMonth(), 1); setView("month"); rerenderAndGlide(() => $("daypanel")); }
 
@@ -751,7 +759,7 @@ function releaseList(name, max) {
 }
 function gigRow(g, level = 3, tracksToggle = true) {
   const near = isNear(g);
-  const past = isPast(g);
+  const past = g.date < todayKey();
   const row = el("article", "row" + (near ? " near" : "") + (past ? " past" : ""));
   const d = parseKey(g.date);
   const rd = el("div", "rdate"); rd.append(el("span", "d", pad(d.getDate())), el("span", "m", `${MONTHS[d.getMonth()]} · ${DOW[(d.getDay() + 6) % 7]}`));
@@ -775,16 +783,15 @@ function gigRow(g, level = 3, tracksToggle = true) {
   const act = el("div", "ract");
   const s = statusOf(g);
   /* Most gigs have no known ticket status; saying so on every row buried the ones that matter, so only known states show. */
-  if (past) {
-    act.append(el("span", "st played", "Played"));
-    const src = g.sourceUrl || g.ticketUrl;
-    if (safeUrl(src)) act.append(fk(link("cta ghost", "Event", src), "tix-" + g.id));
-    row.append(rd, info, act);
-    return row;
-  }
-  if (s !== "unknown") act.append(el("span", "st " + s, s === "available" ? "On sale" : "Sold out"));
   const url = g.ticketUrl || g.sourceUrl;
-  if (safeUrl(url)) act.append(fk(link("cta" + (s === "available" ? "" : " ghost"), s === "available" ? "Tickets" : s === "sold_out" ? "Resale" : "Event", url), "tix-" + g.id));
+  if (past) {
+    /* Already happened: no ticket talk, just a link to the event page. */
+    act.append(el("span", "st played", "Played"));
+    if (safeUrl(g.sourceUrl || url)) act.append(fk(link("cta ghost", "Event", g.sourceUrl || url), "tix-" + g.id));
+  } else {
+    if (s !== "unknown") act.append(el("span", "st " + s, s === "available" ? "On sale" : "Sold out"));
+    if (safeUrl(url)) act.append(fk(link("cta" + (s === "available" ? "" : " ghost"), s === "available" ? "Tickets" : s === "sold_out" ? "Resale" : "Event", url), "tix-" + g.id));
+  }
   row.append(rd, info, act);
   if (tracks) row.append(tracks);
   return row;
@@ -822,7 +829,7 @@ function renderMonth(list) {
 
   const v = $("view");
   v.append(filtersEl());
-  const byDay = {}; list.forEach(g => (byDay[g.date] ||= []).push(g));
+  const byDay = {}; pastGigs().concat(list).forEach(g => (byDay[g.date] ||= []).push(g));
   const monthKey = `${y}-${pad(m + 1)}`;
   if (filter !== "all" && !list.some(g => g.date.startsWith(monthKey))) {
     const nx = list.find(g => g.date > `${monthKey}-31`);
@@ -923,7 +930,8 @@ function renderList(list) {
     rows.append(gigRow(g, 4, false));
   }); };
   byMonth(list);
-  const past = filter === "buy" ? [] : played();
+  /* Played gigs (newest first) sit behind a button, so the list still opens on what's coming up. */
+  const past = pastGigs().reverse();
   if (!past.length || loadState !== "ready") return;
   const b = fk(el("button", "cta ghost pastbtn", showPast ? "Hide played gigs" : `Show ${past.length} played gig${past.length > 1 ? "s" : ""}`), "past-toggle");
   b.setAttribute("aria-expanded", String(showPast));
@@ -1104,7 +1112,7 @@ function render() {
   renderHero();
   $("mainhead").replaceChildren(); $("view").replaceChildren();
   const list = upcoming();
-  if (view === "month") renderMonth(calendarGigs()); else if (view === "list") renderList(list); else renderArtists(list);
+  if (view === "month") renderMonth(list); else if (view === "list") renderList(list); else renderArtists(list);
   if (gigs.length && decodeURIComponent(location.hash) !== hashFor()) { if (lastView === null || view === lastView) history.replaceState(null, "", hashFor()); else history.pushState(null, "", hashFor()); }
   /* The rebuilt children are new elements, so their entrance plays without restarting the class (the old reflow trick forced a full layout mid-click). */
   if (view !== lastView) { $("view").classList.add("view-enter"); lastView = view; }
