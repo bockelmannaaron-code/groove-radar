@@ -1,5 +1,14 @@
 [
   {
+    "version": "1.0.3",
+    "date": "2026-11-21",
+    "changes": [
+      "Ready for Ask Groove Radar, the new AI assistant for gigs, tours, events and trip planning. It appears in the app as soon as it goes live on the website.",
+      "In All gigs, played gigs are listed below the upcoming ones.",
+      "The offline copy of the calendar saved inside the app is up to date."
+    ]
+  },
+  {
     "version": "1.0.2",
     "date": "2026-11-21",
     "changes": [
