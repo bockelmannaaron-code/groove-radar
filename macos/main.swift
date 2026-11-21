@@ -92,12 +92,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard let url = action.request.url else { return decisionHandler(.cancel) }
-        let inApp = url.scheme == "app" || url.scheme == "about" || url.scheme == "blob" || url.scheme == "data"
-            || url.host == liveHost || url.host == "www." + liveHost
+        let scheme = url.scheme?.lowercased() ?? ""
+        let inApp = ["app", "about", "blob", "data"].contains(scheme)
+            || (scheme == "https" && (url.host == liveHost || url.host == "www." + liveHost))
         if inApp || action.targetFrame?.isMainFrame == false {
             decisionHandler(.allow)
         } else {
-            NSWorkspace.shared.open(url)  // tickets, Beatport, maps: the user's browser
+            openExternally(url)  // tickets, Beatport, maps: the user's browser
             decisionHandler(.cancel)
         }
     }
@@ -105,8 +106,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     // Links with target="_blank" ask for a new window: open them in the browser instead.
     func webView(_ webView: WKWebView, createWebViewWith config: WKWebViewConfiguration,
                  for action: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        if let url = action.request.url { NSWorkspace.shared.open(url) }
+        if let url = action.request.url { openExternally(url) }
         return nil
+    }
+
+    /// Hands a page link to macOS only when it is a plain web link. Any other scheme
+    /// (file:, smb:, ssh:, x-apple.systempreferences:, ...) is dropped, so a link in the
+    /// gig data can never make the Mac open a local app, a network share or a settings pane.
+    private func openExternally(_ url: URL) {
+        guard let scheme = url.scheme?.lowercased(), scheme == "http" || scheme == "https" else { return }
+        NSWorkspace.shared.open(url)
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation nav: WKNavigation!, withError error: Error) {
