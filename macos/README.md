@@ -16,9 +16,16 @@ sh macos/build-app.sh
 
 This writes `dist/Groove-Radar-1.0.0.dmg`. It only needs Apple's Command Line Tools (`xcode-select --install`), not Xcode. Set `VERSION=1.1.0` to change the version number.
 
-A build without signing works on your own Mac. **On anyone else's Mac, macOS will block it** ("Apple could not verify..."), and they'd have to allow it in System Settings → Privacy & Security. For a public download you need to sign and notarize it.
+## Releases are unsigned (the current choice)
 
-## Signing and notarizing (one-time setup)
+Groove Radar is sold without an Apple Developer ID, so it isn't notarized. The first time a customer opens it, macOS shows "Groove Radar Not Opened: Apple could not verify..." and they have to allow it once:
+
+- **macOS 15 Sequoia and later:** System Settings → Privacy & Security → **Open Anyway**, then their Mac password.
+- **macOS 13–14:** right-click the app → **Open** → **Open**.
+
+The DMG includes `How to open Groove Radar.txt` with these steps (from `macos/How to open Groove Radar.txt`). Put the same steps on the sales page, so buyers know before they pay.
+
+## Signing and notarizing (optional, if the warning ever becomes a problem)
 
 1. Join the Apple Developer Program at https://developer.apple.com/programs/ ($99/year). Required for any Mac app that strangers download without warnings, even a free one.
 2. Install Xcode from the App Store, open **Xcode → Settings → Accounts**, add your Apple ID, then **Manage Certificates → + → Developer ID Application**.
@@ -31,10 +38,10 @@ A build without signing works on your own Mac. **On anyone else's Mac, macOS wil
    xcrun notarytool store-credentials groove-radar --apple-id YOUR_APPLE_ID --team-id YOUR_TEAM_ID
    ```
 
-Then every release is one command:
+Then every release is one command. The script finds the "Developer ID Application: Aaron Bockelmann" certificate in your keychain by itself (set `SIGN_ID` to use a different one):
 
 ```sh
-SIGN_ID="Developer ID Application: Your Name (TEAMID)" NOTARY_PROFILE=groove-radar sh macos/build-app.sh
+NOTARY_PROFILE=groove-radar sh macos/build-app.sh
 ```
 
 It signs the app, sends the DMG to Apple, waits for approval (usually a few minutes) and staples the approval to the DMG, so it opens cleanly even offline.

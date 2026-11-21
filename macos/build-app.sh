@@ -80,7 +80,11 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 PLIST
 
 echo "5/6 Signing"
+if [ -z "$SIGN_ID" ]; then  # use Aaron Bockelmann's Developer ID automatically once it's in the keychain
+  SIGN_ID="$(security find-identity -v -p codesigning | grep -o '"Developer ID Application: Aaron Bockelmann ([A-Z0-9]*)"' | head -1 | tr -d '"')"
+fi
 if [ -n "$SIGN_ID" ]; then
+  echo "   Signing as $SIGN_ID"
   cat > "$WORK/entitlements.plist" <<'ENT'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -100,6 +104,9 @@ STAGE="$WORK/dmg"
 mkdir -p "$STAGE"
 cp -R "$APP" "$STAGE/"
 ln -s /Applications "$STAGE/Applications"
+if [ -z "$SIGN_ID" ] || [ -z "$NOTARY_PROFILE" ]; then  # not notarized: macOS warns on first open, so explain it
+  cp "macos/How to open Groove Radar.txt" "$STAGE/"
+fi
 hdiutil create -volname "$NAME" -srcfolder "$STAGE" -fs HFS+ -format UDZO -ov "$DMG" >/dev/null
 if [ -n "$SIGN_ID" ]; then
   codesign --force --timestamp --sign "$SIGN_ID" "$DMG"
