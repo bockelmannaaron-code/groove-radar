@@ -1,5 +1,14 @@
 [
   {
+    "version": "1.0.2",
+    "date": "2026-11-21",
+    "changes": [
+      "Past days in the calendar are dimmed, so upcoming gigs stand out.",
+      "Played gigs show a hollow Played marker and link to the event page instead of tickets.",
+      "The offline copy of the calendar saved inside the app is up to date."
+    ]
+  },
+  {
     "version": "1.0.1",
     "date": "2026-11-21",
     "changes": [
