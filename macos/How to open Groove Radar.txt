@@ -1,0 +1,24 @@
+HOW TO OPEN GROOVE RADAR
+
+1. Drag Groove Radar onto the Applications folder in this window.
+
+2. Open Groove Radar from Applications (or Launchpad).
+
+The first time, your Mac shows "Groove Radar Not Opened" and says
+Apple could not verify it. That's normal for apps from independent
+developers that aren't sold through the App Store. Groove Radar
+contains no malware. To open it:
+
+On macOS 15 Sequoia or later:
+  a. Click "Done" on the message.
+  b. Open System Settings > Privacy & Security.
+  c. Scroll down to "Groove Radar was blocked..." and click "Open Anyway".
+  d. Enter your Mac password, then click "Open Anyway" once more.
+
+On macOS 13 Ventura or 14 Sonoma:
+  a. In Applications, right-click (or Control-click) Groove Radar.
+  b. Choose "Open", then click "Open" in the message.
+
+You only do this once. After that, Groove Radar opens normally.
+
+Groove Radar needs macOS 13 or later and works on Apple silicon and Intel Macs.

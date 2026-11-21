@@ -13,6 +13,10 @@
   },
   "workers_dev": false,
   "preview_urls": false,
+  // Ask Groove Radar (chat.js): at most 6 questions per visitor per minute.
+  "ratelimits": [
+    { "name": "CHAT_LIMIT", "namespace_id": "1001", "simple": { "limit": 6, "period": 60 } }
+  ],
   "routes": [
     { "pattern": "drfeelpoo.uk", "custom_domain": true },
     { "pattern": "www.drfeelpoo.uk", "custom_domain": true }

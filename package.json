@@ -1,0 +1,8 @@
+{
+  "name": "groove-radar-site",
+  "private": true,
+  "description": "Cloudflare Worker for drfeelpoo.uk. wrangler bundles these dependencies into worker.js on deploy.",
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.6.0"
+  }
+}
