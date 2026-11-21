@@ -16,3 +16,6 @@ node_modules/
 # Browser test tool output
 .playwright-mcp/
 dist/
+
+# Local Worker secrets (wrangler dev)
+.dev.vars

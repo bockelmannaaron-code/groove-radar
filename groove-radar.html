@@ -373,6 +373,61 @@ html.intro-on .page { animation: intro-land 0.406s cubic-bezier(0.16, 1, 0.3, 1)
   .row .ract { grid-column: 2; justify-content: flex-start; gap: 14px; }
   .row .ract .cta { min-width: 0; min-height: 44px; padding: 0 16px; font-size: var(--fs-ui); }
 }
+/* Ask Groove Radar: the chat assistant (website and Mac app only; see chat.js on the server). */
+.ask-open { position: fixed; right: max(18px, env(safe-area-inset-right, 0px)); bottom: max(18px, env(safe-area-inset-bottom, 0px)); z-index: 30; display: inline-flex; align-items: center; gap: 10px; padding: 13px 20px 13px 16px; border: 0; border-radius: 999px; background: var(--accent); color: var(--on-accent); font: 600 var(--fs-body)/1 var(--body); cursor: pointer; box-shadow: 0 14px 34px -12px rgba(255, 46, 136, 0.55), 0 6px 18px -8px rgba(0, 6, 20, 0.7); transition: transform 0.35s var(--soft), box-shadow 0.35s var(--soft); }
+.ask-open:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -12px rgba(255, 46, 136, 0.65), 0 8px 20px -8px rgba(0, 6, 20, 0.7); }
+.ask-open svg { width: 20px; height: 20px; }
+.ask-open[hidden] { display: none; }
+.ask { position: fixed; z-index: 40; right: max(18px, env(safe-area-inset-right, 0px)); bottom: max(18px, env(safe-area-inset-bottom, 0px)); width: min(440px, calc(100vw - 36px)); height: min(680px, calc(100dvh - 36px)); display: flex; flex-direction: column; border-radius: var(--r-panel); overflow: hidden;
+  --gl-bg: rgba(10, 40, 70, 0.86);
+  background: linear-gradient(150deg, rgba(238, 244, 250, 0.11) 0, rgba(238, 244, 250, 0.02) 46%, rgba(238, 244, 250, 0.05) 100%), var(--gl-bg);
+  -webkit-backdrop-filter: blur(26px) saturate(1.8); backdrop-filter: blur(26px) saturate(1.8);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 0 0 1px rgba(238, 244, 250, 0.12), 0 30px 70px -20px rgba(0, 6, 20, 0.85); }
+.ask[hidden] { display: none; }
+@media (prefers-reduced-motion: no-preference) { .ask:not([hidden]) { animation: ask-in 0.45s var(--soft); } }
+@keyframes ask-in { from { opacity: 0; transform: translateY(14px) scale(0.98); } }
+.ask-head { display: flex; align-items: center; gap: 10px; padding: 14px 14px 12px 20px; border-bottom: 1px solid var(--line); }
+.ask-head h2 { margin: 0; flex: 1; font: 600 var(--fs-subtitle)/1.2 var(--display); letter-spacing: -0.03em; }
+.ask-head h2 span { color: var(--stone); }
+.ask-head button { display: inline-flex; align-items: center; justify-content: center; min-width: 40px; height: 40px; padding: 0 10px; border: 0; border-radius: var(--r-lg); background: transparent; color: var(--muted); font: 500 var(--fs-ui) var(--body); cursor: pointer; }
+.ask-head button:hover { color: var(--ink); background: rgba(238, 244, 250, 0.07); }
+.ask-head button svg { width: 16px; height: 16px; }
+.ask-log { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 18px 20px 8px; display: flex; flex-direction: column; gap: 14px; scrollbar-color: var(--ink-2) transparent; }
+.ask-hello p { margin: 0 0 12px; font-size: var(--fs-body); line-height: 1.5; color: var(--ink); }
+.ask-hello .ask-tries { display: flex; flex-direction: column; gap: 8px; }
+.ask-try { text-align: left; padding: 11px 14px; border: 0; border-radius: var(--r-lg); background: rgba(238, 244, 250, 0.06); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); font: 500 var(--fs-ui)/1.4 var(--body); cursor: pointer; transition: box-shadow 0.25s, color 0.25s; }
+.ask-try:hover { color: var(--accent-ink); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.ask-msg { max-width: 100%; font-size: var(--fs-ui); line-height: 1.55; overflow-wrap: anywhere; }
+.ask-msg.me { align-self: flex-end; max-width: 85%; padding: 10px 14px; border-radius: 16px 16px 4px 16px; background: var(--accent); color: var(--on-accent); font-weight: 500; white-space: pre-wrap; }
+.ask-msg.ai p { margin: 0 0 8px; }
+.ask-msg.ai ul { margin: 0 0 8px; padding-left: 1.15em; }
+.ask-msg.ai li { margin-bottom: 4px; }
+.ask-msg.ai li::marker { color: var(--stone); }
+.ask-msg.ai strong { font-weight: 650; }
+.ask-msg.ai a { color: var(--accent-ink); font-weight: 600; text-underline-offset: 3px; }
+.ask-msg.ai a .ico { width: 0.75em; height: 0.75em; margin-left: 3px; vertical-align: -0.05em; }
+.ask-msg .ask-status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: var(--fs-meta); }
+.ask-msg .ask-status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+@media (prefers-reduced-motion: no-preference) { .ask-msg .ask-status::before { animation: ask-pulse 1.1s ease-in-out infinite; } }
+@keyframes ask-pulse { 50% { opacity: 0.25; transform: scale(0.7); } }
+.ask-msg .ask-err { color: var(--accent-ink); font-weight: 500; }
+.ask-src { margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.ask-src .cap { color: var(--muted); }
+.ask-src a { font-size: var(--fs-meta); font-weight: 500; color: var(--ink); text-decoration: none; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ask-src a:hover { color: var(--accent-ink); }
+.ask-form { display: flex; align-items: flex-end; gap: 8px; padding: 10px 12px 6px; border-top: 1px solid var(--line); }
+.ask-form textarea { flex: 1; resize: none; max-height: 140px; min-height: 44px; padding: 11px 14px; border: 0; border-radius: var(--r-lg); background: rgba(3, 32, 61, 0.6); box-shadow: inset 0 0 0 1px var(--line); color: var(--ink); font: 400 var(--fs-body)/1.4 var(--body); }
+.ask-form textarea::placeholder { color: var(--muted); opacity: 0.85; }
+.ask-form textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ask-send { flex: none; width: 44px; height: 44px; border: 0; border-radius: var(--r-lg); background: var(--accent); color: var(--on-accent); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.ask-send svg { width: 18px; height: 18px; }
+.ask-send:disabled { opacity: 0.45; cursor: default; }
+.ask-note { margin: 0; padding: 2px 16px 12px; font-size: var(--fs-label); line-height: 1.4; color: var(--muted); }
+@media (max-width: 640px) {
+  .ask-open { padding: 12px 16px 12px 14px; font-size: var(--fs-ui); }
+  .ask { right: 0; bottom: 0; width: 100vw; height: 100dvh; border-radius: 0; padding-bottom: env(safe-area-inset-bottom, 0px); }
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .ask { --gl-bg: #0D2E52; } }
 </style>
 
 <a class="skip" href="#main">Skip to the gig calendar</a>
@@ -1300,5 +1355,140 @@ render();
   db.collection("music").onSnapshot(snap => { music = {}; snap.docs.forEach(d => { const m = d.data(); music[nkey(m.name)] = m; }); render(); }, () => {});
   db.collection("updates").orderBy("date", "desc").limit(14).onSnapshot(snap => { updates = snap.docs.map(d => d.data()); renderNews(); }, () => {});
   db.doc("meta/run").onSnapshot(s => { meta = s.exists ? s.data() : null; }, () => {});
+})();
+</script>
+<script>
+/* ---------- Ask Groove Radar: a chat assistant about these artists' gigs, tours, events and trips ----------
+   Only on the public website and in the Mac app when online: the claude.ai artifact and the app's offline copy
+   have no /api/chat. The conversation lives in this page only (nothing stored on the device); each question
+   sends it, the visitor's "Measure from" place, and nothing else, to /api/chat, which streams the answer back. */
+(() => {
+  if (typeof claude !== "undefined" || !/^https?:$/.test(location.protocol)) return;
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function svg(view, parts) {
+    const s = document.createElementNS(SVGNS, "svg"); s.setAttribute("viewBox", view); s.setAttribute("aria-hidden", "true");
+    parts.forEach(([tag, attrs]) => { const n = document.createElementNS(SVGNS, tag); Object.entries(attrs).forEach(([k, v]) => n.setAttribute(k, v)); s.append(n); });
+    return s;
+  }
+  const radar = () => svg("0 0 24 24", [["circle", { cx: 12, cy: 12, r: 9, fill: "none", stroke: "currentColor", "stroke-width": 2 }], ["circle", { cx: 12, cy: 12, r: 3.5, fill: "none", stroke: "currentColor", "stroke-width": 2 }], ["circle", { cx: 17.5, cy: 6.5, r: 2.6, fill: "currentColor" }]]);
+  const cross = () => svg("0 0 16 16", [["path", { d: "M3 3l10 10M13 3 3 13", fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "square" }]]);
+  const arrow = () => svg("0 0 16 16", [["path", { d: "M8 13V3M3.5 7.5 8 3l4.5 4.5", fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "square" }]]);
+
+  const TRIES = [
+    "Which weekend in the next three months has the most gigs I can reach?",
+    "Any newly announced tours or festivals with these artists?",
+    "Plan me a trip to the UK around two good gigs.",
+  ];
+  let history = [];   // [{ role, content }] text only
+  let busy = false;
+  let showStatus = false;
+
+  const openBtn = el("button", "ask-open"); openBtn.type = "button"; openBtn.append(radar(), el("span", null, "Ask Groove Radar"));
+  openBtn.setAttribute("aria-haspopup", "dialog");
+  const panel = el("section", "ask"); panel.hidden = true; panel.setAttribute("role", "dialog"); panel.setAttribute("aria-label", "Ask Groove Radar");
+  const head = el("div", "ask-head"); const h = el("h2"); h.append("Ask Groove ", el("span", null, "Radar"));
+  const fresh = el("button", null, "New chat"); fresh.type = "button";
+  const close = el("button"); close.type = "button"; close.setAttribute("aria-label", "Close"); close.append(cross());
+  head.append(h, fresh, close);
+  const log = el("div", "ask-log"); log.setAttribute("aria-live", "polite");
+  const form = el("form", "ask-form");
+  const box = el("textarea"); box.rows = 1; box.maxLength = 1500; box.placeholder = "Ask about gigs, tours or a trip…"; box.setAttribute("aria-label", "Your question");
+  const send = el("button", "ask-send"); send.type = "submit"; send.setAttribute("aria-label", "Send"); send.append(arrow());
+  form.append(box, send);
+  const note = el("p", "ask-note", "Answers come from AI and can be wrong. Check the ticket page before you buy.");
+  panel.append(head, log, form, note);
+  openBtn.hidden = true;
+  document.body.append(openBtn, panel);
+  fetch("/api/chat").then(r => r.ok ? r.json() : null).then(s => { if (s && s.ready && panel.hidden) openBtn.hidden = false; }).catch(() => {});
+
+  function hello() {
+    log.replaceChildren();
+    const w = el("div", "ask-hello");
+    w.append(el("p", null, "Ask about these artists' gigs, new tours, bigger events worth travelling for, or plan a trip from where you are."));
+    const t = el("div", "ask-tries");
+    TRIES.forEach(q => { const b = el("button", "ask-try", q); b.type = "button"; b.onclick = () => ask(q); t.append(b); });
+    w.append(t); log.append(w);
+  }
+  hello();
+
+  /* A small, safe Markdown subset: paragraphs, "- " lists, **bold** and [text](url) links. Built as DOM nodes, never HTML. */
+  function inline(text, into) {
+    const re = /\*\*([^*]+)\*\*|\[([^\]]+)\]\(([^)\s]+)\)|(https?:\/\/[^\s)]+)/g;
+    let last = 0, m;
+    while ((m = re.exec(text))) {
+      if (m.index > last) into.append(text.slice(last, m.index));
+      if (m[1]) into.append(el("strong", null, m[1]));
+      else { const u = safeUrl(m[3] || m[4]); if (u) into.append(link(null, m[2] || u.replace(/^https?:\/\/(www\.)?/, "").slice(0, 40), u)); else into.append(m[0]); }
+      last = re.lastIndex;
+    }
+    if (last < text.length) into.append(text.slice(last));
+  }
+  function markdown(src) {
+    const out = document.createDocumentFragment(); let list = null;
+    src.split(/\n/).forEach(line => {
+      const t = line.trim();
+      if (!t) { list = null; return; }
+      const b = t.match(/^[-*•]\s+(.*)$/);
+      if (b) { if (!list) { list = el("ul"); out.append(list); } const li = el("li"); inline(b[1], li); list.append(li); return; }
+      list = null; const p = el("p"); inline(t.replace(/^#+\s*/, ""), p); out.append(p);
+    });
+    return out;
+  }
+
+  function scrollDown() { log.scrollTop = log.scrollHeight; }
+  function setBusy(on) { busy = on; send.disabled = on; box.readOnly = on; }
+
+  async function ask(q) {
+    q = (q || "").trim(); if (!q || busy) return;
+    if (log.querySelector(".ask-hello")) log.replaceChildren();
+    const mine = el("div", "ask-msg me", q); log.append(mine);
+    const ai = el("div", "ask-msg ai"); const status = el("span", "ask-status", "Thinking…"); ai.append(status); log.append(ai);
+    box.value = ""; fit(); scrollDown(); setBusy(true);
+    history.push({ role: "user", content: q });
+    let answer = "", sources = [], error = null, frame = 0;
+    showStatus = true;
+    const paint = () => { frame = 0; const body = el("div"); body.append(markdown(answer)); ai.replaceChildren(body); if (showStatus) ai.append(status); scrollDown(); };
+    try {
+      const from = typeof here !== "undefined" && here ? { lat: here.lat, lon: here.lon, label: here.label } : null;
+      const res = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: history.slice(-16), from }) });
+      if (!res.ok || !res.body) { let msg = "Something went wrong. Try again."; try { msg = (await res.json()).error || msg; } catch (e) {} throw new Error(msg); }
+      const reader = res.body.getReader(), dec = new TextDecoder(); let buf = "";
+      for (;;) {
+        const { value, done } = await reader.read(); if (done) break;
+        buf += dec.decode(value, { stream: true });
+        let i;
+        while ((i = buf.indexOf("\n\n")) >= 0) {
+          const chunk = buf.slice(0, i); buf = buf.slice(i + 2);
+          if (!chunk.startsWith("data: ")) continue;
+          let ev; try { ev = JSON.parse(chunk.slice(6)); } catch (e) { continue; }
+          if (ev.t === "text") { answer += ev.v; showStatus = false; if (!frame) frame = requestAnimationFrame(paint); }
+          else if (ev.t === "status") { status.textContent = ev.v; showStatus = true; if (answer) answer += "\n\n"; if (!frame) frame = requestAnimationFrame(paint); }
+          else if (ev.t === "sources") sources = ev.v || [];
+          else if (ev.t === "error") error = ev.v;
+        }
+      }
+    } catch (e) { error = e.message || "Couldn't reach the assistant. Check your connection."; }
+    if (frame) cancelAnimationFrame(frame);
+    const body = el("div"); body.append(markdown(answer)); ai.replaceChildren(body);
+    if (sources.length) {
+      const s = el("div", "ask-src"); s.append(el("span", "cap", "Sources"));
+      sources.forEach(x => { const u = safeUrl(x.url); if (u) s.append(link(null, x.title || u, u)); });
+      ai.append(s);
+    }
+    if (error) ai.append(el("p", "ask-err", error));
+    if (answer.trim()) history.push({ role: "assistant", content: answer.trim() });
+    else history.pop();   // nothing came back: drop the question so the next try isn't two in a row
+    setBusy(false); scrollDown(); box.focus();
+  }
+
+  function fit() { box.style.height = "auto"; box.style.height = Math.min(box.scrollHeight, 140) + "px"; }
+  box.addEventListener("input", fit);
+  box.addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); ask(box.value); } });
+  form.addEventListener("submit", e => { e.preventDefault(); ask(box.value); });
+  function open() { panel.hidden = false; openBtn.hidden = true; box.focus(); }
+  function shut() { panel.hidden = true; openBtn.hidden = false; openBtn.focus(); }
+  openBtn.onclick = open; close.onclick = shut;
+  fresh.onclick = () => { if (busy) return; history = []; hello(); box.focus(); };
+  panel.addEventListener("keydown", e => { if (e.key === "Escape") shut(); });
 })();
 </script>
