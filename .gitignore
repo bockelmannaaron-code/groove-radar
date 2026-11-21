@@ -11,7 +11,7 @@ site/
 # Tool caches
 .wrangler/
 node_modules/
-.impeccable/hook.cache.json
 
-# Browser test tool output
-.playwright-mcp/
+
+# Obsidian vault settings
+.obsidian/

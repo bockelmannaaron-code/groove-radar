@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """Build the public Groove Radar website (drfeelpoo.uk) into ./site.
 
-- site/index.html   from groove-radar.html (the one source of truth), with the
-                    claude.ai database loader swapped for a fetch of data.json
-                    and Google Fonts swapped for self-hosted fonts.
+- site/index.html   from groove-radar.html (the one source of truth), with
+                    Google Fonts swapped for self-hosted fonts.
 - site/data.json    from the database export in ./.export
-                    (gigs/, music/, updates/, meta/run.json), written by the morning task.
+                    (gigs/, music/, updates/, meta/run.json), refreshed every morning.
 - site/privacy.html, terms.html, cookies.html from ./legal, with owner details from site.json.
-- site/fonts/       from ./fonts-src (Anton, Inter, Yellowtail; SIL Open Font License).
+- site/fonts/       from ./fonts-src (Schibsted Grotesk; SIL Open Font License).
 
 Run:  python3 build.py
 """
@@ -68,57 +67,19 @@ body {{ margin: 0; }} [hidden] {{ display: none !important; }}
 {extra}"""
 
 
-LOADER = """(async () => {
-  const notice = $("notice");
-  try {
-    const r = await fetch("data.json?v=" + Date.now(), { cache: "no-store" });
-    if (!r.ok) throw new Error("HTTP " + r.status);
-    const d = await r.json();
-    gigs = d.gigs || [];
-    loadState = "ready";
-    places = d.places || {};
-    try {
-      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 2500);
-      const w = await (await fetch("/api/where", { cache: "no-store", signal: ctl.signal })).json(); clearTimeout(t);
-      if (typeof w.lat === "number" && w.continent === "EU") { autoHere = { lat: w.lat, lon: w.lon, label: w.city || w.country || "your area", source: "auto" }; here = autoHere; }
-    } catch (e) { /* no location: near stays the Munich and Rheingau home zones */ }
-    if (location.hash.includes("@") || store.get("near")) readHash();
-    music = {}; (d.music || []).forEach(m => { music[nkey(m.name)] = m; });
-    updates = (d.updates || []).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14);
-    meta = d.meta || null;
-    const up = upcoming();
-    if (up.length && !up.some(g => g.date === selDay)) { selDay = up[0].date; const dd = parseKey(up[0].date); cursor = new Date(dd.getFullYear(), dd.getMonth(), 1); }
-    render(); renderNews();
-    if (meta && meta.lastRun) {
-      const t = new Date(meta.lastRun);
-      if (!isNaN(t)) document.querySelector("footer p").append(" Last updated " + t.toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) + ".");
-    }
-  } catch (e) {
-    loadState = "error"; render();
-    notice.hidden = false;
-    notice.textContent = "The gig list couldn't be loaded. Check your connection, then try again. ";
-    const again = document.createElement("button"); again.className = "cta ghost"; again.textContent = "Try again"; again.onclick = () => location.reload(); notice.append(again);
-  }
-})();
-</script>"""
-
-
 def build_index():
     src = SRC.read_text(encoding="utf-8")
-    start = src.index("(async () => {\n  const db = await claude.use(\"db\");")
-    end = src.index("})();\n</script>", start) + len("})();\n</script>")
-    page = src[:start] + LOADER + src[end:]
+    page = src
     body_start = page.index('<a class="skip"')
     head_bits = page[:body_start]
-    head_bits = re.sub(r'<meta name="claude:[^>]*>\n?', "", head_bits)
     head_bits = re.sub(r'<link rel="preconnect"[^>]*>\n?', "", head_bits)
     head_bits = re.sub(r'<link rel="stylesheet" href="https://fonts\.googleapis\.com[^>]*>\n?', "", head_bits)
     head_bits = re.sub(r"<title>[^<]*</title>\n?", "", head_bits)
     html = head("Groove Radar") + head_bits + "</head>\n<body>\n" + page[body_start:] + "\n</body>\n</html>\n"
     # The copyright year follows the build date, so the morning rebuild rolls it over on 1 January.
     html = re.sub(r"© \d{4} ", f"© {YEAR} ", html)
-    if "googleapis" in html or "gstatic" in html or "claude.use" in html:
-        sys.exit("Build check failed: index.html still references Google Fonts or claude.ai.")
+    if "googleapis" in html or "gstatic" in html:
+        sys.exit("Build check failed: index.html still references Google Fonts.")
     # Device storage goes only through the `store` helper, and every key it uses must be listed on the cookie page.
     if html.count("localStorage") != 3:
         sys.exit("Build check failed: localStorage is used outside the store helper.")
