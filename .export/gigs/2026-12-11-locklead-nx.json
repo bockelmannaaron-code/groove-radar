@@ -4,6 +4,9 @@
   "country": "UK",
   "date": "2026-12-11",
   "sourceUrl": "https://www.songkick.com/concerts/43495775",
-  "status": "unknown",
+  "start": "23:00",
+  "status": "available",
+  "ticketUrl": "https://www.songkick.com/concerts/43495775-locklead-at-nx-newcastle",
+  "updatedAt": "2026-11-21",
   "venue": "NX"
 }

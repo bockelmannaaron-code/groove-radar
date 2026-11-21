@@ -5,6 +5,9 @@
   "date": "2026-12-18",
   "event": "Concourse",
   "sourceUrl": "https://www.songkick.com/concerts/43397965",
-  "status": "unknown",
+  "start": "21:00",
+  "status": "available",
+  "ticketUrl": "https://www.songkick.com/concerts/43397965-silva-bumpa-at-concourse-depot-mayfield",
+  "updatedAt": "2026-11-21",
   "venue": "Depot Mayfield"
 }

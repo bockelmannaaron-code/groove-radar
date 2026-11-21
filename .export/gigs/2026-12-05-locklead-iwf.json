@@ -4,7 +4,10 @@
   "country": "UK",
   "date": "2026-12-05",
   "event": "Mella Dee",
+  "note": "Mella Dee headlines, with Locklead and Reeshy. Listed as sold out on Skiddle.",
   "sourceUrl": "https://www.songkick.com/concerts/43395245",
-  "status": "unknown",
+  "status": "sold_out",
+  "ticketUrl": "https://www.songkick.com/concerts/43395245-mella-dee-at-invisible-wind-factory",
+  "updatedAt": "2026-11-21",
   "venue": "Invisible Wind Factory"
 }

@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/jamie-jones/27044",
+  "name": "Jamie Jones",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Jamie Jones",
+      "date": "2026-12-11",
+      "label": "Hot Creations",
+      "preorder": true,
+      "title": "Shapeshifter",
+      "url": "https://www.beatport.com/release/shapeshifter/7735684"
+    },
+    {
+      "artists": "Jamie Jones, Emmanuel Jal",
+      "date": "2026-11-20",
+      "label": "Helix Records",
+      "preorder": false,
+      "title": "Shawang (Extended Mix)",
+      "url": "https://www.beatport.com/release/shawang-extended-mix/7693803"
+    },
+    {
+      "artists": "Robotman, Richie Hawtin, Marshall Jefferson, Plastikman",
+      "date": "2026-09-04",
+      "label": "Definitive Recordings",
+      "preorder": false,
+      "title": "Do Da Doo",
+      "url": "https://www.beatport.com/release/do-da-doo/7236986"
+    },
+    {
+      "artists": "Jamie Jones, Camden Cox",
+      "date": "2026-06-26",
+      "label": "Helix Records",
+      "preorder": false,
+      "title": "State Of Mind",
+      "url": "https://www.beatport.com/release/state-of-mind/7111178"
+    },
+    {
+      "artists": "Jamie Jones, Max Dean, Luke Dean",
+      "date": "2026-04-15",
+      "label": "DX3N",
+      "preorder": false,
+      "title": "Gets Like That (Jamie Jones Remix) (Extended)",
+      "url": "https://www.beatport.com/release/gets-like-that-jamie-jones-remix-extended/6503145"
+    }
+  ],
+  "updatedAt": "2026-11-21"
+}

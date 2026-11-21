@@ -4,6 +4,8 @@
   "country": "UK",
   "date": "2027-02-06",
   "sourceUrl": "https://www.songkick.com/concerts/43492486",
-  "status": "unknown",
+  "status": "available",
+  "ticketUrl": "https://www.songkick.com/concerts/43492486-locklead-at-gaswrx",
+  "updatedAt": "2026-11-21",
   "venue": "GASWRX"
 }

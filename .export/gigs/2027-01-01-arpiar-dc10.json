@@ -5,6 +5,9 @@
   "date": "2027-01-01",
   "event": "AR:PIA:R",
   "sourceUrl": "https://www.songkick.com/concerts/43514779",
-  "status": "unknown",
+  "start": "16:00",
+  "status": "available",
+  "ticketUrl": "https://www.songkick.com/concerts/43514779-arpiar-at-dc10",
+  "updatedAt": "2026-11-21",
   "venue": "DC10"
 }
