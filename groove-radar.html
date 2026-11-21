@@ -239,6 +239,9 @@ nav.top::before, .hero aside::before, .news::before, .filters::before, .grid::be
 .st::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 .st.available { color: var(--accent-ink); }
 .st.sold_out { color: var(--muted); }
+.st.played { color: var(--muted); }
+.row.past .rdate .d, .row.past .rartist { color: var(--muted); }
+.pastbtn { align-self: flex-start; margin-top: 22px; }
 .tbtn::after { content: ""; display: inline-block; width: 7px; height: 7px; margin-left: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-2px) rotate(45deg); transition: transform 0.3s var(--soft); }
 .tbtn[aria-expanded="true"]::after { transform: translateY(1px) rotate(-135deg); }
 .tbtn:hover { color: var(--ink); }
@@ -651,12 +654,17 @@ let selDay = todayKey();
 const openTracks = new Set();
 
 function allUpcoming() { return gigs.filter(g => g.date && g.date >= todayKey()).sort((a, b) => a.date.localeCompare(b.date)); }
-function upcoming() {
-  let l = allUpcoming();
+function isPast(g) { return g.date < todayKey(); }
+function applyFilter(l) {
   if (filter === "near") l = l.filter(g => isNear(g));
-  if (filter === "buy") l = l.filter(g => g.status === "available");
+  if (filter === "buy") l = l.filter(g => g.status === "available" && !isPast(g));
   return l.sort((a, b) => a.date.localeCompare(b.date) || (isNear(b) - isNear(a)));
 }
+function upcoming() { return applyFilter(allUpcoming()); }
+/* Gigs whose date has passed stay in the data (the morning job keeps them for a year), shown as "Played". */
+function played() { return applyFilter(gigs.filter(g => g.date && isPast(g))).reverse(); }
+function calendarGigs() { return applyFilter(gigs.filter(g => g.date)); }
+let showPast = false;
 function goToDay(k) { pendingFocus = "day-" + k; selDay = k; const d = parseKey(k); cursor = new Date(d.getFullYear(), d.getMonth(), 1); setView("month"); rerenderAndGlide(() => $("daypanel")); }
 
 /* ---------- hero ---------- */
@@ -743,14 +751,15 @@ function releaseList(name, max) {
 }
 function gigRow(g, level = 3, tracksToggle = true) {
   const near = isNear(g);
-  const row = el("article", "row" + (near ? " near" : ""));
+  const past = isPast(g);
+  const row = el("article", "row" + (near ? " near" : "") + (past ? " past" : ""));
   const d = parseKey(g.date);
   const rd = el("div", "rdate"); rd.append(el("span", "d", pad(d.getDate())), el("span", "m", `${MONTHS[d.getMonth()]} · ${DOW[(d.getDay() + 6) % 7]}`));
   const info = el("div", "rinfo");
-  const an = el("h" + level, "rartist", g.artist || "TBA"); if (isNew(g)) an.append(el("span", "newb", "NEW"));
+  const an = el("h" + level, "rartist", g.artist || "TBA"); if (isNew(g) && !past) an.append(el("span", "newb", "NEW"));
   info.append(an);
   info.append(el("div", "rwhere", [g.event, g.venue, g.city, COUNTRY[g.country] || g.country].filter(Boolean).join(" · ")));
-  if (near) info.append(el("div", "rnear", `near you · ${kmTo(g) ?? "?"} km from ${fromLabel(g)}`));
+  if (near && !past) info.append(el("div", "rnear", `near you · ${kmTo(g) ?? "?"} km from ${fromLabel(g)}`));
   const note = noteFor(g); if (note) info.append(el("div", "rnote", note));
   const names = artistsIn(g.artist);
   let tracks = null;
@@ -766,6 +775,13 @@ function gigRow(g, level = 3, tracksToggle = true) {
   const act = el("div", "ract");
   const s = statusOf(g);
   /* Most gigs have no known ticket status; saying so on every row buried the ones that matter, so only known states show. */
+  if (past) {
+    act.append(el("span", "st played", "Played"));
+    const src = g.sourceUrl || g.ticketUrl;
+    if (safeUrl(src)) act.append(fk(link("cta ghost", "Event", src), "tix-" + g.id));
+    row.append(rd, info, act);
+    return row;
+  }
   if (s !== "unknown") act.append(el("span", "st " + s, s === "available" ? "On sale" : "Sold out"));
   const url = g.ticketUrl || g.sourceUrl;
   if (safeUrl(url)) act.append(fk(link("cta" + (s === "available" ? "" : " ghost"), s === "available" ? "Tickets" : s === "sold_out" ? "Resale" : "Event", url), "tix-" + g.id));
@@ -874,7 +890,7 @@ function renderMonth(list) {
   if (items.length) { const r = el("div", "rows"); items.forEach(x => r.append(gigRow(x))); panel.append(r); }
   else if (loadState !== "ready") panel.append(el("div", "empty", waitingText()));
   else {
-    const all = allUpcoming().filter(g => g.date === selDay).length;
+    const all = gigs.filter(g => g.date === selDay).length;
     const e = el("div", "empty", all && filter !== "all" ? `No ${filter === "near" ? "near-you" : "on-sale"} gigs this day · ${all} more with the filter off.` : "Nothing from your artists this day.");
     const nx = list.find(g => g.date > selDay);
     if (nx) { const b = el("button", "cta ghost", `Next: ${nx.artist.split(",")[0]} · ${parseKey(nx.date).getDate()} ${MONTHS[parseKey(nx.date).getMonth()]}`); b.append(icon("next")); b.onclick = () => goToDay(nx.date); e.append(b); }
@@ -900,14 +916,20 @@ function renderList(list) {
   head.append(el("h2", null, filter === "near" ? "Near-you gigs" : filter === "buy" ? "Gigs on sale" : "All gigs"), el("span", "cap", `${list.length} upcoming`));
   const v = $("view");
   v.append(filtersEl());
-  if (!list.length) { v.append(el("div", "empty", loadState !== "ready" ? waitingText() : filter === "near" ? "No near-you gigs coming up right now. Switch to Everywhere to see the rest of Europe." : "No upcoming gigs match this filter.")); return; }
-  let last = "";
-  let rows = null;
-  list.forEach(g => {
+  if (!list.length) v.append(el("div", "empty", loadState !== "ready" ? waitingText() : filter === "near" ? "No near-you gigs coming up right now. Switch to Everywhere to see the rest of Europe." : "No upcoming gigs match this filter."));
+  const byMonth = l => { let last = "", rows = null; l.forEach(g => {
     const mk = g.date.slice(0, 7);
     if (mk !== last) { last = mk; const d = parseKey(g.date); v.append(el("h3", "monthhead", `${FULLMONTHS[d.getMonth()]} ${d.getFullYear()}`)); rows = el("div", "rows"); v.append(rows); }
     rows.append(gigRow(g, 4, false));
-  });
+  }); };
+  byMonth(list);
+  const past = filter === "buy" ? [] : played();
+  if (!past.length || loadState !== "ready") return;
+  const b = fk(el("button", "cta ghost pastbtn", showPast ? "Hide played gigs" : `Show ${past.length} played gig${past.length > 1 ? "s" : ""}`), "past-toggle");
+  b.setAttribute("aria-expanded", String(showPast));
+  b.onclick = () => { showPast = !showPast; rerender("past-toggle", ["#view"], "fade"); };
+  v.append(b);
+  if (showPast) { v.append(el("h2", "monthhead", "Already played")); byMonth(past); }
 }
 
 /* Artists: one compact row each, sorted by next gig (artists with nothing listed go last, A to Z).
@@ -1082,7 +1104,7 @@ function render() {
   renderHero();
   $("mainhead").replaceChildren(); $("view").replaceChildren();
   const list = upcoming();
-  if (view === "month") renderMonth(list); else if (view === "list") renderList(list); else renderArtists(list);
+  if (view === "month") renderMonth(calendarGigs()); else if (view === "list") renderList(list); else renderArtists(list);
   if (gigs.length && decodeURIComponent(location.hash) !== hashFor()) { if (lastView === null || view === lastView) history.replaceState(null, "", hashFor()); else history.pushState(null, "", hashFor()); }
   /* The rebuilt children are new elements, so their entrance plays without restarting the class (the old reflow trick forced a full layout mid-click). */
   if (view !== lastView) { $("view").classList.add("view-enter"); lastView = view; }

@@ -1,0 +1,23 @@
+[
+  {
+    "version": "1.0.1",
+    "date": "2026-11-21",
+    "changes": [
+      "Groove Radar now updates itself. New versions download in the background and install when you restart.",
+      "Gigs that have already happened stay in the calendar, marked Played. In All gigs, choose Show played gigs to see them.",
+      "This change log: see what's new in Groove Radar > What's New.",
+      "Check for Updates in the Groove Radar menu.",
+      "Safer links: only web links open outside the app."
+    ]
+  },
+  {
+    "version": "1.0.0",
+    "date": "2026-11-21",
+    "changes": [
+      "First release of Groove Radar for Mac.",
+      "Every European gig from your artists in one calendar, nearest first, updated every morning.",
+      "Works offline with the copy of the calendar saved inside the app.",
+      "Ticket and Beatport links open in your browser."
+    ]
+  }
+]

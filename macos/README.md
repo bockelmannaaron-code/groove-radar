@@ -16,6 +16,18 @@ sh macos/build-app.sh
 
 This writes `dist/Groove-Radar-1.0.0.dmg`. It only needs Apple's Command Line Tools (`xcode-select --install`), not Xcode. Set `VERSION=1.1.0` to change the version number.
 
+## Releasing an update
+
+1. Add the new version at the top of `macos/changelog.json` (it becomes the app's What's New window and the release notes).
+2. Commit and push, then run:
+   ```sh
+   sh macos/release.sh 1.0.2
+   ```
+
+Installed apps (1.0.1 and later) check GitHub at launch and every 6 hours, download the update in the background, check its signature, and ask to restart. If people choose Later, it installs when they quit. Gig data never needs a release: the app shows the live website.
+
+**The update signing key** is `~/.groove-radar/update-signing-key`, created by the first build. Back it up (for example in your password manager). Never commit it. If it's lost, installed apps can't update themselves any more and everyone has to download the app again.
+
 ## Releases are unsigned (the current choice)
 
 Groove Radar is sold without an Apple Developer ID, so it isn't notarized. The first time a customer opens it, macOS shows "Groove Radar Not Opened: Apple could not verify..." and they have to allow it once:

@@ -12,6 +12,10 @@
 #   SIGN_ID="Developer ID Application: Your Name (TEAMID)" NOTARY_PROFILE=groove-radar sh macos/build-app.sh
 #
 # Optional: VERSION=1.2.0 (default 1.0.0).
+#
+# Automatic updates: the DMG is signed with the update key in ~/.groove-radar/update-signing-key
+# (created on the first build; set UPDATE_KEY to use another file), and dist/update.json is written
+# for the GitHub release. macos/release.sh builds and publishes both.
 set -e
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
@@ -23,6 +27,8 @@ OUT="$ROOT/dist"
 WORK="$OUT/work"
 APP="$OUT/$NAME.app"
 DMG="$OUT/Groove-Radar-$VERSION.dmg"
+UPDATE_KEY="${UPDATE_KEY:-$HOME/.groove-radar/update-signing-key}"
+REPO="bockelmannaaron-code/groove-radar"
 
 rm -rf "$OUT"
 mkdir -p "$WORK" "$APP/Contents/MacOS" "$APP/Contents/Resources"
@@ -31,11 +37,12 @@ echo "1/6 Building the website copy that ships inside the app"
 python3 build.py
 cp -R site "$APP/Contents/Resources/site"
 rm -f "$APP/Contents/Resources/site/_headers"
+cp macos/changelog.json "$APP/Contents/Resources/changelog.json"
 
 echo "2/6 Compiling (Apple silicon + Intel)"
 for arch in arm64 x86_64; do
   swiftc -O -target "$arch-apple-macos13.0" -framework AppKit -framework WebKit \
-    macos/main.swift -o "$WORK/GrooveRadar-$arch"
+    macos/main.swift macos/Updater.swift macos/Changelog.swift -o "$WORK/GrooveRadar-$arch"
 done
 lipo -create "$WORK/GrooveRadar-arm64" "$WORK/GrooveRadar-x86_64" -output "$APP/Contents/MacOS/GrooveRadar"
 
@@ -58,6 +65,7 @@ done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 
 echo "4/6 Writing Info.plist"
+UPDATE_PUBKEY="$(swift macos/update-key.swift public "$UPDATE_KEY")"
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -74,6 +82,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSMinimumSystemVersion</key><string>13.0</string>
   <key>LSApplicationCategoryType</key><string>public.app-category.music</string>
   <key>NSHighResolutionCapable</key><true/>
+  <key>GRUpdatePublicKey</key><string>$UPDATE_PUBKEY</string>
   <key>NSHumanReadableCopyright</key><string>© $(date +%Y) Groove Radar</string>
 </dict>
 </plist>
@@ -116,7 +125,16 @@ if [ -n "$SIGN_ID" ] && [ -n "$NOTARY_PROFILE" ]; then
   xcrun notarytool submit "$DMG" --keychain-profile "$NOTARY_PROFILE" --wait
   xcrun stapler staple "$DMG"
 fi
+echo "   Signing the update"
+SIG="$(swift macos/update-key.swift sign "$UPDATE_KEY" "$DMG")"
+cat > "$OUT/update.json" <<JSON
+{
+  "version": "$VERSION",
+  "url": "https://github.com/$REPO/releases/download/v$VERSION/Groove-Radar-$VERSION.dmg",
+  "signature": "$SIG"
+}
+JSON
 rm -rf "$WORK"
 
 echo
-echo "Done: $DMG ($(du -h "$DMG" | cut -f1))"
+echo "Done: $DMG ($(du -h "$DMG" | cut -f1)) and $OUT/update.json"

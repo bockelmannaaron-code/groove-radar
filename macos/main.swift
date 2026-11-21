@@ -4,6 +4,7 @@
 // - With no internet, it falls back to the copy of the site bundled inside the app
 //   (served from app://local/ so data.json loads just like on the web).
 // - Ticket and shop links open in the default browser, not inside the app.
+// - Updates itself from GitHub releases (see Updater.swift) and shows a change log (Changelog.swift).
 //
 // Built by macos/build-app.sh with swiftc (no Xcode project needed).
 import AppKit
@@ -47,6 +48,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     var window: NSWindow!
     var web: WKWebView!
     var usingBundled = false
+    let updater = Updater()
+    let changelog = Changelog()
 
     func applicationDidFinishLaunching(_ note: Notification) {
         buildMenu()
@@ -76,7 +79,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
 
         loadLive()
         NSApp.activate(ignoringOtherApps: true)
+        updater.start()
+        changelog.showIfUpdated(currentVersion: updater.currentVersion)
     }
+
+    func applicationWillTerminate(_ note: Notification) { updater.install(relaunch: false) }
+
+    @objc func checkForUpdates() { updater.check(userInitiated: true) }
+
+    @objc func showChangelog() { changelog.show() }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ app: NSApplication) -> Bool { true }
 
@@ -141,6 +152,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         let appItem = NSMenuItem()
         let appMenu = NSMenu()
         appMenu.addItem(withTitle: "About Groove Radar", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
+        appMenu.addItem(withTitle: "What's New", action: #selector(showChangelog), keyEquivalent: "").target = self
+        appMenu.addItem(withTitle: "Check for Updates…", action: #selector(checkForUpdates), keyEquivalent: "").target = self
         appMenu.addItem(.separator())
         appMenu.addItem(withTitle: "Hide Groove Radar", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         let others = appMenu.addItem(withTitle: "Hide Others", action: #selector(NSApplication.hideOtherApplications(_:)), keyEquivalent: "h")
