@@ -1,5 +1,6 @@
-// "What's New in Groove Radar": the change log, read from changelog.json inside the app.
-// Opens from Groove Radar > What's New, and once by itself on the first launch after an update.
+// The app's change log, read from changelog.json inside the app. Opens from the Change log button
+// in the window's bottom-right corner, from Groove Radar > Change Log, and once by itself on the
+// first launch after an update.
 import AppKit
 import WebKit
 
@@ -26,7 +27,7 @@ final class Changelog {
         if window == nil {
             let w = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 600),
                              styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
-            w.title = "What's New in Groove Radar"
+            w.title = "Groove Radar Change Log"
             w.titlebarAppearsTransparent = true
             w.titleVisibility = .hidden  // the page's own heading says it
             w.backgroundColor = NSColor(red: 3 / 255, green: 32 / 255, blue: 61 / 255, alpha: 1)
@@ -40,6 +41,7 @@ final class Changelog {
         }
         (window?.contentView as? WKWebView)?.loadHTMLString(html(since: since), baseURL: nil)
         window?.makeKeyAndOrderFront(nil)
+        if since == nil { NSApp.activate(ignoringOtherApps: true) }  // opened on purpose: bring it to the front
     }
 
     private func html(since: String?) -> String {
@@ -61,13 +63,14 @@ final class Changelog {
         :root { color-scheme: dark; }
         body { margin: 0; padding: 8px 28px 32px; font: 14px/1.55 -apple-system, system-ui, sans-serif; color: #E6EEF6; background: transparent; }
         h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; margin: 4px 0 18px; }
-        h1 em { font-style: normal; color: #639CC5; }
+        h1 em { display: block; margin-top: 4px; font-style: normal; font-size: 14px; font-weight: 500; letter-spacing: 0; color: #639CC5; }
         section { padding: 16px 0; border-top: 1px solid rgba(230,238,246,0.14); }
         h2 { font-size: 17px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 10px; }
         .tag { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: #FF2E88; color: #fff; border-radius: 6px; padding: 2px 7px; }
         .date { margin: 2px 0 8px; color: #8FA9C2; font-size: 13px; }
+        .note { margin: -6px 0 16px; color: #8FA9C2; font-size: 13px; }
         ul { margin: 0; padding-left: 18px; } li { margin: 4px 0; }
-        </style><h1>What's new in Groove <em>Radar</em></h1>\(body.isEmpty ? "<p>No change log in this build.</p>" : body)
+        </style><h1>Change log <em>Groove Radar for Mac</em></h1><p class=note>Changes to the gig calendar itself go live on the website and in the app straight away, so they aren't listed here.</p>\(body.isEmpty ? "<p>No change log in this build.</p>" : body)
         """
     }
 }

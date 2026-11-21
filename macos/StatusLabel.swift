@@ -69,3 +69,39 @@ final class StatusLabel: NSView {
     override func mouseDown(with event: NSEvent) { onClick?() }
     override func resetCursorRects() { addCursorRect(bounds, cursor: .pointingHand) }
 }
+
+/// The "Change log" button next to the version label: opens the change log window.
+final class PillButton: NSView {
+    private let text: NSTextField
+    var onClick: (() -> Void)?
+
+    init(title: String, help: String) {
+        text = NSTextField(labelWithString: title)
+        super.init(frame: .zero)
+        wantsLayer = true
+        layer?.backgroundColor = NSColor(red: 3 / 255, green: 32 / 255, blue: 61 / 255, alpha: 0.82).cgColor
+        layer?.cornerRadius = 9
+        layer?.borderWidth = 1
+        layer?.borderColor = NSColor(red: 99 / 255, green: 156 / 255, blue: 197 / 255, alpha: 0.3).cgColor
+        text.font = .systemFont(ofSize: 11, weight: .semibold)
+        text.textColor = NSColor(red: 238 / 255, green: 244 / 255, blue: 250 / 255, alpha: 1)
+        text.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(text)
+        NSLayoutConstraint.activate([
+            text.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            text.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -10),
+            text.topAnchor.constraint(equalTo: topAnchor, constant: 4),
+            text.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -4),
+        ])
+        toolTip = help
+        setAccessibilityElement(true)
+        setAccessibilityRole(.button)
+        setAccessibilityLabel(title)
+    }
+
+    required init?(coder: NSCoder) { fatalError("not used") }
+
+    override func mouseDown(with event: NSEvent) { onClick?() }
+    override func accessibilityPerformPress() -> Bool { onClick?(); return true }
+    override func resetCursorRects() { addCursorRect(bounds, cursor: .pointingHand) }
+}

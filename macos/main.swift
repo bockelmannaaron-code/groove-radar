@@ -50,6 +50,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     var usingBundled = false
     let updater = Updater()
     let statusLabel = StatusLabel()
+    let whatsNewButton = PillButton(title: "Change log", help: "See what changed in each version of the app")
     let changelog = Changelog()
 
     func applicationDidFinishLaunching(_ note: Notification) {
@@ -80,8 +81,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         let content = NSView()
         web.translatesAutoresizingMaskIntoConstraints = false
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        whatsNewButton.translatesAutoresizingMaskIntoConstraints = false
         content.addSubview(web)
         content.addSubview(statusLabel)
+        content.addSubview(whatsNewButton)
         NSLayoutConstraint.activate([
             web.leadingAnchor.constraint(equalTo: content.leadingAnchor),
             web.trailingAnchor.constraint(equalTo: content.trailingAnchor),
@@ -89,10 +92,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
             web.bottomAnchor.constraint(equalTo: content.bottomAnchor),
             statusLabel.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -8),
             statusLabel.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -8),
-            statusLabel.leadingAnchor.constraint(greaterThanOrEqualTo: content.leadingAnchor, constant: 8),
+            whatsNewButton.trailingAnchor.constraint(equalTo: statusLabel.leadingAnchor, constant: -6),
+            whatsNewButton.centerYAnchor.constraint(equalTo: statusLabel.centerYAnchor),
+            whatsNewButton.leadingAnchor.constraint(greaterThanOrEqualTo: content.leadingAnchor, constant: 8),
         ])
         window.contentView = content
         statusLabel.onClick = { [weak self] in self?.updater.check(userInitiated: true) }
+        whatsNewButton.onClick = { [weak self] in self?.changelog.show() }
         updater.onState = { [weak self] state in self?.statusLabel.update(state: state) }
         window.setFrameAutosaveName("GrooveRadarMain")
         if !window.setFrameUsingName("GrooveRadarMain") { window.center() }
@@ -174,7 +180,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         let appItem = NSMenuItem()
         let appMenu = NSMenu()
         appMenu.addItem(withTitle: "About Groove Radar", action: #selector(NSApplication.orderFrontStandardAboutPanel(_:)), keyEquivalent: "")
-        appMenu.addItem(withTitle: "What's New", action: #selector(showChangelog), keyEquivalent: "").target = self
+        appMenu.addItem(withTitle: "Change Log", action: #selector(showChangelog), keyEquivalent: "").target = self
         appMenu.addItem(withTitle: "Check for Updates…", action: #selector(checkForUpdates), keyEquivalent: "").target = self
         appMenu.addItem(.separator())
         appMenu.addItem(withTitle: "Hide Groove Radar", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")

@@ -12,7 +12,7 @@
 //      quietly in the background (no window jumps to the front);
 //    - if it is in front, it waits until you switch to another app, then does the same;
 //    - if you quit first, the new version is put in place as it quits.
-//    After an update, the What's New window shows what changed (Changelog.swift).
+//    After an update, the Change log window shows what changed (Changelog.swift).
 //    Check for Updates… in the menu still asks before restarting, since you asked for it.
 //
 // The swap runs in a small shell script after the app exits: the old app is kept until the new
