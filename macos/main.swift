@@ -49,6 +49,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
     var web: WKWebView!
     var usingBundled = false
     let updater = Updater()
+    let statusLabel = StatusLabel()
     let changelog = Changelog()
 
     func applicationDidFinishLaunching(_ note: Notification) {
@@ -57,6 +58,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         let config = WKWebViewConfiguration()
         config.setURLSchemeHandler(BundledSite(), forURLScheme: "app")
         config.websiteDataStore = .default()  // keeps the page's saved settings between launches
+        // Lift the page's bottom-right Ask button and panel clear of the version label.
+        let lift = "var s=document.createElement('style');s.textContent='.ask-open{bottom:44px!important}.ask{bottom:44px!important;height:min(680px,calc(100dvh - 62px))!important}@media (max-width:640px){.ask{bottom:36px!important;height:calc(100dvh - 36px)!important}}';document.documentElement.appendChild(s);"
+        config.userContentController.addUserScript(WKUserScript(source: lift, injectionTime: .atDocumentEnd, forMainFrameOnly: true))
 
         web = WKWebView(frame: .zero, configuration: config)
         web.navigationDelegate = self
@@ -72,13 +76,31 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
         window.titleVisibility = .hidden
         window.backgroundColor = NSColor(red: 3 / 255, green: 32 / 255, blue: 61 / 255, alpha: 1)
         window.minSize = NSSize(width: 380, height: 520)
-        window.contentView = web
+        // The page fills the window; the version label sits in the bottom-right corner on top of it.
+        let content = NSView()
+        web.translatesAutoresizingMaskIntoConstraints = false
+        statusLabel.translatesAutoresizingMaskIntoConstraints = false
+        content.addSubview(web)
+        content.addSubview(statusLabel)
+        NSLayoutConstraint.activate([
+            web.leadingAnchor.constraint(equalTo: content.leadingAnchor),
+            web.trailingAnchor.constraint(equalTo: content.trailingAnchor),
+            web.topAnchor.constraint(equalTo: content.topAnchor),
+            web.bottomAnchor.constraint(equalTo: content.bottomAnchor),
+            statusLabel.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -8),
+            statusLabel.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -8),
+            statusLabel.leadingAnchor.constraint(greaterThanOrEqualTo: content.leadingAnchor, constant: 8),
+        ])
+        window.contentView = content
+        statusLabel.onClick = { [weak self] in self?.updater.check(userInitiated: true) }
+        updater.onState = { [weak self] state in self?.statusLabel.update(state: state) }
         window.setFrameAutosaveName("GrooveRadarMain")
         if !window.setFrameUsingName("GrooveRadarMain") { window.center() }
         window.makeKeyAndOrderFront(nil)
 
         loadLive()
-        NSApp.activate(ignoringOtherApps: true)
+        // After a quiet automatic update the app comes back in the background, where it was.
+        if !Updater.launchedByUpdate { NSApp.activate(ignoringOtherApps: true) }
         updater.start()
         changelog.showIfUpdated(currentVersion: updater.currentVersion)
     }

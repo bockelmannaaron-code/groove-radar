@@ -7,8 +7,13 @@
 //    Ed25519 signature against the public key built into the app (Info.plist GRUpdatePublicKey).
 //    Only DMGs signed with the private key on the publisher's Mac are accepted, so a changed
 //    release or download can never install code.
-// 3. It copies the new app out of the DMG and asks: "Restart now" or "Later". With Later, the
-//    update is put in place when the app quits, so the next launch is the new version.
+// 3. It copies the new app out of the DMG and installs it without asking:
+//    - if Groove Radar isn't the app in front, it restarts into the new version straight away,
+//      quietly in the background (no window jumps to the front);
+//    - if it is in front, it waits until you switch to another app, then does the same;
+//    - if you quit first, the new version is put in place as it quits.
+//    After an update, the What's New window shows what changed (Changelog.swift).
+//    Check for Updates… in the menu still asks before restarting, since you asked for it.
 //
 // The swap runs in a small shell script after the app exits: the old app is kept until the new
 // one is copied in, and put back if the copy fails.
@@ -23,6 +28,12 @@ final class Updater {
     private var timer: Timer?
     private var busy = false
     private var staged: (app: URL, version: String, work: URL)?
+    private var waitingForBackground: NSObjectProtocol?
+    /// Reports each check's outcome (for the label in the window's corner).
+    var onState: ((StatusLabel.State) -> Void)?
+
+    /// True when this launch is the quiet restart after an automatic update.
+    static let launchedByUpdate = CommandLine.arguments.contains("--updated")
 
     init() {
         if let b64 = Bundle.main.object(forInfoDictionaryKey: "GRUpdatePublicKey") as? String,
@@ -53,10 +64,12 @@ final class Updater {
         }
         if busy { return }
         guard publicKey != nil else {
+            onState?(.couldNotCheck)
             if userInitiated { tell("Updates are switched off in this build.", detail: "Download new versions from the releases page.") }
             return
         }
         busy = true
+        if userInitiated { onState?(.checking) }
         Task {
             let result: Result<(URL, String, URL)?, Error>
             do { result = .success(try await self.fetchAndStage()) } catch { result = .failure(error) }
@@ -65,10 +78,13 @@ final class Updater {
                 switch result {
                 case .success(let found?):
                     self.staged = (found.0, found.1, found.2)
-                    self.offerRestart(version: found.1)
+                    self.onState?(.updateReady(found.1))
+                    if userInitiated { self.offerRestart(version: found.1) } else { self.installWhenIdle() }
                 case .success(nil):
+                    self.onState?(.upToDate(Date()))
                     if userInitiated { self.tell("Groove Radar is up to date.", detail: "You have version \(self.currentVersion), the newest one.") }
                 case .failure(let error):
+                    self.onState?(.couldNotCheck)
                     if userInitiated { self.tell("Couldn't check for updates.", detail: error.localizedDescription) }
                 }
             }
@@ -123,6 +139,20 @@ final class Updater {
 
     // MARK: Installing
 
+    /// Installs as soon as Groove Radar isn't the app in use: now if it's in the background,
+    /// otherwise the moment you switch away from it.
+    private func installWhenIdle() {
+        if !NSApp.isActive { install(relaunch: true, quietly: true); return }
+        if waitingForBackground != nil { return }
+        waitingForBackground = NotificationCenter.default.addObserver(
+            forName: NSApplication.didResignActiveNotification, object: nil, queue: .main) { [weak self] _ in
+            guard let self else { return }
+            if let o = self.waitingForBackground { NotificationCenter.default.removeObserver(o) }
+            self.waitingForBackground = nil
+            self.install(relaunch: true, quietly: true)
+        }
+    }
+
     private func offerRestart(version: String) {
         let a = NSAlert()
         a.messageText = "Groove Radar \(version) is ready"
@@ -133,14 +163,14 @@ final class Updater {
     }
 
     /// Called on quit (relaunch false) or from "Restart Now" (relaunch true).
-    func install(relaunch: Bool) {
+    func install(relaunch: Bool, quietly: Bool = false) {
         guard let staged else { return }
         let target = Bundle.main.bundleURL
         let parent = target.deletingLastPathComponent().path
         // An app opened straight from the DMG or Downloads runs from a read-only copy: send people to the download instead.
         guard !target.path.contains("/AppTranslocation/"), !target.path.hasPrefix("/Volumes/"),
               FileManager.default.isWritableFile(atPath: parent) else {
-            if relaunch {
+            if relaunch && !quietly {
                 tell("Groove Radar can't update itself from here.",
                      detail: "Move Groove Radar into your Applications folder, or download version \(staged.version) from the releases page.")
                 NSWorkspace.shared.open(Self.releasesPage)
@@ -158,12 +188,13 @@ final class Updater {
         fi
         /usr/bin/xattr -dr com.apple.quarantine "$2" 2>/dev/null
         [ "$4" = 1 ] && /usr/bin/open "$2"
+        [ "$4" = 2 ] && /usr/bin/open -g "$2" --args --updated
         rm -rf "$5"
         """
         let p = Process()
         p.executableURL = URL(fileURLWithPath: "/bin/sh")
         p.arguments = ["-c", script, "groove-radar-update", String(ProcessInfo.processInfo.processIdentifier),
-                       target.path, staged.app.path, relaunch ? "1" : "0", staged.work.path]
+                       target.path, staged.app.path, relaunch ? (quietly ? "2" : "1") : "0", staged.work.path]
         try? p.run()
         if relaunch { NSApp.terminate(nil) }
     }

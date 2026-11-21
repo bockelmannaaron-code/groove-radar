@@ -1,5 +1,14 @@
 [
   {
+    "version": "1.0.4",
+    "date": "2026-11-21",
+    "changes": [
+      "Updates now install by themselves: when a new version is ready, Groove Radar restarts into it quietly the next time it's in the background, or when you quit.",
+      "After an update, this What's New window shows what changed.",
+      "The bottom-right corner shows the version, when it was published and when the app last confirmed it's up to date. Click it to check for updates."
+    ]
+  },
+  {
     "version": "1.0.3",
     "date": "2026-11-21",
     "changes": [

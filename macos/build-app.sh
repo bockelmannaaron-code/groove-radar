@@ -42,7 +42,7 @@ cp macos/changelog.json "$APP/Contents/Resources/changelog.json"
 echo "2/6 Compiling (Apple silicon + Intel)"
 for arch in arm64 x86_64; do
   swiftc -O -target "$arch-apple-macos13.0" -framework AppKit -framework WebKit \
-    macos/main.swift macos/Updater.swift macos/Changelog.swift -o "$WORK/GrooveRadar-$arch"
+    macos/main.swift macos/Updater.swift macos/Changelog.swift macos/StatusLabel.swift -o "$WORK/GrooveRadar-$arch"
 done
 lipo -create "$WORK/GrooveRadar-arm64" "$WORK/GrooveRadar-x86_64" -output "$APP/Contents/MacOS/GrooveRadar"
 
@@ -83,6 +83,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
   <key>LSApplicationCategoryType</key><string>public.app-category.music</string>
   <key>NSHighResolutionCapable</key><true/>
   <key>GRUpdatePublicKey</key><string>$UPDATE_PUBKEY</string>
+  <key>GRPublished</key><string>$(date -u +%Y-%m-%dT%H:%M:%SZ)</string>
   <key>NSHumanReadableCopyright</key><string>© $(date +%Y) Groove Radar</string>
 </dict>
 </plist>
