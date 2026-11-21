@@ -1,5 +1,4 @@
 <title>Groove Radar</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..700&display=swap">
 <style>
@@ -12,7 +11,7 @@
   --on-ink: #03203D; --on-accent: #03203D;
   --display: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
   --body: "Schibsted Grotesk", "Helvetica Neue", Arial, sans-serif;
-  /* Type roles (DESIGN.md typography). rem so the visitor's own text size is respected. */
+  /* Type roles. rem so the visitor's own text size is respected. */
   --fs-label: 0.75rem;                          /* 12px uppercase metadata */
   --fs-meta: 0.8125rem;                         /* 13px small supporting text */
   --fs-ui: 0.875rem;                            /* 14px controls, navigation, notes */
@@ -26,7 +25,7 @@
   --fs-display: clamp(2.25rem, 6.2vw, 5.5rem);  /* hero verdict */
   --fs-wordmark: clamp(3.5rem, 13vw, 11.875rem);/* footer wordmark */
   --fs-intro: clamp(1.75rem, 5.2vw, 4rem);      /* intro tagline */
-  /* Corner radii (DESIGN.md rounded) */
+  /* Corner radii */
   --r: 6px; --r-md: 8px; --r-lg: 12px; --r-nav: 18px; --r-panel: 20px;
   color-scheme: dark;
 }
@@ -1251,24 +1250,35 @@ document.querySelector('.navlinks button[data-jump="news"]').addEventListener("c
 render();
 
 (async () => {
-  const db = await claude.use("db");
   const notice = $("notice");
-  if (!db) { loadState = "error"; render(); notice.hidden = false; notice.textContent = "Sign in to claude.ai to see your gigs."; return; }
-  const timer = setTimeout(() => { notice.hidden = false; notice.textContent = "Your gigs can't be reached right now. What's shown may be out of date."; }, 10000);
-  let first = true;
-  db.collection("gigs").onSnapshot(snap => {
-    gigs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  try {
+    const r = await fetch("data.json?v=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    const d = await r.json();
+    gigs = d.gigs || [];
     loadState = "ready";
-    if (!snap.metadata.fromCache) { clearTimeout(timer); notice.hidden = true; }
-    if (first && gigs.length) {
-      first = false;
-      const up = upcoming();
-      if (up.length && !up.some(g => g.date === selDay)) { selDay = up[0].date; const d = parseKey(up[0].date); cursor = new Date(d.getFullYear(), d.getMonth(), 1); }
+    places = d.places || {};
+    try {
+      const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 2500);
+      const w = await (await fetch("/api/where", { cache: "no-store", signal: ctl.signal })).json(); clearTimeout(t);
+      if (typeof w.lat === "number" && w.continent === "EU") { autoHere = { lat: w.lat, lon: w.lon, label: w.city || w.country || "your area", source: "auto" }; here = autoHere; }
+    } catch (e) { /* no location: near stays the Munich and Rheingau home zones */ }
+    if (location.hash.includes("@") || store.get("near")) readHash();
+    music = {}; (d.music || []).forEach(m => { music[nkey(m.name)] = m; });
+    updates = (d.updates || []).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 14);
+    meta = d.meta || null;
+    const up = upcoming();
+    if (up.length && !up.some(g => g.date === selDay)) { selDay = up[0].date; const dd = parseKey(up[0].date); cursor = new Date(dd.getFullYear(), dd.getMonth(), 1); }
+    render(); renderNews();
+    if (meta && meta.lastRun) {
+      const t = new Date(meta.lastRun);
+      if (!isNaN(t)) document.querySelector("footer p").append(" Last updated " + t.toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) + ".");
     }
-    render();
-  }, err => { clearTimeout(timer); loadState = "error"; render(); notice.hidden = false; notice.textContent = "Couldn't load gigs (" + err.code + ")."; });
-  db.collection("music").onSnapshot(snap => { music = {}; snap.docs.forEach(d => { const m = d.data(); music[nkey(m.name)] = m; }); render(); }, () => {});
-  db.collection("updates").orderBy("date", "desc").limit(14).onSnapshot(snap => { updates = snap.docs.map(d => d.data()); renderNews(); }, () => {});
-  db.doc("meta/run").onSnapshot(s => { meta = s.exists ? s.data() : null; }, () => {});
+  } catch (e) {
+    loadState = "error"; render();
+    notice.hidden = false;
+    notice.textContent = "The gig list couldn't be loaded. Check your connection, then try again. ";
+    const again = document.createElement("button"); again.className = "cta ghost"; again.textContent = "Try again"; again.onclick = () => location.reload(); notice.append(again);
+  }
 })();
 </script>
