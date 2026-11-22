@@ -1,0 +1,48 @@
+{
+  "beatportUrl": "https://www.beatport.com/artist/joshwa/587859",
+  "name": "Joshwa",
+  "note": "",
+  "releases": [
+    {
+      "artists": "Joshwa",
+      "date": "2026-11-06",
+      "label": "No Bad Fridays Records",
+      "preorder": false,
+      "title": "IN2U",
+      "url": "https://www.beatport.com/release/in2u/7670922"
+    },
+    {
+      "artists": "Joshwa",
+      "date": "2026-10-02",
+      "label": "Eastenderz",
+      "preorder": false,
+      "title": "So Sweet",
+      "url": "https://www.beatport.com/release/so-sweet/7402746"
+    },
+    {
+      "artists": "Joshwa, Yasmine Jane",
+      "date": "2026-08-07",
+      "label": "No Bad Fridays Records",
+      "preorder": false,
+      "title": "From The Back",
+      "url": "https://www.beatport.com/release/from-the-back/7218287"
+    },
+    {
+      "artists": "Joshwa",
+      "date": "2026-07-03",
+      "label": "Insomniac Records",
+      "preorder": false,
+      "title": "If Its Real",
+      "url": "https://www.beatport.com/release/if-its-real/6974111"
+    },
+    {
+      "artists": "Joshwa",
+      "date": "2026-06-12",
+      "label": "Hellbent Records",
+      "preorder": false,
+      "title": "Lets Get Ill",
+      "url": "https://www.beatport.com/release/lets-get-ill/7001205"
+    }
+  ],
+  "updatedAt": "2026-11-21"
+}

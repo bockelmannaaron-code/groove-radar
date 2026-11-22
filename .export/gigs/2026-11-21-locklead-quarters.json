@@ -3,7 +3,11 @@
   "city": "Brighton",
   "country": "UK",
   "date": "2026-11-21",
+  "note": "With Julian Anthony and Reeshy. Doors 23:00.",
   "sourceUrl": "https://www.songkick.com/concerts/43379444",
-  "status": "unknown",
+  "start": "23:00",
+  "status": "available",
+  "ticketUrl": "https://www.songkick.com/concerts/43379444-locklead-at-quarters",
+  "updatedAt": "2026-11-21",
   "venue": "Quarters"
 }

@@ -4,6 +4,8 @@
   "country": "UK",
   "date": "2026-12-05",
   "sourceUrl": "https://www.songkick.com/concerts/43514475",
-  "status": "unknown",
+  "status": "available",
+  "ticketUrl": "https://www.songkick.com/concerts/43514475-locklead-at-sawmills",
+  "updatedAt": "2026-11-21",
   "venue": "Sawmills"
 }

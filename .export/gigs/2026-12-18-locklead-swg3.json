@@ -4,6 +4,9 @@
   "country": "UK",
   "date": "2026-12-18",
   "sourceUrl": "https://www.songkick.com/concerts/43491328",
-  "status": "unknown",
+  "start": "22:00",
+  "status": "available",
+  "ticketUrl": "https://www.songkick.com/concerts/43491328-locklead-at-swg3",
+  "updatedAt": "2026-11-21",
   "venue": "SWG3"
 }
