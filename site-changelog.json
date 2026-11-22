@@ -1,0 +1,5 @@
+[
+  {"date": "2026-11-22", "changes": ["The footer shows when the site was last published, in your time zone, and a Change log button opens this list."]},
+  {"date": "2026-11-21", "changes": ["Past gigs stay in the calendar, marked as played.", "Ask Groove Radar: a chat for questions about gigs, tours and trips.", "Groove Radar for Mac: a download that keeps itself up to date."]},
+  {"date": "2026-11-20", "changes": ["First public version of Groove Radar.", "Calendar months start top-left in a standard month grid.", "Every click is smooth, with no page jumps.", "Gaskin, Joshwa, Jamie Jones and Ben Hemsley are tracked.", "Privacy, terms and cookie pages."]}
+]
