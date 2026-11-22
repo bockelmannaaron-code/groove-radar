@@ -91,8 +91,13 @@ LOADER = """(async () => {
     render(); renderNews();
     if (meta && meta.lastRun) {
       const t = new Date(meta.lastRun);
-      if (!isNaN(t)) document.querySelector("footer p").append(" Last updated " + t.toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" }) + ".");
+      if (!isNaN(t)) document.querySelector("footer p").append(" Last updated " + t.toLocaleString("en-GB", { weekday: "long", day: "numeric", month: "long", hour: "numeric", minute: "2-digit", hour12: true }) + ".");
     }
+    const pub = d.published ? new Date(d.published) : null;
+    if (pub && !isNaN(pub)) { $("pubTime").textContent = "Published " + pub.toLocaleString("en-GB", { day: "numeric", month: "long", year: "numeric", hour: "numeric", minute: "2-digit", hour12: true, timeZoneName: "short" }); $("pubTime").dateTime = d.published; }
+    const esc = s => String(s).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c]);
+    $("clogList").innerHTML = (d.changelog || []).map(e => "<section><h3>" + esc(new Date(e.date + "T12:00:00").toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })) + "</h3><ul>" + e.changes.map(c => "<li>" + esc(c) + "</li>").join("") + "</ul></section>").join("");
+    $("pubRow").hidden = false;
   } catch (e) {
     loadState = "error"; render();
     notice.hidden = false;
@@ -101,6 +106,29 @@ LOADER = """(async () => {
   }
 })();
 </script>"""
+
+
+PUB_CSS = """<style>
+footer .pub { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 6px 18px; font-size: var(--fs-meta); color: var(--ink-2); }
+footer .pub button { border: 0; background: none; padding: 6px 0; color: var(--ink); font: inherit; font-size: var(--fs-ui); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+footer .pub button:hover { color: var(--accent-ink); }
+.clog { width: min(560px, calc(100vw - 32px)); max-height: min(640px, calc(100dvh - 48px)); padding: 0; border: 1px solid var(--line); border-radius: var(--r-lg); background: #03203D; color: var(--ink); opacity: 0; box-shadow: 0 24px 60px -20px rgba(0, 6, 20, 0.9); transform: translateY(8px); transition: opacity 0.3s var(--soft), transform 0.3s var(--soft), overlay 0.3s allow-discrete, display 0.3s allow-discrete; }
+.clog[open] { opacity: 1; transform: none; }
+@starting-style { .clog[open] { opacity: 0; transform: translateY(8px); } }
+.clog::backdrop { background: rgba(0, 6, 20, 0.72); }
+.clog .in { padding: 20px 24px 24px; }
+.clog header { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.clog h2 { margin: 0; font-family: var(--display); font-weight: 500; font-size: 1.5rem; letter-spacing: -0.02em; }
+.clog h3 { margin: 18px 0 6px; font-size: var(--fs-ui); color: var(--ink-2); font-weight: 600; }
+.clog ul { margin: 0; padding-left: 18px; line-height: 1.55; } .clog li { margin: 4px 0; }
+.clog .x { border: 0; background: none; color: var(--ink); font: inherit; font-weight: 500; cursor: pointer; padding: 8px 0; min-height: 44px; }
+@media (prefers-reduced-motion: reduce) { .clog { transition: none; } }
+</style>
+"""
+
+PUB_ROW = """<div class="pub" id="pubRow" hidden><time id="pubTime"></time><button type="button" onclick="document.getElementById('clog').showModal()">Change log</button></div>
+<dialog class="clog" id="clog" aria-labelledby="clogTitle"><div class="in"><header><h2 id="clogTitle">Change log</h2><button type="button" class="x" onclick="this.closest('dialog').close()">Close</button></header><div id="clogList"></div></div></dialog>
+"""
 
 
 def build_index():
@@ -117,6 +145,7 @@ def build_index():
     html = head("Groove Radar") + head_bits + "</head>\n<body>\n" + page[body_start:] + "\n</body>\n</html>\n"
     # The copyright year follows the build date, so the morning rebuild rolls it over on 1 January.
     html = re.sub(r"© \d{4} ", f"© {YEAR} ", html)
+    html = html.replace('<p class="copy">', PUB_ROW + '<p class="copy">', 1).replace("</head>", PUB_CSS + "</head>", 1)
     if "googleapis" in html or "gstatic" in html or "claude.use" in html:
         sys.exit("Build check failed: index.html still references Google Fonts or claude.ai.")
     # Device storage goes only through the `store` helper, and every key it uses must be listed on the cookie page.
@@ -334,6 +363,8 @@ def build_data():
         "music": read_dir("music"),
         "updates": read_dir("updates"),
         "meta": next((m for m in meta if m["id"] == "run"), None),
+        "published": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
+        "changelog": json.loads((ROOT / "site-changelog.json").read_text(encoding="utf-8")),
     })
 
 
